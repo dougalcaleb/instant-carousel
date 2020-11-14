@@ -1,0 +1,1 @@
+const carousel1 = new Carousel({});

@@ -1,17 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Blank</title>
+    <title>Carousel V2</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
-
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 </head>
+
 <body>
 
+    <div class="carousel-wrap">
+        <div class="carousel-page-wrap">
+            <div class="carousel-page page1"></div>
+        </div>
+        <div class="carousel-nav">
+            <div class="btn-r nav-btn">
+                <svg viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M8.6,16.6L13.2,12L8.6,7.4L10,6L16,12L10,18L8.6,16.6Z" />
+                </svg>
+            </div>
+            <div class="btn-l nav-btn">
+                <svg viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2A10,10 0 0,1 22,12M20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12M15.4,16.6L10.8,12L15.4,7.4L14,6L8,12L14,18L15.4,16.6Z" />
+                </svg>
+            </div>
+            <div class="radio-btn-wrap">
+                <div class="radio-btn rbtn-0"></div>
+                <div class="radio-btn rbtn-1"></div>
+                <div class="radio-btn rbtn-2"></div>
+            </div>
+        </div>
+    </div>
 
 </body>
 
-<script src="javascript/script.js"></script>
+<script src="javascript/carousel.js"></script>
+<script src="javascript/carousel-settings.js"></script>
 
 </html>
