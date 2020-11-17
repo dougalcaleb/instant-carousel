@@ -8,47 +8,61 @@ body {
     background: #111;
 }
 
-.carousel-wrap {
-    height: calc(100% - 50px);
-    width: calc(100% - 50px);
+// .carousel-wrap {
+//     height: calc(100% - 50px);
+//     width: calc(100% - 50px);
+//     @extend %center;
+//     background: gray;
+//     .carousel-nav {
+//         height: 100%;
+//         width: 100%;
+//         .nav-btn {
+//             height: 40px;
+//             width: 40px;
+//             background: white;
+//             border-radius: 5px;
+//             @extend %center-y;
+//             cursor: pointer;
+//             svg {
+//                 @extend %center;
+//                 height: 30px;
+//             }
+//         }
+//         .btn-l {
+//             left: 10px;
+//         }
+//         .btn-r {
+//             right: 10px;
+//         }
+//         .radio-btn-wrap {
+//             display: flex;
+//             justify-content: space-evenly;
+//             @extend %center-x;
+//             bottom: 0;
+//             height: 40px;
+//             width: 25%;
+//             .radio-btn {
+//                 border-radius: 100%;
+//                 border: 2px solid white;
+//                 height: 15px;
+//                 width: 15px;
+//                 align-self: center;
+//                 cursor: pointer;
+//             }
+//         }
+//     }
+// }
+
+.carousel-page {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+// .carousel-page-wrap {width: 100%;height: 100%;overflow: hidden;position: absolute;}
+
+.popup {
+    height: 100px;
+    width: 100px;
     @extend %center;
-    background: gray;
-    .carousel-nav {
-        height: 100%;
-        width: 100%;
-        .nav-btn {
-            height: 40px;
-            width: 40px;
-            background: white;
-            border-radius: 5px;
-            @extend %center-y;
-            cursor: pointer;
-            svg {
-                @extend %center;
-                height: 30px;
-            }
-        }
-        .btn-l {
-            left: 10px;
-        }
-        .btn-r {
-            right: 10px;
-        }
-        .radio-btn-wrap {
-            display: flex;
-            justify-content: space-evenly;
-            @extend %center-x;
-            bottom: 0;
-            height: 40px;
-            width: 25%;
-            .radio-btn {
-                border-radius: 100%;
-                border: 2px solid white;
-                height: 15px;
-                width: 15px;
-                align-self: center;
-                cursor: pointer;
-            }
-        }
-    }
+    background: green;
 }

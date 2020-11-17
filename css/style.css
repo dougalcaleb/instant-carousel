@@ -3,24 +3,10 @@
 @mixin name - function (used @include name(param))
 $name - variable
 */
-.carousel-wrap, .carousel-wrap .carousel-nav .nav-btn svg {
+.popup {
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-}
-
-.carousel-wrap .carousel-nav .radio-btn-wrap {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin: auto;
-}
-
-.carousel-wrap .carousel-nav .nav-btn {
-  position: absolute;
   top: 0;
   bottom: 0;
   margin: auto;
@@ -35,43 +21,14 @@ body {
   background: #111;
 }
 
-.carousel-wrap {
-  height: calc(100% - 50px);
-  width: calc(100% - 50px);
-  background: gray;
-}
-.carousel-wrap .carousel-nav {
+.carousel-page {
   height: 100%;
   width: 100%;
+  position: absolute;
 }
-.carousel-wrap .carousel-nav .nav-btn {
-  height: 40px;
-  width: 40px;
-  background: white;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.carousel-wrap .carousel-nav .nav-btn svg {
-  height: 30px;
-}
-.carousel-wrap .carousel-nav .btn-l {
-  left: 10px;
-}
-.carousel-wrap .carousel-nav .btn-r {
-  right: 10px;
-}
-.carousel-wrap .carousel-nav .radio-btn-wrap {
-  display: flex;
-  justify-content: space-evenly;
-  bottom: 0;
-  height: 40px;
-  width: 25%;
-}
-.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn {
-  border-radius: 100%;
-  border: 2px solid white;
-  height: 15px;
-  width: 15px;
-  align-self: center;
-  cursor: pointer;
+
+.popup {
+  height: 100px;
+  width: 100px;
+  background: green;
 }
