@@ -1,5 +1,5 @@
 /*
-✔ = Complete  ⚠ = In Progress  ✖ = Incomplete
+✔ = Complete  ⚠ = Partial  ✖ = Incomplete
 INTENDED FEATURES:
 
 3 TYPES
@@ -23,9 +23,9 @@ SPECS (FADE)
 ✖  Can move and fade simultaneously
 
 HAS AUTOSCROLL
-✖  Scrolls over an interval
-✖  Pauses on interaction or hover
-✖  Can go either direction
+✔  Scrolls over an interval
+✔  Pauses on interaction or hover
+✔  Can go either direction
 
 HTML
 ✔  Can be auto-genned
@@ -41,9 +41,14 @@ PAGES
 ✖  Can define HTML and CSS per page for interactivity
 
 SWIPE
-✖  User can swipe to advance pages
-✖  User can swipe past the edge and experience resistance
+✔  User can swipe to advance pages
+✔  User can swipe past the edge and experience resistance
 ✖  A page always shows
+
+BUBBLES
+✖  Show current page and available pages
+✖  Entirely customizable
+✖  Can be disabled
 
 MISC
 ✔  User interactions can be throttled
@@ -51,7 +56,7 @@ MISC
 ✖  Scrolling through pages with bubbles is smooth
 ✖  Responsive
 ✖  Can have multiple carousels in a single page with object constructors
-✔  Any relevant setting has a default, but can be overridden
+⚠  Any relevant setting has a default, but can be overridden
 ✖  Unique class names
 */
 
@@ -71,7 +76,9 @@ class Carousel {
         this.autoScroll = (settings.autoScroll) ? settings.autoScroll : false;
         this.autoScroll_speed = (settings.autoScroll_speed) ? settings.autoScroll_speed : 5000;
         this.autoScroll_timeout = (settings.autoScroll_timeout) ? settings.autoScroll_timeout : 15000;
-        this.autoScroll_direction = (settings.autoScroll_direction) ? settings.autoScroll_direction : "r";
+        this.autoScroll_pauseOnHover = (settings.autoScroll_pauseOnHover) ? settings.autoScroll_pauseOnHover : false;
+        this.autoScroll_startAfter = (settings.autoScroll_startAfter) ? settings.autoScroll_startAfter : 5000;
+        this.autoScroll_direction = (settings.autoScroll_direction) ? settings.autoScroll_direction : "right";
         this.transition = (settings.transition) ? settings.transition : 300;
         this.throttle = (settings.throttle == false) ? settings.throttle : true;
         this.throttle_timeout = (settings.throttle_timeout) ? settings.throttle_timeout : 300;
@@ -108,12 +115,17 @@ class Carousel {
         this.sy = 0;
         this.ex = 0;
         this.ey = 0;
+        this.dx = 0;
+        this.dy = 0;
         this.x = 0;
         this.y = 0;
         this.lastMove = null;
         this.t = false;
         this.dragging = false;
         this.canSnap = false;
+        // autoscroll
+        this.scrollTimeoutHolder = null;
+        this.scrollIntervalHolder = null;
         // probably temporary
         this.pageOffset = 100;
 
@@ -184,6 +196,42 @@ class Carousel {
         }
     }
 
+    // On user interaction, this is called to pause scrolling until user is presumably done
+    resetScrollTimeout() {
+        clearTimeout(this.scrollTimeoutHolder);
+        clearInterval(this.scrollIntervalHolder);
+        this.scrollTimeoutHolder = setTimeout(() => {
+            this.setAutoScroll(this);
+        }, this.autoScroll_timeout);
+    }
+
+    // Initializes autoscroll if enabled
+    setAutoScroll(parent, firstTime = false) {
+        console.log(parent);
+        if (firstTime && parent.autoScroll) {
+            setTimeout(() => {
+                parent.scrollAuto(parent);
+                parent.scrollIntervalHolder = setInterval(() => {
+                    parent.scrollAuto(parent);
+                }, parent.autoScroll_speed);
+            }, parent.autoScroll_startAfter);
+        } else if (parent.autoScroll) {
+            parent.scrollIntervalHolder = setInterval(() => {
+                parent.scrollAuto(parent);
+            }, parent.autoScroll_speed);
+        }
+    }
+
+    // Called at each interval, determines how to scroll
+    scrollAuto(parent) {
+        if (parent.autoScroll_direction.toLowerCase() == "left" && parent.scrollIsAllowed) {
+            parent.scrollLeft();
+        } else if (parent.autoScroll_direction.toLowerCase() == "right" && parent.scrollIsAllowed) {
+            parent.scrollRight();
+        }
+    }
+
+
     setListeners() {
         document.querySelector(".btn-r").addEventListener("click", () => {
             this.rightPressed(this);
@@ -203,23 +251,227 @@ class Carousel {
                 }
             });
         }
+        if (this.autoScroll_pauseOnHover) {
+            document.querySelector(this.parent).addEventListener("mouseover", () => {
+                this.scrollIsAllowed = false;
+            });
+            document.querySelector(this.parent).addEventListener("mouseout", () => {
+                this.scrollIsAllowed = true;
+                this.resetScrollTimeout();
+            });
+        }
+        if (this.swipe) {
+            document.querySelector(".carousel-swipe-overlay").addEventListener("mousedown", (event) => {
+                this.tStart(event, this);
+            }, false);
+            document.querySelector(".carousel-swipe-overlay").addEventListener("touchstart", (event) => {
+                this.setTouch(event, this);
+            }, false);
+        }
     }
 
-    // resetScrollTimeout() { 
-    //     clearTimeout(this.scrollTimeout);
-    //     clearInterval(this.scrollInt);
-    //     carousel.scrollTimeout = setTimeout(carousel_setAutoScroll, carousel.autoScrollTimeout);
-    // }
+
+    /*
+    =======================================================
+    SWIPE
+    =======================================================
+    */
+
+    setTouch(event, parent) {
+        event.preventDefault();
+        parent.t = true;
+        parent.tStart(event, parent);
+    }
+    
+    // called once when touch or click starts
+    tStart(event, parent) {
+        event.preventDefault();
+        parent.dragging = true;
+    
+        // remove transitions to eliminate delayed movement
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = "0s";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = "0s";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = "0s";
+    
+        // log the first touch position
+        parent.lastMove = event.touches;
+        if (parent.t) {
+            parent.x = event.touches[0].clientX;
+            parent.y = event.touches[0].clientY;
+            parent.sx = event.touches[0].clientX;
+            parent.sy = event.touches[0].clientY;
+        } else {
+            parent.x = event.clientX;
+            parent.y = event.clientY;
+        
+            parent.sx = event.clientX;
+            parent.sy = event.clientY;
+        }
+    
+        document.addEventListener("mousemove", (event) => {
+            parent.follow(event, parent);
+        }, false);
+        document.addEventListener("touchmove", (event) => {
+            parent.follow(event, parent);
+        }, false);
+    
+        document.addEventListener("mouseup", (event) => {
+            parent.tEnd(event, parent);
+        }, false);
+        document.addEventListener("touchend", (event) => {
+            parent.tEnd(event, parent);
+        }, false);
+        document.addEventListener("touchcancel", (event) => {
+            parent.tCancel(event, parent);
+        }, false);
+    }
+    
+    // called repeatedly while dragging
+    follow(event, parent) {
+        if (parent.dragging) {
+            // capture movements
+            if (parent.t) {
+                parent.x = event.changedTouches[0].clientX;
+                parent.y = event.changedTouches[0].clientY;
+            } else {
+                parent.x = event.clientX;
+                parent.y = event.clientY;
+            }
+    
+            // resistant scrolling
+            if (Math.abs(parent.dx) < document.querySelector(parent.parent).offsetWidth && parent.infinite) {
+                parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
+                parent.dy = (parent.y-parent.sy)*parent.swipe_multiplier;
+            } else if (parent.dx < 0) {
+                parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
+                if (parent.infinite) {
+                    parent.dx -= (parent.dx + document.querySelector(parent.parent).offsetWidth)*parent.swipe_resistance;
+                } else if (parent.orderedPages[parent.orderedPagesMainIndex] === parent.pages.length-1) {
+                    parent.dx -= (parent.dx)*parent.swipe_resistance;
+                }
+                parent.dy = (parent.y-parent.sy)*parent.swipe_multiplier;
+            } else if (parent.dx >= 0) {
+                parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
+                if (parent.infinite) {
+                    parent.dx -= (parent.dx - document.querySelector(parent.parent).offsetWidth)*parent.swipe_resistance;
+                } else if (parent.orderedPages[parent.orderedPagesMainIndex] === 0) {
+                    parent.dx -= (parent.dx*parent.resist);
+                }
+                parent.dy = (parent.y-parent.sy)*parent.swipe_multiplier;
+            }
+    
+            // get distance values
+            let rawDist = (Math.pow(parent.dx, 2) + Math.pow(parent.dy, 2));
+            let dist = Math.sqrt(rawDist);
+    
+            // if user has swiped far enough, allow movement to next slide
+            if (dist >= parent.swipe_threshold) {
+                parent.canSnap = true;
+            } else {
+                parent.canSnap = false;
+            }
+            // move slides to the correct position while being dragged
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "calc(-100% + "+parent.dx+"px)";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = parent.dx+"px";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "calc(100% + "+parent.dx+"px)";
+        } else {
+            // if not dragging, restore correct values
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = parent.transition/1000+"s";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = parent.transition/1000+"s";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = parent.transition/1000+"s";
+
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "100%";
+        }
+    }
+    
+    // called once when the touch or click ends
+    tEnd(event, parent) {
+        parent.dragging = false;
+    
+        // log the end of touch position
+        if (parent.t) {
+            parent.ex = event.changedTouches[0].clientX;
+            parent.ey = event.changedTouches[0].clientY;
+        } else {
+            parent.ex = event.clientX;
+            parent.ey = event.clientY;
+        }
+    
+        parent.snap(parent.canSnap, parent.dx, parent);
+
+        parent.resetSwipeVars(parent);
+    
+        document.removeEventListener("mousemove", (event) => {parent.follow(event, parent);}, false);
+        document.removeEventListener("touchmove", (event) => {parent.follow(event, parent);}, false);
+
+        document.removeEventListener("mouseup", (event) => {parent.tEnd(event, parent);}, false);
+        document.removeEventListener("touchend", (event) => {parent.tEnd(event, parent);}, false);
+        document.removeEventListener("touchcancel", (event) => {parent.tCancel(event, parent);}, false);
+    }
+    
+    // when touch is canceled, handle it
+    tCancel(event, parent) {
+        event.preventDefault();
+        document.removeEventListener("mouseup", (event) => {parent.tEnd(event, parent);}, false);
+        document.removeEventListener("touchend", (event) => {parent.tEnd(event, parent);}, false);
+        document.removeEventListener("touchcancel", (event) => {parent.tCancel(event, parent);}, false);
+    }
+    
+    // snap to a new slide once touch or click ends
+    snap(al, dir, parent) {
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = parent.transition/1000+"s";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = parent.transition/1000+"s";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = parent.transition/1000+"s";
+        if (al) {
+            if (dir > 0) {
+                parent.leftPressed(parent);
+            } else if (dir < 0) {
+                parent.rightPressed(parent);
+            }
+        } else {
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "100%";
+        }
+    }
+    
+    // reset all variables to defaults to avoid strange movements when a new touch starts
+    resetSwipeVars(parent) {
+        parent.sx = 0;
+        parent.sy = 0;
+        parent.ex = 0;
+        parent.ey = 0;
+        parent.x = 0;
+        parent.y = 0;
+        parent.dx = 0;
+        parent.dy = 0;
+        parent.lastMove = [];
+        parent.t = false;
+        parent.canSnap = false;
+    }
+
+
+
+
+
+
+
+
+
+
+
 
     // Generates the default HTML structure
     defaultHTML() {
-        let html = `<div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"><div class="radio-btn rbtn-0"></div><div class="radio-btn rbtn-1"></div><div class="radio-btn rbtn-2"></div></div></div>`;
+        let html = `<div class="carousel-swipe-overlay"></div><div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"><div class="radio-btn rbtn-0"></div><div class="radio-btn rbtn-1"></div><div class="radio-btn rbtn-2"></div></div></div>`;
         document.querySelector(this.parent).innerHTML = html;
     }
 
     // Generates the default CSS styling
     defaultCSS() {
-        let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:calc(100% - 50px);background:gray}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:10px}.carousel-wrap .carousel-nav .btn-r{right:10px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;}`;
+        let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:calc(100% - 50px);background:gray}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
         let newStyle = document.createElement("STYLE");
         newStyle.setAttribute("type", "text/css");
         newStyle.innerHTML = css;
@@ -264,6 +516,9 @@ class Carousel {
         if (this.throttle_matchTransition) {
             this.throttle_timeout = this.transition;
         }
+        if (this.autoScroll) {
+            this.setAutoScroll(this, true);
+        }
         this.generatePages();
     }
 
@@ -277,8 +532,7 @@ class Carousel {
 
 
 Carousel.prototype.rightPressed = function(parent) {
-    //! INCLUDES AUTOSCROLL CODE, BUT AUTOSCROLL IS NOT YET IMPLEMENTED
-    // parent.resetScrollTimeout();
+    parent.resetScrollTimeout();
     if (parent.scrollIsAllowed) {
         parent.scrollRight();
         if (parent.throttle) {
@@ -291,8 +545,7 @@ Carousel.prototype.rightPressed = function(parent) {
 };
 
 Carousel.prototype.leftPressed = function(parent) {
-    //! INCLUDES AUTOSCROLL CODE, BUT AUTOSCROLL IS NOT YET IMPLEMENTED
-    // parent.resetScrollTimeout();
+    parent.resetScrollTimeout();
     if (parent.scrollIsAllowed) {
         parent.scrollLeft();
         if (parent.throttle) {
