@@ -21,6 +21,6 @@ let c = new Carousel({
         {
             imageURL: "../images/numbers/6.png"
         },
-        
     ]
 });
+

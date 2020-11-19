@@ -46,7 +46,7 @@ SWIPE
 ✖  A page always shows
 
 BUBBLES
-✖  Show current page and available pages
+✖  Show current and available pages
 ✖  Entirely customizable
 ✖  Can be disabled
 
@@ -54,11 +54,28 @@ MISC
 ✔  User interactions can be throttled
 ✔  Keys can be used to navigate
 ✖  Scrolling through pages with bubbles is smooth
-✖  Responsive
+⚠  Responsive
 ✖  Can have multiple carousels in a single page with object constructors
 ⚠  Any relevant setting has a default, but can be overridden
 ✖  Unique class names
+
+EXTRA
+✖  Presets for carousel visuals
+✖  Presets for bubble visuals
+
 */
+
+//? IDEAS:
+/*
+-   Unique class names can be achieved through storing instances in an array, and using the array index in the names
+*/
+
+//! KNOWN ISSUES:
+/*
+
+*/
+
+let global;
 
 class Carousel {
     constructor(settings) {
@@ -128,6 +145,10 @@ class Carousel {
         this.scrollIntervalHolder = null;
         // probably temporary
         this.pageOffset = 100;
+        // functions
+        this.boundFollow = null;
+        this.boundEnd = null;
+        this.boundCancel = null;
 
         // Function calls
         this.initialActions();
@@ -137,6 +158,7 @@ class Carousel {
 
     } // end of constructor
 
+    // Create each new page from the this.pages array and append to the parent element
     generatePages() {
         let leftSidePages = Math.floor((this.pages.length - 1) / 2);
         for (let a = 0; a < this.pages.length; a++) {
@@ -162,6 +184,7 @@ class Carousel {
         }
     }
 
+    // Scrolls right. Does not handle actual clicks
     scrollRight() { //! Both of these will probably need to be updated to accomodate multiple visible pages at once and different units than %
         if (this.onPage >= this.pages.length-1 && !this.infinite) {
             return;
@@ -179,6 +202,7 @@ class Carousel {
         }
     }
 
+    // Scrolls left. Does not handle actual clicks
     scrollLeft() {
         if (this.onPage <= 0 && !this.infinite) {
             return;
@@ -207,7 +231,6 @@ class Carousel {
 
     // Initializes autoscroll if enabled
     setAutoScroll(parent, firstTime = false) {
-        console.log(parent);
         if (firstTime && parent.autoScroll) {
             setTimeout(() => {
                 parent.scrollAuto(parent);
@@ -231,7 +254,7 @@ class Carousel {
         }
     }
 
-
+    // Sets all required eventListeners for the carousel
     setListeners() {
         document.querySelector(".btn-r").addEventListener("click", () => {
             this.rightPressed(this);
@@ -277,6 +300,7 @@ class Carousel {
     =======================================================
     */
 
+    // starts the touch if the user has a touchscreen
     setTouch(event, parent) {
         event.preventDefault();
         parent.t = true;
@@ -307,23 +331,15 @@ class Carousel {
             parent.sx = event.clientX;
             parent.sy = event.clientY;
         }
+
+        document.addEventListener("mousemove", parent.boundFollow, false);
+        document.addEventListener("mouseup", parent.boundEnd, false);
     
-        document.addEventListener("mousemove", (event) => {
-            parent.follow(event, parent);
-        }, false);
-        document.addEventListener("touchmove", (event) => {
-            parent.follow(event, parent);
-        }, false);
-    
-        document.addEventListener("mouseup", (event) => {
-            parent.tEnd(event, parent);
-        }, false);
-        document.addEventListener("touchend", (event) => {
-            parent.tEnd(event, parent);
-        }, false);
-        document.addEventListener("touchcancel", (event) => {
-            parent.tCancel(event, parent);
-        }, false);
+        if (parent.t) {
+            document.addEventListener("touchmove", parent.boundFollow, false);
+            document.addEventListener("touchend", parent.boundEnd, false);
+            document.addEventListener("touchcancel", parent.boundCancel, false);
+        }
     }
     
     // called repeatedly while dragging
@@ -375,13 +391,13 @@ class Carousel {
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = parent.dx+"px";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "calc(100% + "+parent.dx+"px)";
         } else {
-            // if not dragging, restore correct values
+            // if not dragging, restore correct positioning and values
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = parent.transition/1000+"s";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = parent.transition/1000+"s";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = parent.transition/1000+"s";
 
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0%";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "100%";
         }
     }
@@ -399,19 +415,12 @@ class Carousel {
             parent.ey = event.clientY;
         }
     
+        // snap the page to the correct position, and reset for next swipe
         parent.snap(parent.canSnap, parent.dx, parent);
-
         parent.resetSwipeVars(parent);
-    
-        document.removeEventListener("mousemove", (event) => {parent.follow(event, parent);}, false);
-        document.removeEventListener("touchmove", (event) => {parent.follow(event, parent);}, false);
-
-        document.removeEventListener("mouseup", (event) => {parent.tEnd(event, parent);}, false);
-        document.removeEventListener("touchend", (event) => {parent.tEnd(event, parent);}, false);
-        document.removeEventListener("touchcancel", (event) => {parent.tCancel(event, parent);}, false);
     }
     
-    // when touch is canceled, handle it
+    // handle touch cancle
     tCancel(event, parent) {
         event.preventDefault();
         document.removeEventListener("mouseup", (event) => {parent.tEnd(event, parent);}, false);
@@ -419,7 +428,7 @@ class Carousel {
         document.removeEventListener("touchcancel", (event) => {parent.tCancel(event, parent);}, false);
     }
     
-    // snap to a new slide once touch or click ends
+    // snap to a new slide once touch or drag ends
     snap(al, dir, parent) {
         document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = parent.transition/1000+"s";
         document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = parent.transition/1000+"s";
@@ -430,11 +439,10 @@ class Carousel {
             } else if (dir < 0) {
                 parent.rightPressed(parent);
             }
-        } else {
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "100%";
         }
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0%";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "100%";
     }
     
     // reset all variables to defaults to avoid strange movements when a new touch starts
@@ -452,16 +460,18 @@ class Carousel {
         parent.canSnap = false;
     }
 
+    // These remain bound to the constructor object, assisting in circumventing 'this' scope issues
+    execMM(event) {
+        this.follow(event, this);
+    }
+    execMU(event) {
+        this.tEnd(event, this);
+    }
+    execTC(event) {
+        this.tCancel(event, this);
+    }
 
-
-
-
-
-
-
-
-
-
+    // end of swipe
 
     // Generates the default HTML structure
     defaultHTML() {
@@ -471,7 +481,7 @@ class Carousel {
 
     // Generates the default CSS styling
     defaultCSS() {
-        let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:calc(100% - 50px);background:gray}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
+        let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:calc(100% - 50px);}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
         let newStyle = document.createElement("STYLE");
         newStyle.setAttribute("type", "text/css");
         newStyle.innerHTML = css;
@@ -520,6 +530,9 @@ class Carousel {
             this.setAutoScroll(this, true);
         }
         this.generatePages();
+        this.boundFollow = this.execMM.bind(this);
+        this.boundEnd = this.execMU.bind(this);
+        this.boundCancel = this.execTC.bind(this);
     }
 
 
@@ -585,21 +598,4 @@ function arr_last(arr) {
         return "INVALID PARAMETERS";
     }
     return arr[arr.length-1];
-}
-
-function arr_rotate(arr, dir = 1) {
-    if (typeof arr !== "object") {
-        return "INVALID PARAMETERS";
-    }
-    if (dir === 0) {        // left
-        arr.push(arr[0]);
-        arr.shift();
-        return arr;
-    } else if (dir === 1) { // right
-        arr.unshift(arr_last(arr));
-        arr.pop();
-        return arr;
-    } else {
-        return "INVALID DIRECTION";
-    }
 }
