@@ -44,6 +44,7 @@ SWIPE
 ✔  User can swipe to advance pages
 ✔  User can swipe past the edge and experience resistance
 ✖  A page always shows
+✖  Throttled
 
 BUBBLES
 ✖  Show current and available pages
@@ -72,7 +73,7 @@ EXTRA
 
 //! KNOWN ISSUES:
 /*
-
+- There is a jump when trying to scroll past the ends when infinite: false and resistance < 1
 */
 
 let global;
@@ -133,9 +134,9 @@ class Carousel {
         this.ex = 0;
         this.ey = 0;
         this.dx = 0;
-        this.dy = 0;
         this.x = 0;
         this.y = 0;
+        this.xo = 0;
         this.lastMove = null;
         this.t = false;
         this.dragging = false;
@@ -163,14 +164,13 @@ class Carousel {
         let leftSidePages = Math.floor((this.pages.length - 1) / 2);
         for (let a = 0; a < this.pages.length; a++) {
             let newPage = document.createElement("DIV");
-            newPage.classList.add("carousel-page-"+a, "carousel-page");
+            newPage.classList.add("carousel-page-"+a, "carousel-page", "carousel-page-has-transition");
             if (this.pages[a].imageURL) {
                 newPage.style.background = "url("+this.pages[a].imageURL+")";
                 newPage.style.backgroundSize = "cover";
                 newPage.style.backgroundPosition = "center center";
             }
             newPage.style.left = (this.pageOffset * a + "%");
-            newPage.style.transition = (this.transition/1000)+"s";
             document.querySelector(".carousel-page-wrap").appendChild(newPage);
             this.orderedPages.push(a);
             this.orderedPositions.push(a-leftSidePages);
@@ -185,38 +185,69 @@ class Carousel {
     }
 
     // Scrolls right. Does not handle actual clicks
-    scrollRight() { //! Both of these will probably need to be updated to accomodate multiple visible pages at once and different units than %
+    scrollRight(valuesOnly = false) { //! Both of these will probably need to be updated to accomodate multiple visible pages at once and different units than %
         if (this.onPage >= this.pages.length-1 && !this.infinite) {
             return;
         } else {
-            for (let a = 0; a < this.pages.length; a++) {
-                let currentPageOffset = parseFloat(document.querySelector(".carousel-page-"+a).style.left.split("%")[0]);
-                currentPageOffset -= this.pageOffset;
-                document.querySelector(".carousel-page-"+a).style.left = currentPageOffset+"%";
+            if (!valuesOnly) {
+                for (let a = 0; a < this.pages.length; a++) {
+                    let currentPageOffset = parseFloat(document.querySelector(".carousel-page-"+a).style.left.split("%")[0]);
+                    currentPageOffset -= this.pageOffset;
+                    document.querySelector(".carousel-page-"+a).style.left = currentPageOffset+"%";
+                }
             }
-            document.querySelector(".carousel-page-"+this.orderedPages[0]).classList.add("carousel-moving-page");
-            document.querySelector(".carousel-page-"+arr_last(this.orderedPages)).classList.remove("carousel-moving-page");
+            
+            let currentMoving = this.orderedPages[0];
+            document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-moving-page");
+            document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-page-has-no-transition");
+            document.querySelector(".carousel-page-"+currentMoving).classList.remove("carousel-page-has-transition");
+            setTimeout(() => {
+                document.querySelector(".carousel-page-"+currentMoving).classList.remove("carousel-moving-page");
+                if (!valuesOnly) {
+                    document.querySelector(".carousel-page-"+currentMoving).classList.remove("carousel-page-has-no-transition");
+                    document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-page-has-transition");
+                }
+            }, this.transition);
             document.querySelector(".carousel-page-"+this.orderedPages[0]).style.left = arr_last(this.orderedPositions) * this.pageOffset + "%";
             this.onPage++;
             this.orderedPages.push(this.orderedPages.shift());
+            if (valuesOnly) {
+                document.querySelector(".carousel-page-"+this.orderedPages[this.orderedPagesMainIndex+1]).classList.add("carousel-page-has-no-transition");
+                document.querySelector(".carousel-page-"+this.orderedPages[this.orderedPagesMainIndex+1]).classList.remove("carousel-page-has-transition");
+            }
         }
     }
 
     // Scrolls left. Does not handle actual clicks
-    scrollLeft() {
+    scrollLeft(valuesOnly = false) {
         if (this.onPage <= 0 && !this.infinite) {
             return;
         } else {
-            for (let a = 0; a < this.pages.length; a++) {
-                let currentPageOffset = parseFloat(document.querySelector(".carousel-page-"+a).style.left.split("%")[0]);
-                currentPageOffset += this.pageOffset;
-                document.querySelector(".carousel-page-"+a).style.left = currentPageOffset+"%";
+            if (!valuesOnly) {
+                for (let a = 0; a < this.pages.length; a++) {
+                    let currentPageOffset = parseFloat(document.querySelector(".carousel-page-"+a).style.left.split("%")[0]);
+                    currentPageOffset += this.pageOffset;
+                    document.querySelector(".carousel-page-"+a).style.left = currentPageOffset+"%";
+                }
             }
-            document.querySelector(".carousel-page-"+arr_last(this.orderedPages)).classList.add("carousel-moving-page");
-            document.querySelector(".carousel-page-"+this.orderedPages[0]).classList.remove("carousel-moving-page");
+            let currentMoving = arr_last(this.orderedPages);
+            document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-moving-page");
+            document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-page-has-no-transition");
+            document.querySelector(".carousel-page-"+currentMoving).classList.remove("carousel-page-has-transition");
+            setTimeout(() => {
+                document.querySelector(".carousel-page-"+currentMoving).classList.remove("carousel-moving-page");
+                if (!valuesOnly) {
+                    document.querySelector(".carousel-page-"+currentMoving).classList.remove("carousel-page-has-no-transition");
+                    document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-page-has-transition");
+                }
+            }, this.transition);
             document.querySelector(".carousel-page-"+arr_last(this.orderedPages)).style.left = this.orderedPositions[0] * this.pageOffset + "%";
             this.onPage--;
             this.orderedPages.unshift(this.orderedPages.pop());
+            if (valuesOnly) {
+                document.querySelector(".carousel-page-"+this.orderedPages[this.orderedPagesMainIndex-1]).classList.add("carousel-page-has-no-transition");
+                document.querySelector(".carousel-page-"+this.orderedPages[this.orderedPagesMainIndex-1]).classList.remove("carousel-page-has-transition");
+            }
         }
     }
 
@@ -313,9 +344,12 @@ class Carousel {
         parent.dragging = true;
     
         // remove transitions to eliminate delayed movement
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = "0s";
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = "0s";
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = "0s";
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.add("carousel-page-has-no-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.add("carousel-page-has-no-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.add("carousel-page-has-no-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.remove("carousel-page-has-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.remove("carousel-page-has-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.remove("carousel-page-has-transition");
     
         // log the first touch position
         parent.lastMove = event.touches;
@@ -353,32 +387,36 @@ class Carousel {
                 parent.x = event.clientX;
                 parent.y = event.clientY;
             }
-    
+
+            parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
+
             // resistant scrolling
             if (Math.abs(parent.dx) < document.querySelector(parent.parent).offsetWidth && parent.infinite) {
                 parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
-                parent.dy = (parent.y-parent.sy)*parent.swipe_multiplier;
             } else if (parent.dx < 0) {
-                parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
                 if (parent.infinite) {
                     parent.dx -= (parent.dx + document.querySelector(parent.parent).offsetWidth)*parent.swipe_resistance;
                 } else if (parent.orderedPages[parent.orderedPagesMainIndex] === parent.pages.length-1) {
-                    parent.dx -= (parent.dx)*parent.swipe_resistance;
+                    if (parent.swipe_resistance == 1) {
+                        parent.dx = 0;
+                    } else {
+                        parent.dx -= (parent.dx*parent.swipe_resistance);
+                    }
                 }
-                parent.dy = (parent.y-parent.sy)*parent.swipe_multiplier;
-            } else if (parent.dx >= 0) {
-                parent.dx = (parent.x-parent.sx)*parent.swipe_multiplier;
+            } else if (parent.dx > 0) {
                 if (parent.infinite) {
                     parent.dx -= (parent.dx - document.querySelector(parent.parent).offsetWidth)*parent.swipe_resistance;
                 } else if (parent.orderedPages[parent.orderedPagesMainIndex] === 0) {
-                    parent.dx -= (parent.dx*parent.resist);
+                    if (parent.swipe_resistance == 1) {
+                        parent.dx = 0;
+                    } else {
+                        parent.dx -= (parent.dx*parent.swipe_resistance);
+                    }
                 }
-                parent.dy = (parent.y-parent.sy)*parent.swipe_multiplier;
             }
     
             // get distance values
-            let rawDist = (Math.pow(parent.dx, 2) + Math.pow(parent.dy, 2));
-            let dist = Math.sqrt(rawDist);
+            let dist = Math.abs(parent.dx-parent.xo);
     
             // if user has swiped far enough, allow movement to next slide
             if (dist >= parent.swipe_threshold) {
@@ -386,15 +424,32 @@ class Carousel {
             } else {
                 parent.canSnap = false;
             }
-            // move slides to the correct position while being dragged
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "calc(-100% + "+parent.dx+"px)";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = parent.dx+"px";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "calc(100% + "+parent.dx+"px)";
+
+            if (dist >= document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth) {
+                if (parent.dx-parent.xo > 0) {
+                    parent.scrollLeft(true);
+                } else if (parent.dx-parent.xo < 0) {
+                    parent.scrollRight(true);
+                }
+                parent.sx = parent.x/1;
+                parent.dx = 0;
+                parent.xo = 0;
+            } else {
+                // move slides to the correct position while being dragged
+                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "calc(-100% + "+(parent.dx-parent.xo)+"px)";
+                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "calc(100% + "+(parent.dx-parent.xo)+"px)";
+                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = (parent.dx-parent.xo)+"px";
+            }
+            
+            
         } else {
             // if not dragging, restore correct positioning and values
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = parent.transition/1000+"s";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = parent.transition/1000+"s";
-            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = parent.transition/1000+"s";
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.add("carousel-page-has-transition");
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.add("carousel-page-has-transition");
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.add("carousel-page-has-transition");
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.remove("carousel-page-has-no-transition");
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.remove("carousel-page-has-no-transition");
+            document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.remove("carousel-page-has-no-transition");
 
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0%";
@@ -404,6 +459,12 @@ class Carousel {
     
     // called once when the touch or click ends
     tEnd(event, parent) {
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.add("carousel-page-has-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.add("carousel-page-has-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.add("carousel-page-has-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.remove("carousel-page-has-no-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.remove("carousel-page-has-no-transition");
+        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.remove("carousel-page-has-no-transition");
         parent.dragging = false;
     
         // log the end of touch position
@@ -414,6 +475,8 @@ class Carousel {
             parent.ex = event.clientX;
             parent.ey = event.clientY;
         }
+
+        parent.xo = 0;
     
         // snap the page to the correct position, and reset for next swipe
         parent.snap(parent.canSnap, parent.dx, parent);
@@ -430,9 +493,6 @@ class Carousel {
     
     // snap to a new slide once touch or drag ends
     snap(al, dir, parent) {
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.transition = parent.transition/1000+"s";
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.transition = parent.transition/1000+"s";
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.transition = parent.transition/1000+"s";
         if (al) {
             if (dir > 0) {
                 parent.leftPressed(parent);
@@ -454,7 +514,6 @@ class Carousel {
         parent.x = 0;
         parent.y = 0;
         parent.dx = 0;
-        parent.dy = 0;
         parent.lastMove = [];
         parent.t = false;
         parent.canSnap = false;
@@ -482,6 +541,7 @@ class Carousel {
     // Generates the default CSS styling
     defaultCSS() {
         let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:calc(100% - 50px);}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
+        // 
         let newStyle = document.createElement("STYLE");
         newStyle.setAttribute("type", "text/css");
         newStyle.innerHTML = css;
@@ -490,7 +550,7 @@ class Carousel {
 
     // Generates the required CSS. Seperate from default styling
     internalCSS() {
-        let css = `.carousel-moving-page{opacity:0;transition:0;z-index:-100}`;
+        let css = `.carousel-moving-page{z-index:-100} .carousel-page-has-transition{transition:${this.transition/1000}s} .carousel-page-has-no-transition{transition:0s;}`;
         let newStyle = document.createElement("STYLE");
         newStyle.setAttribute("type", "text/css");
         newStyle.innerHTML = css;
