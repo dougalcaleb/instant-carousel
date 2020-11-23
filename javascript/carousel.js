@@ -43,7 +43,7 @@ PAGES
 SWIPE
 ✔  User can swipe to advance pages
 ✔  User can swipe past the edge and experience resistance
-✖  A page always shows
+✔  A page always shows
 ✖  Throttled
 
 BUBBLES
@@ -59,6 +59,7 @@ MISC
 ✖  Can have multiple carousels in a single page with object constructors
 ⚠  Any relevant setting has a default, but can be overridden
 ✖  Unique class names
+✖  Can be vertical
 
 EXTRA
 ✖  Presets for carousel visuals
@@ -68,15 +69,13 @@ EXTRA
 
 //? IDEAS:
 /*
--   Unique class names can be achieved through storing instances in an array, and using the array index in the names
+- Unique class names can be achieved through storing instances in an array, and using the array index in the names
 */
 
 //! KNOWN ISSUES:
 /*
-- There is a jump when trying to scroll past the ends when infinite: false and resistance < 1
-*/
 
-let global;
+*/
 
 class Carousel {
     constructor(settings) {
@@ -124,6 +123,7 @@ class Carousel {
         // general
         this.orderedPages = [];
         this.orderedPositions = [];
+        this.positions = [];
         this.orderedPagesMainIndex = 0;
         this.scrollIsAllowed = true;
         this.onPage = 0;
@@ -136,11 +136,11 @@ class Carousel {
         this.dx = 0;
         this.x = 0;
         this.y = 0;
-        this.xo = 0;
         this.lastMove = null;
         this.t = false;
         this.dragging = false;
         this.canSnap = false;
+        this.swipeFrom = 0;
         // autoscroll
         this.scrollTimeoutHolder = null;
         this.scrollIntervalHolder = null;
@@ -174,6 +174,7 @@ class Carousel {
             document.querySelector(".carousel-page-wrap").appendChild(newPage);
             this.orderedPages.push(a);
             this.orderedPositions.push(a-leftSidePages);
+            this.positions.push(a-leftSidePages);
         }
 
         this.orderedPagesMainIndex = leftSidePages/1;
@@ -181,19 +182,19 @@ class Carousel {
             let targeting = document.querySelector(".carousel-page-wrap").children.length-b;
             document.querySelector(".carousel-page-wrap").children[targeting].style.left = (-b * this.pageOffset + "%");
             this.orderedPages.unshift(this.orderedPages.pop());
+            this.positions.push(this.positions.shift());
         }
     }
 
     // Scrolls right. Does not handle actual clicks
     scrollRight(valuesOnly = false) { //! Both of these will probably need to be updated to accomodate multiple visible pages at once and different units than %
+        this.positions.unshift(this.positions.pop());
         if (this.onPage >= this.pages.length-1 && !this.infinite) {
             return;
         } else {
             if (!valuesOnly) {
                 for (let a = 0; a < this.pages.length; a++) {
-                    let currentPageOffset = parseFloat(document.querySelector(".carousel-page-"+a).style.left.split("%")[0]);
-                    currentPageOffset -= this.pageOffset;
-                    document.querySelector(".carousel-page-"+a).style.left = currentPageOffset+"%";
+                    document.querySelector(".carousel-page-"+a).style.left = (this.positions[a]*100)+"%";
                 }
             }
             
@@ -208,7 +209,8 @@ class Carousel {
                     document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-page-has-transition");
                 }
             }, this.transition);
-            document.querySelector(".carousel-page-"+this.orderedPages[0]).style.left = arr_last(this.orderedPositions) * this.pageOffset + "%";
+            // probably don't need this next line anymore, but keeping it around just in case
+            // document.querySelector(".carousel-page-"+this.orderedPages[0]).style.left = arr_last(this.orderedPositions) * this.pageOffset + "%";
             this.onPage++;
             this.orderedPages.push(this.orderedPages.shift());
             if (valuesOnly) {
@@ -220,14 +222,13 @@ class Carousel {
 
     // Scrolls left. Does not handle actual clicks
     scrollLeft(valuesOnly = false) {
+        this.positions.push(this.positions.shift());
         if (this.onPage <= 0 && !this.infinite) {
             return;
         } else {
             if (!valuesOnly) {
                 for (let a = 0; a < this.pages.length; a++) {
-                    let currentPageOffset = parseFloat(document.querySelector(".carousel-page-"+a).style.left.split("%")[0]);
-                    currentPageOffset += this.pageOffset;
-                    document.querySelector(".carousel-page-"+a).style.left = currentPageOffset+"%";
+                    document.querySelector(".carousel-page-"+a).style.left = (this.positions[a]*100)+"%";
                 }
             }
             let currentMoving = arr_last(this.orderedPages);
@@ -241,7 +242,8 @@ class Carousel {
                     document.querySelector(".carousel-page-"+currentMoving).classList.add("carousel-page-has-transition");
                 }
             }, this.transition);
-            document.querySelector(".carousel-page-"+arr_last(this.orderedPages)).style.left = this.orderedPositions[0] * this.pageOffset + "%";
+            // probably don't need this next line anymore, but keeping it around just in case
+            // document.querySelector(".carousel-page-"+arr_last(this.orderedPages)).style.left = this.orderedPositions[0] * this.pageOffset + "%";
             this.onPage--;
             this.orderedPages.unshift(this.orderedPages.pop());
             if (valuesOnly) {
@@ -342,6 +344,7 @@ class Carousel {
     tStart(event, parent) {
         event.preventDefault();
         parent.dragging = true;
+        parent.swipeFrom = parent.orderedPages[parent.orderedPagesMainIndex];
     
         // remove transitions to eliminate delayed movement
         document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.add("carousel-page-has-no-transition");
@@ -416,7 +419,7 @@ class Carousel {
             }
     
             // get distance values
-            let dist = Math.abs(parent.dx-parent.xo);
+            let dist = Math.abs(parent.dx);
     
             // if user has swiped far enough, allow movement to next slide
             if (dist >= parent.swipe_threshold) {
@@ -426,22 +429,19 @@ class Carousel {
             }
 
             if (dist >= document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth) {
-                if (parent.dx-parent.xo > 0) {
+                if (parent.dx > 0) {
                     parent.scrollLeft(true);
-                } else if (parent.dx-parent.xo < 0) {
+                } else if (parent.dx < 0) {
                     parent.scrollRight(true);
                 }
                 parent.sx = parent.x/1;
                 parent.dx = 0;
-                parent.xo = 0;
             } else {
                 // move slides to the correct position while being dragged
-                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "calc(-100% + "+(parent.dx-parent.xo)+"px)";
-                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "calc(100% + "+(parent.dx-parent.xo)+"px)";
-                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = (parent.dx-parent.xo)+"px";
-            }
-            
-            
+                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "calc(-100% + "+(parent.dx)+"px)";
+                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "calc(100% + "+(parent.dx)+"px)";
+                document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = (parent.dx)+"px";
+            }    
         } else {
             // if not dragging, restore correct positioning and values
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.add("carousel-page-has-transition");
@@ -450,7 +450,6 @@ class Carousel {
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.remove("carousel-page-has-no-transition");
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.remove("carousel-page-has-no-transition");
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.remove("carousel-page-has-no-transition");
-
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).style.left = "-100%";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0%";
             document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).style.left = "100%";
@@ -459,12 +458,10 @@ class Carousel {
     
     // called once when the touch or click ends
     tEnd(event, parent) {
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.add("carousel-page-has-transition");
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.add("carousel-page-has-transition");
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.add("carousel-page-has-transition");
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex-1]).classList.remove("carousel-page-has-no-transition");
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex]).classList.remove("carousel-page-has-no-transition");
-        document.querySelector(".carousel-page-"+parent.orderedPages[parent.orderedPagesMainIndex+1]).classList.remove("carousel-page-has-no-transition");
+        for (let a = 0; a < parent.orderedPages.length; a++) {
+            document.querySelector(".carousel-page-"+parent.orderedPages[a]).classList.add("carousel-page-has-transition");
+            document.querySelector(".carousel-page-"+parent.orderedPages[a]).classList.remove("carousel-page-has-no-transition");
+        }
         parent.dragging = false;
     
         // log the end of touch position
@@ -475,12 +472,17 @@ class Carousel {
             parent.ex = event.clientX;
             parent.ey = event.clientY;
         }
-
-        parent.xo = 0;
     
         // snap the page to the correct position, and reset for next swipe
         parent.snap(parent.canSnap, parent.dx, parent);
         parent.resetSwipeVars(parent);
+
+        document.removeEventListener("mousemove", parent.boundFollow, false);
+        document.removeEventListener("mouseup", parent.boundEnd, false);
+    
+        document.removeEventListener("touchmove", parent.boundFollow, false);
+        document.removeEventListener("touchend", parent.boundEnd, false);
+        document.removeEventListener("touchcancel", parent.boundCancel, false);
     }
     
     // handle touch cancle

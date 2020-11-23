@@ -4,7 +4,7 @@ let c = new Carousel({
     throttle_matchTransition: true,
     swipe_multiplier: 1,
     swipe_resistance: 0.95,
-    infinite: false,
+    // infinite: false,
     pages: [
         {
             imageURL: "../images/numbers/1.png"
