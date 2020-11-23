@@ -44,12 +44,28 @@ fade_offsetIn | Integer | Defines the movement of a page when it is coming into 
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | type 2 (fade)
 fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | type 2 (fade)
 
+INACTIVE, UNFINISHED, OR DEPRECATED SETTINGS:
+
+Setting | Status | Time Frame
+--------|--------|-----------
+static_showPages | Not implemented | Upcoming
+static_enlargeCenter | Not implemented | Upcoming
+static_sizeFalloff | Not implemented | Upcoming
+fade_offsetIn | Not implemented | Upcoming
+fade_offsetOut | Not implemented | Upcoming
+fade_offsetUnits | Not implemented | Upcoming
+rtl | Not implemented | Low priority
+type | Partially implemented | In progress
+autoGenHTML | Partially implemented | In progress
+autoGenCSS | Partially implemented | In progress
+radioBubbles | Not implemented | Upcoming
 
 Patch Notes:
 
 v0.2.0:
 * Features:
     * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
+    * Added comprehensive list of settings to README
 * Bugfixes:
     * Scrolling quickly with fewer pages caused a pop-in effect
     * Some transitions were not being reset correctly in certain conditions. Switched to a css-class based method instead
