@@ -2,8 +2,15 @@ Settings:
 
 Setting | Type | Value | Default | Example
 --------|------|-------|---------|--------
-pages | array | unnamed objects containing elements for each corresponding page | [] | [{background_image: "../images/numbers/1.png"},{background_image: "../images/numbers/2.png"}]
-type | integer | integer from 0-2 that defines which carousl type to use. 0 defines static (all pages are directly adjacent and can be swiped/dragged). 1 defines overlap (pages slide in from the sides to overlap the current page and can be swiped/dragged). 2 defines fade (pages fade in and out over each other) | 0 | 0
+pages | Array | Unnamed objects containing elements for each corresponding page | [] | [{background_image: "../images/numbers/1.png"},{background_image: "../images/numbers/2.png"}]
+type | Integer | Integer from 0-2 that defines which carousl type to use. 
+* 0 defines static (all pages are directly adjacent and can be swiped/dragged). 
+* 1 defines overlap (pages slide in from the sides to overlap the current page and can be swiped/dragged). 
+* 2 defines fade (pages fade in and out over each other) | 0 | 0
+subtype | Integer | Integer from 0-?? that defines the subtype of the main type. For type 0, there are no available subtypes. For type 1, there are 3 available subtypes: 
+* 0 defines double overlap (new pages overlap when coming from both sides)
+* 1 defines left overlap (new pages are placed on top when scrolling left. Scrolling right uncovers pages)
+* 2 defines right overlap (new pages are placed on top when scrolling right. Scrolling left uncovers pages)
 
 
 Patch Notes:
