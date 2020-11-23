@@ -2,19 +2,19 @@ GENERAL SETTINGS:
 
 Setting | Type | Effect | Default | Example
 --------|------|--------|---------|--------
-pages | Array | Contains unnamed objects containing elements for each corresponding page. | [] | [{background_image: "../images/numbers/1.png"},{background_image: "../images/numbers/2.png"}]
+pages | Array | Contains unnamed objects containing elements for each corresponding page. | [] | [<br/>{background_image: "../images/numbers/1.png"},<br/>{background_image: "../images/numbers/2.png"}<br/>]
 type | Integer | Integer from 0-2 that defines which carousl type to use: <ul><li>0 defines static (all pages are directly adjacent and can be swiped/dragged)</li><li>1 defines overlap (pages slide in from the sides to overlap the current page and can be swiped/dragged)</li><li>2 defines fade (pages fade in and out over each other)</li></ul> | 0 |
 parent | String | Selector of an HTML tag to be the parent of the carousel. | "body" | ".myCarouselWrap"
 autoGenHTML | Boolean | Determines whether the required HTML structure will be automatically generated inside the element specified by the "parent" setting, or if it will be created by the user. A reference for custom HTML will be available soon. | true | 
 autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS will be available soon. | true |
 radioBubbles | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true | 
-mobile | Object | Defines a set of values to override when the screen is smaller than the size set by "mobile_breakpoint". | {swipe_threshold: 50} | {keys: false, radioBubbles: false}
+mobile | Object | Defines a set of values to override when the screen is smaller than the size set by "mobile_breakpoint". | {swipe_threshold: 50} | {keys: false, <br/>radioBubbles: false}
 mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700 |
 
 BEHAVIORAL SETTINGS:
 
-Setting | Type | Effect | Default | Example
---------|------|--------|---------|--------
+Setting | Type | Effect | Default
+--------|------|--------|--------
 autoScroll | Boolean | Determines if the autoscroll will be active or not. | false | 
 autoScroll_speed | Integer | Time in miliseconds between automatically scrolling between pages. | 5000 | 
 autoScroll_timeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000 | 
@@ -37,16 +37,12 @@ TYPE-SPECIFIC SETTINGS:
 
 Setting | Type | Effect | Default | Applies To
 --------|------|--------|---------|-----------
-static_showPages | Integer | Defines the number of pages to show | 1 | type 0 (static)
-static_enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to | 100 | type 0 (static)
-static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by | 0 | type 0 (static)
-fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus | 20 | type 2 (fade)
-fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus | -20 | type 2 (fade)
-fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut | "px" | type 2 (fade)
-
-
-<ul></ul>
-<li></li>
+static_showPages | Integer | Defines the number of pages to show. | 1 | type 0 (static)
+static_enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | type 0 (static)
+static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | type 0 (static)
+fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | type 2 (fade)
+fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | type 2 (fade)
+fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | type 2 (fade)
 
 
 Patch Notes:
