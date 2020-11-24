@@ -1,4 +1,7 @@
-GENERAL SETTINGS: 
+# Instant Carousel
+## An easy-to-use, highly configurable, and attractive Javascript carousel.
+
+### General Settings:
 
 Setting | Type | Effect | Default | Example
 --------|------|--------|---------|--------
@@ -11,7 +14,7 @@ radioBubbles | Boolean | Determines whether the navigational radio bubbles will 
 mobile | Object | Defines a set of values to override when the screen is smaller than the size set by "mobile_breakpoint". | {swipe_threshold: 50} | {keys: false, <br/>radioBubbles: false}
 mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700 |
 
-BEHAVIORAL SETTINGS:
+### Behavorial Settings:
 
 Setting | Type | Effect | Default
 --------|------|--------|--------
@@ -33,7 +36,7 @@ swipe_multiplier | Integer | Defines the multiplier for swipe interactions. | 1 
 swipe_resistance | Integer | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1. | 0.95 | 
 rtl | Boolean | Determines whether the carousel will be laid out right-to-left or not. | false | 
 
-TYPE-SPECIFIC SETTINGS:
+### Type-Specific Settings:
 
 Setting | Type | Effect | Default | Applies To
 --------|------|--------|---------|-----------
@@ -45,7 +48,7 @@ fade_offsetIn | Integer | Defines the movement of a page when it is coming into 
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | type 2 (fade)
 fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | type 2 (fade)
 
-INACTIVE, UNFINISHED, OR DEPRECATED SETTINGS:
+### Inactive, Unfinished or Deprecated Settings:
 
 Setting | Status | Time Frame
 --------|--------|-----------
@@ -62,9 +65,9 @@ autoGenHTML | Partially implemented | In progress
 autoGenCSS | Partially implemented | In progress
 radioBubbles | Not implemented | Upcoming
 
-Patch Notes:
+### Patch Notes:
 
-v0.2.0:
+##### v0.2.0:
 * Features:
     * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
     * Added comprehensive list of settings to README
@@ -80,7 +83,7 @@ v0.2.0:
     * Dragging and step-scrolling was possible, and could break page order
     * Page order could break when non-infinite and spamming nav buttons
 
-v0.1.0:
+##### v0.1.0:
 * Features:
     * New type: static. All pages are directly next to each other and fill the entire wrapper.
     * Fully implemented swipe/drag scrolling on "static" type
