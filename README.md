@@ -43,6 +43,8 @@ Setting | Type | Effect | Default | Applies To
 static_showPages | Integer | Defines the number of pages to show. | 1 | type 0 (static)
 static_enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | type 0 (static)
 static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | type 0 (static)
+static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 20 | type 0 (static)
+static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing" | "px" | type 0 (static)
 overlap_direction | Integer | Integer between 0-2 that defines the movement of pages. <ul><li>0: New pages come from both sides and always are on top</li><li>1: Scrolling right removes the topmost page to uncover pages below. Scrolling left brings in a new page that sits on top.</li><li>2: Scrolling left uncovers the topmost page to uncover pages below. Scrolling right brings in a new page that sits on top.</li></ul> | 0 | type 1 (overlap)
 fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | type 2 (fade)
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | type 2 (fade)
@@ -55,6 +57,8 @@ Setting | Status | Time Frame
 static_showPages | Not implemented | Upcoming
 static_enlargeCenter | Not implemented | Upcoming
 static_sizeFalloff | Not implemented | Upcoming
+static_pageSpacing | Not implemented | In progess
+static_pageSpacingUnits | Not implemented | In progess
 overlap_direction | Not implemented | Upcoming
 fade_offsetIn | Not implemented | Upcoming
 fade_offsetOut | Not implemented | Upcoming
