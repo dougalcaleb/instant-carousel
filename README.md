@@ -140,3 +140,7 @@ radioBubbles | Not implemented | Upcoming
     * Autoscroll
     * Auto-generating HTML and CSS structure
     * User interaction throttling
+
+<br/><br/>
+
+[Back to top](https://github.com/dougalcaleb/instant-carousel#instant-carousel)
