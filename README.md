@@ -82,6 +82,7 @@ radioBubbles | Not implemented | Upcoming
       * static_pageSpacing
       * static_pageSpacingUnits
       * static_spacingMode
+      * transition_timingFunction
     * Added comprehensive list of settings to README
 * Bugfixes:
     * Scrolling quickly with fewer pages caused a pop-in effect
