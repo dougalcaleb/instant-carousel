@@ -1,5 +1,18 @@
 # Instant Carousel
 
+### Jump to:
+[General Settings](https://github.com/dougalcaleb/instant-carousel#general-settings)
+
+[Behavorial Settings](https://github.com/dougalcaleb/instant-carousel#behavorial-settings)
+
+[Type-Specific Settings](https://github.com/dougalcaleb/instant-carousel#type-specific-settings)
+
+[Inactive, Unfinished or Deprecated Settings](https://github.com/dougalcaleb/instant-carousel#inactive-unfinished-or-deprecated-settings)
+
+[Patch Notes](https://github.com/dougalcaleb/instant-carousel#patch-notes)
+
+<br/>
+
 ### General Settings:
 
 Setting | Type | Effect | Default | Example
@@ -12,6 +25,8 @@ autoGenCSS | Boolean | Determines whether the required CSS styling will be autom
 radioBubbles | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true | 
 mobile | Object | Defines a set of values to override when the screen is smaller than the size set by "mobile_breakpoint". | {swipe_threshold: 50} | {keys: false, <br/>radioBubbles: false}
 mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700 |
+
+<br/>
 
 ### Behavorial Settings:
 
@@ -40,6 +55,8 @@ swipe_multiplier | Integer | Defines the multiplier for swipe interactions. | 1
 swipe_resistance | Integer | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1. | 0.95
 rtl | Boolean | Determines whether the carousel will be laid out right-to-left or not. | false
 
+<br/>
+
 ### Type-Specific Settings:
 
 Setting | Type | Effect | Default | Applies To
@@ -54,6 +71,8 @@ overlap_direction | Integer | Integer between 0-2 that defines the movement of p
 fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | type 2 (fade)
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | type 2 (fade)
 fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | type 2 (fade)
+
+<br/>
 
 ### Inactive, Unfinished or Deprecated Settings:
 
@@ -75,7 +94,13 @@ autoGenHTML | Partially implemented | In progress
 autoGenCSS | Partially implemented | In progress
 radioBubbles | Not implemented | Upcoming
 
+<br/>
+
 ### Patch Notes:
+
+### Jump to:
+[v0.2.0](https://github.com/dougalcaleb/instant-carousel#v020)
+[v0.1.0](https://github.com/dougalcaleb/instant-carousel#v010)
 
 ##### v0.2.0:
 * Features:
