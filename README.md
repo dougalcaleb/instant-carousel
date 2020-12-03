@@ -28,6 +28,10 @@ transition_timingFunction | String | Defines the timing function for transitions
 throttle | Boolean | Determines whether user interactions will be throttled or not. | true
 throttle_timeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300
 throttle_matchTransition | Boolean | Determines whether the "throttle_timeout" setting will match the "transition" setting. Overrides "throttle_timeout". | false
+throttle_keys | Boolean | Determines if user interaction from keyboard keys are throttled. | true
+throttle_buttons | Boolean | Determines if user interaction from left and right buttons are throttled. | true
+throttle_swipe | Boolean | Determines if user interaction from swiping is throttled. | true
+throttle_navigation | Boolean | Determines if user interaction from navigation is throttled. | true
 keys | Boolean | Determines whether the arrow keys can be used for navigation or not. | true
 infinite | Boolean | Determines whether the carousel can scroll infinitely or not. | true
 swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true
@@ -77,12 +81,18 @@ radioBubbles | Not implemented | Upcoming
 * Features:
     * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
     * New extensions for type 0: multiple pages can now be visible at once
+    * Swiping can now be throttled
+    * Different types of user interactions can be individually throttled or not throttled
     * New settings (refer to documentation above for descriptions):
       * static_showPages
       * static_pageSpacing
       * static_pageSpacingUnits
       * static_spacingMode
       * transition_timingFunction
+      * throttle_swipe
+      * throttle_keys
+      * throttle_buttons
+      * throttle_navigation
     * Added comprehensive list of settings to README
 * Bugfixes:
     * Scrolling quickly with fewer pages caused a pop-in effect
@@ -96,6 +106,7 @@ radioBubbles | Not implemented | Upcoming
     * Dragging and step-scrolling was possible, and could break page order
     * Page order could break when non-infinite and spamming nav buttons
     * Static non-infinite scroll with multiple pages could show pages beyond the end
+    * Positions were being incorrectly set and read, causing "ghost pages"
 
 ##### v0.1.0:
 * Features:
