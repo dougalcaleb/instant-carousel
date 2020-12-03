@@ -1,5 +1,4 @@
 # Instant Carousel
-## An easy-to-use, highly configurable, and attractive Javascript carousel.
 
 ### General Settings:
 
@@ -18,23 +17,24 @@ mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to app
 
 Setting | Type | Effect | Default
 --------|------|--------|--------
-autoScroll | Boolean | Determines if the autoscroll will be active or not. | false | 
-autoScroll_speed | Integer | Time in miliseconds between automatically scrolling between pages. | 5000 | 
-autoScroll_timeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000 | 
-autoScroll_pauseOnHover | Boolean | Determines whether autoscroll will be paused when user mouses over the carousel or not. | false | 
-autoScroll_startAfter | Integer | Time in miliseconds for the first automatic scroll to happen after the page loads. | 5000 |
-autoScroll_direction | String | Defines the direction for the autoscroll to scroll. Either "right" or "left". | "right" |
-transition | Integer | Time in miliseconds to transition between pages when scrolling. | 300 |
-throttle | Boolean | Determines whether user interactions will be throttled or not. | true | 
-throttle_timeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300 | 
-throttle_matchTransition | Boolean | Determines whether the "throttle_timeout" setting will match the "transition" setting. Overrides "throttle_timeout". | false |
-keys | Boolean | Determines whether the arrow keys can be used for navigation or not. | true |
-infinite | Boolean | Determines whether the carousel can scroll infinitely or not. | true |
-swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true |
-swipe_threshold | Integer | Defines the distance in px that the user must swipe or drag to advance to the next page instead of snapping back to the current one. | 300 | 
-swipe_multiplier | Integer | Defines the multiplier for swipe interactions. | 1 |
-swipe_resistance | Integer | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1. | 0.95 | 
-rtl | Boolean | Determines whether the carousel will be laid out right-to-left or not. | false | 
+autoScroll | Boolean | Determines if the autoscroll will be active or not. | false
+autoScroll_speed | Integer | Time in miliseconds between automatically scrolling between pages. | 5000
+autoScroll_timeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000
+autoScroll_pauseOnHover | Boolean | Determines whether autoscroll will be paused when user mouses over the carousel or not. | false
+autoScroll_startAfter | Integer | Time in miliseconds for the first automatic scroll to happen after the page loads. | 5000
+autoScroll_direction | String | Defines the direction for the autoscroll to scroll. Either "right" or "left". | "right"
+transition | Integer | Time in miliseconds to transition between pages when scrolling. | 300
+transition_timingFunction | String | Defines the timing function for transitions between pages. Can be any valid CSS timing value. | "ease"
+throttle | Boolean | Determines whether user interactions will be throttled or not. | true
+throttle_timeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300
+throttle_matchTransition | Boolean | Determines whether the "throttle_timeout" setting will match the "transition" setting. Overrides "throttle_timeout". | false
+keys | Boolean | Determines whether the arrow keys can be used for navigation or not. | true
+infinite | Boolean | Determines whether the carousel can scroll infinitely or not. | true
+swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true
+swipe_threshold | Integer | Defines the distance in px that the user must swipe or drag to advance to the next page instead of snapping back to the current one. | 300
+swipe_multiplier | Integer | Defines the multiplier for swipe interactions. | 1
+swipe_resistance | Integer | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1. | 0.95
+rtl | Boolean | Determines whether the carousel will be laid out right-to-left or not. | false
 
 ### Type-Specific Settings:
 
@@ -45,6 +45,7 @@ static_enlargeCenter | Integer | Defines the percentage of the size of a normal 
 static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | type 0 (static)
 static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 20 | type 0 (static)
 static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing" | "px" | type 0 (static)
+static_spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | type 0 (static)
 overlap_direction | Integer | Integer between 0-2 that defines the movement of pages. <ul><li>0: New pages come from both sides and always are on top</li><li>1: Scrolling right removes the topmost page to uncover pages below. Scrolling left brings in a new page that sits on top.</li><li>2: Scrolling left uncovers the topmost page to uncover pages below. Scrolling right brings in a new page that sits on top.</li></ul> | 0 | type 1 (overlap)
 fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | type 2 (fade)
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | type 2 (fade)
@@ -54,11 +55,12 @@ fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut.
 
 Setting | Status | Time Frame
 --------|--------|-----------
-static_showPages | Not implemented | Upcoming
+static_showPages | Almost finished | Upcoming
 static_enlargeCenter | Not implemented | Upcoming
 static_sizeFalloff | Not implemented | Upcoming
-static_pageSpacing | Not implemented | In progess
-static_pageSpacingUnits | Not implemented | In progess
+static_pageSpacing | Almost finished | In progress
+static_pageSpacingUnits | Almost finished | In progress
+static_spacingMode | Almost finished | In progress
 overlap_direction | Not implemented | Upcoming
 fade_offsetIn | Not implemented | Upcoming
 fade_offsetOut | Not implemented | Upcoming
@@ -74,6 +76,12 @@ radioBubbles | Not implemented | Upcoming
 ##### v0.2.0:
 * Features:
     * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
+    * New extensions for type 0: multiple pages can now be visible at once
+    * New settings (refer to documentation above for descriptions):
+      * static_showPages
+      * static_pageSpacing
+      * static_pageSpacingUnits
+      * static_spacingMode
     * Added comprehensive list of settings to README
 * Bugfixes:
     * Scrolling quickly with fewer pages caused a pop-in effect
@@ -86,6 +94,7 @@ radioBubbles | Not implemented | Upcoming
     * Dragging and then step-scrolling back to the initial page would cause some pages to disappear
     * Dragging and step-scrolling was possible, and could break page order
     * Page order could break when non-infinite and spamming nav buttons
+    * Static non-infinite scroll with multiple pages could show pages beyond the end
 
 ##### v0.1.0:
 * Features:
