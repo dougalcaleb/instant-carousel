@@ -55,7 +55,7 @@ fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut.
 
 Setting | Status | Time Frame
 --------|--------|-----------
-static_showPages | Almost finished | Upcoming
+static_showPages | Almost finished | In progress
 static_enlargeCenter | Not implemented | Upcoming
 static_sizeFalloff | Not implemented | Upcoming
 static_pageSpacing | Almost finished | In progress
