@@ -50,7 +50,7 @@ SWIPE
 BUBBLES
 ✖ Show current and available pages
 ✖ Entirely customizable
-✖ Can be disabled
+✖ Can be enabled/disabled
 
 MISC
 ✔ User interactions can be throttled
@@ -65,13 +65,14 @@ MISC
 EXTRA
 ✖ Presets for carousel visuals
 ✖ Presets for bubble visuals
+✖ Which keys to include in navigation can be specified
 
 */
 
 //? IDEAS:
 /*
-> Unique class names can be achieved through storing instances in an array, and using the array index in the names
-   > Alternatively, an incremental integer value can be stored in each Carousel, placed as a this.instance value
+- Unique class names can be achieved through storing instances in an array, and using the array index in the names
+   - Alternatively, an incremental integer value can be stored in each Carousel, placed as a this. value
 */
 
 //! KNOWN ISSUES:
@@ -94,7 +95,7 @@ class Carousel {
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenHTML = settings.autoGenHTML == false ? settings.autoGenHTML : true;
 		this.autoGenCSS = settings.autoGenCSS == false ? settings.autoGenCSS : true;
-		// this.radioBubbles = (settings.radioBubbles == false) ? settings.radioBubbles : true;
+		// this.navigation = (settings.navigation == false) ? settings.navigation : true;
 		this.autoScroll = settings.autoScroll ? settings.autoScroll : false;
 		this.autoScroll_speed = settings.autoScroll_speed ? settings.autoScroll_speed : 5000;
 		this.autoScroll_timeout = settings.autoScroll_timeout ? settings.autoScroll_timeout : 15000;
@@ -106,6 +107,10 @@ class Carousel {
 		this.throttle = settings.throttle == false ? settings.throttle : true;
 		this.throttle_timeout = settings.throttle_timeout ? settings.throttle_timeout : 300;
 		this.throttle_matchTransition = settings.throttle_matchTransition ? settings.throttle_matchTransition : false;
+		this.throttle_keys = settings.throttle_keys == false ? settings.throttle_keys : true;
+		this.throttle_swipe = settings.throttle_swipe == false ? settings.throttle_swipe : true;
+		this.throttle_buttons = settings.throttle_buttons == false ? settings.throttle_buttons : true;
+		// this.throttle_navigation = settings.throttle_navigation == false ? settings.throttle_navigation : true;
 		this.keys = settings.keys == false ? settings.keys : true;
 		this.infinite = settings.infinite == false ? settings.infinite : true;
 		this.swipe = settings.swipe == false ? settings.swipe : true;
@@ -132,7 +137,9 @@ class Carousel {
 
 		this.dev__allowInternalStyles = settings.dev__allowInternalStyles == false ? settings.dev__allowInternalStyles : true;
 
-		// this.val = (settings.val) ? settings.val : default;
+		// this.val = settings.val ? settings.val : default;
+		// this.val = settings.val == false ? settings.val : true;
+		// this.val = settings.val ? settings.val : false;
 
 		// Private
 
@@ -156,6 +163,7 @@ class Carousel {
 		this.dragging = false;
 		this.canSnap = false;
 		this.swipeFrom = 0;
+		this.swipeIsAllowed = true;
 		// autoscroll
 		this.scrollTimeoutHolder = null;
 		this.scrollIntervalHolder = null;
@@ -171,8 +179,7 @@ class Carousel {
 		this.replaceWithMobile();
 		this.setListeners();
 		this.debug_output();
-   } // end of constructor
-   
+	} // end of constructor
 
 	/*
    ==================================================================================================================
@@ -181,7 +188,6 @@ class Carousel {
 
    ==================================================================================================================
    */
-
 
 	// Scrolls right. Does not handle actual clicks
 	scrollRight(valuesOnly = false) {
@@ -322,6 +328,21 @@ class Carousel {
 
 	// called once when touch or click starts
 	tStart(event, parent) {
+		// throttling
+		parent.resetScrollTimeout();
+		if (parent.throttle_swipe) {
+			if (parent.swipeIsAllowed) {
+				if (parent.throttle) {
+					parent.swipeIsAllowed = false;
+					setTimeout(() => {
+						parent.swipeIsAllowed = true;
+					}, parent.throttle_timeout);
+				}
+			} else {
+				return;
+			}
+		}
+
 		event.preventDefault();
 		parent.dragging = true;
 		parent.swipeFrom = parent.orderedPages[parent.orderedPagesMainIndex];
@@ -552,8 +573,7 @@ class Carousel {
 	}
 	execTC(event) {
 		this.tCancel(event, this);
-   }
-   
+	}
 
 	/*
    ==================================================================================================================
@@ -562,7 +582,6 @@ class Carousel {
 
    ==================================================================================================================
    */
-
 
 	// Generates the default HTML structure
 	defaultHTML() {
@@ -629,9 +648,9 @@ class Carousel {
 						") / " +
 						this.static_showPages +
 						") * " +
-						(a - 1) +
+						(a - leftSidePages) +
 						") + " +
-						(this.static_pageSpacing * a + this.static_pageSpacingUnits) +
+						(this.static_pageSpacing * (a - leftSidePages + 1) + this.static_pageSpacingUnits) +
 						")";
 				} else {
 					let pageWidth =
@@ -649,9 +668,9 @@ class Carousel {
 						") / " +
 						this.static_showPages +
 						") * " +
-						(a - 1) +
+						(a - leftSidePages) +
 						") + " +
-						(this.static_pageSpacing * (a - 1) + this.static_pageSpacingUnits) +
+						(this.static_pageSpacing * (a - leftSidePages) + this.static_pageSpacingUnits) +
 						")";
 				}
 				this.pageOffset = 100 / this.static_showPages;
@@ -684,7 +703,7 @@ class Carousel {
 		// Alter the positional arrays as necessary
 		for (let b = 1; b <= leftSidePages; b++) {
 			this.orderedPages.unshift(this.orderedPages.pop());
-			if (b > 1) {
+			if (b > 0) {
 				this.positions.push(this.positions.shift());
 			}
 		}
@@ -750,10 +769,10 @@ class Carousel {
 			document.addEventListener("keydown", (event) => {
 				switch (event.key) {
 					case "ArrowLeft":
-						this.leftPressed(this);
+						this.leftPressed(this, true);
 						break;
 					case "ArrowRight":
-						this.rightPressed(this);
+						this.rightPressed(this, true);
 						break;
 				}
 			});
@@ -785,7 +804,7 @@ class Carousel {
 		}
 	}
 
-   // prevents breakage by providing constraints and displaying an error message
+	// prevents breakage by providing constraints and displaying an error message
 	checkForErrors() {
 		if (this.pages.length - this.static_showPages <= 0) {
 			this.displayError(
@@ -812,11 +831,11 @@ class Carousel {
 	}
 }
 
-Carousel.prototype.rightPressed = function (parent) {
+Carousel.prototype.rightPressed = function (parent, isKey) {
 	parent.resetScrollTimeout();
 	if (parent.scrollIsAllowed && !parent.dragging) {
 		parent.scrollRight();
-		if (parent.throttle) {
+		if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
 			parent.scrollIsAllowed = false;
 			setTimeout(() => {
 				parent.scrollIsAllowed = true;
@@ -825,11 +844,11 @@ Carousel.prototype.rightPressed = function (parent) {
 	}
 };
 
-Carousel.prototype.leftPressed = function (parent) {
+Carousel.prototype.leftPressed = function (parent, isKey) {
 	parent.resetScrollTimeout();
 	if (parent.scrollIsAllowed && !parent.dragging) {
 		parent.scrollLeft();
-		if (parent.throttle) {
+		if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
 			parent.scrollIsAllowed = false;
 			setTimeout(() => {
 				parent.scrollIsAllowed = true;
