@@ -8,7 +8,7 @@ INTENDED FEATURES:
 ✖ Fade
 
 SPECS (STATIC)
-✖ Can define page size and show however many fit or 
+⚠ Can define page size and show however many fit or 
     define number to show and resize dynamically
 ✖ Can be all equal size or have an emphasized center slide
 ✖ Size falloff: center is biggest, and all side slides
@@ -61,6 +61,8 @@ MISC
 ⚠ Any relevant setting has a default, but can be overridden
 ✖ Unique class names
 ✖ Can be vertical
+✖ Adding a new carousel appends without using innerHTML
+✖ Errors are thrown when using incorrect settings for the type
 
 EXTRA
 ✖ Presets for carousel visuals
@@ -82,14 +84,15 @@ EXTRA
 
 // To do:
 /*
-
+-  Optimize swiping to not need to scroll all pages at once, only visible and ends
 */
 
 class Carousel {
 	constructor(settings) {
 		// User defined (commented out = not used yet)
 
-		this.pages = settings.pages ? settings.pages : {};
+      this.pages = settings.pages ? settings.pages : {};
+      this.id = settings.id ? settings.id : ".myCarousel";
 		this.type = settings.type ? settings.type : 0;
 		// this.subtype = (settings.subtype) ? settings.subtype : 0;
 		this.parent = settings.parent ? settings.parent : "body";
@@ -102,7 +105,7 @@ class Carousel {
 		this.autoScroll_pauseOnHover = settings.autoScroll_pauseOnHover ? settings.autoScroll_pauseOnHover : false;
 		this.autoScroll_startAfter = settings.autoScroll_startAfter ? settings.autoScroll_startAfter : 5000;
 		this.autoScroll_direction = settings.autoScroll_direction ? settings.autoScroll_direction : "right";
-		this.transition = settings.transition ? settings.transition : 300;
+		this.transition = (settings.transition != undefined) ? settings.transition : 300;
 		this.transition_timingFunction = settings.transition_timingFunction ? settings.transition_timingFunction : "ease";
 		this.throttle = settings.throttle == false ? settings.throttle : true;
 		this.throttle_timeout = settings.throttle_timeout ? settings.throttle_timeout : 300;
@@ -122,7 +125,7 @@ class Carousel {
 		this.static_showPages = settings.static_showPages ? settings.static_showPages : 1;
 		this.static_enlargeCenter = settings.static_enlargeCenter ? settings.static_enlargeCenter : 100;
 		this.static_sizeFalloff = settings.static_sizeFalloff ? settings.static_sizeFalloff : 0;
-		this.static_pageSpacing = settings.static_pageSpacing ? settings.static_pageSpacing : 20;
+		this.static_pageSpacing = settings.static_pageSpacing ? settings.static_pageSpacing : 0;
 		this.static_pageSpacingUnits = settings.static_pageSpacingUnits ? settings.static_pageSpacingUnits : "px";
 		this.static_spacingMode = settings.static_spacingMode ? settings.static_spacingMode : "fill";
 
@@ -133,9 +136,8 @@ class Carousel {
 		// this.fade_offsetUnits = (settings.fade_offsetUnits) ? settings.fade_offsetUnits : "px";
 
 		this.mobile = settings.mobile ? settings.mobile : {swipe_threshold: 50};
-		this.mobile_breakpoint = settings.mobile_breakpoint ? settings.mobile_breakpoint : 700;
-
-		this.dev__allowInternalStyles = settings.dev__allowInternalStyles == false ? settings.dev__allowInternalStyles : true;
+      this.mobile_breakpoint = settings.mobile_breakpoint ? settings.mobile_breakpoint : 700;
+      
 
 		// this.val = settings.val ? settings.val : default;
 		// this.val = settings.val == false ? settings.val : true;
@@ -149,7 +151,9 @@ class Carousel {
 		this.positions = [];
 		this.orderedPagesMainIndex = 0;
 		this.scrollIsAllowed = true;
-		this.onPage = 0;
+      this.onPage = 0;
+      this.allowInternalStyles = true;
+      this.leftSidePages = 0;
 		// swipe
 		this.sx = 0;
 		this.sy = 0;
@@ -167,8 +171,6 @@ class Carousel {
 		// autoscroll
 		this.scrollTimeoutHolder = null;
 		this.scrollIntervalHolder = null;
-		// probably temporary
-		this.pageOffset = 100;
 		// functions
 		this.boundFollow = null;
 		this.boundEnd = null;
@@ -179,7 +181,7 @@ class Carousel {
 		this.replaceWithMobile();
 		this.setListeners();
 		this.debug_output();
-	} // end of constructor
+	}
 
 	/*
    ==================================================================================================================
@@ -207,10 +209,12 @@ class Carousel {
 			let currentMoving = this.orderedPages[0];
 			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-moving-page");
 			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-no-transition");
-			document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
+         document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
+         
+         document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
 			setTimeout(() => {
-				document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
-				if (!valuesOnly) {
+            // document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
+            if (!valuesOnly) {
 					document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-no-transition");
 					document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-transition");
 				}
@@ -243,9 +247,11 @@ class Carousel {
 			let currentMoving = arr_last(this.orderedPages);
 			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-moving-page");
 			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-no-transition");
-			document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
+         document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
+
+			document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
 			setTimeout(() => {
-				document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
+				// document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
 				if (!valuesOnly) {
 					document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-no-transition");
 					document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-transition");
@@ -342,25 +348,11 @@ class Carousel {
 		parent.dragging = true;
 		parent.swipeFrom = parent.orderedPages[parent.orderedPagesMainIndex];
 
-		// remove transitions to eliminate delayed movement
-		document
-			.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex - 1])
-			.classList.add("carousel-page-has-no-transition");
-		document
-			.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex + 0])
-			.classList.add("carousel-page-has-no-transition");
-		document
-			.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex + 1])
-			.classList.add("carousel-page-has-no-transition");
-		document
-			.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex - 1])
-			.classList.remove("carousel-page-has-transition");
-		document
-			.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex + 0])
-			.classList.remove("carousel-page-has-transition");
-		document
-			.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex + 1])
-			.classList.remove("carousel-page-has-transition");
+		// remove transitions to prevent elastic-y movement         
+      for (let a = 0; a < parent.pages.length; a++) {
+         document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-transition");
+         document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-no-transition");
+      }
 
 		// log the first touch position
 		parent.lastMove = event.touches;
@@ -407,7 +399,7 @@ class Carousel {
 			} else if (parent.dx < 0) {
 				if (parent.infinite) {
 					parent.dx -= (parent.dx + document.querySelector(parent.parent).offsetWidth) * parent.swipe_resistance;
-				} else if (parent.orderedPages[parent.orderedPagesMainIndex] === parent.pages.length - 1) {
+				} else if (parent.pages.length - parent.static_showPages == parent.onPage) {
 					if (parent.swipe_resistance == 1) {
 						parent.dx = 0;
 					} else {
@@ -434,9 +426,11 @@ class Carousel {
 				parent.canSnap = true;
 			} else {
 				parent.canSnap = false;
-			}
+         }
+         
+         let totalSize = document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth + parent.static_pageSpacing;
 
-			if (dist >= document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth) {
+			if (dist >= totalSize) {
 				if (parent.dx > 0) {
 					parent.scrollLeft(true);
 				} else if (parent.dx < 0) {
@@ -444,22 +438,29 @@ class Carousel {
 				}
 				parent.sx = parent.x / 1;
 				parent.dx = 0;
-			} else {
-				// move slides to the correct position while being dragged
-				document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex - 1]).style.left =
-					"calc(-100% + " + parent.dx + "px)";
-				document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex + 1]).style.left =
-					"calc(100% + " + parent.dx + "px)";
-				document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).style.left = parent.dx + "px";
+         } else {
+            // sets the position of all pages
+            //! needs to be optomized to only move visible pages and edge pages. not necessary for smaller page counts, but will matter in large quantities
+            // mostly works, just causes some weird glitches that likely need to be fixed with snap
+
+            // for (let a = 0; a < parent.pages.length; a++) {
+            //    document.querySelector(".carousel-page-" + a).style.left =
+				// 		"calc((" + parent.positions[a] + ") + " + parent.dx + "px)";
+            // }
+
+            for (let a = 0; a < parent.static_showPages + 2; a++) {
+               let pos = a + parent.leftSidePages - 1;
+               document.querySelector(".carousel-page-" + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
+            }
 			}
 		}
 	}
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
-		for (let a = 0; a < parent.orderedPages.length; a++) {
-			document.querySelector(".carousel-page-" + parent.orderedPages[a]).classList.add("carousel-page-has-transition");
-			document.querySelector(".carousel-page-" + parent.orderedPages[a]).classList.remove("carousel-page-has-no-transition");
+		for (let a = 0; a < parent.pages.length; a++) {
+			document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-transition");
+			document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-no-transition");
 		}
 		parent.dragging = false;
 
@@ -519,9 +520,10 @@ class Carousel {
 				parent.rightPressed(parent);
 			}
 		}
-		document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex - 1]).style.left = "-100%";
-		document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).style.left = "0%";
-		document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex + 1]).style.left = "100%";
+      
+      for (let a = 0; a < parent.pages.length; a++) {
+			document.querySelector(".carousel-page-" + a).style.left = parent.positions[a];
+		}
 	}
 
 	// reset all variables to defaults to avoid strange movements when a new touch starts
@@ -558,9 +560,23 @@ class Carousel {
    */
 
 	// Generates the default HTML structure
-	defaultHTML() {
-		let html = `<div class="carousel-swipe-overlay"></div><div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"><div class="radio-btn rbtn-0"></div><div class="radio-btn rbtn-1"></div><div class="radio-btn rbtn-2"></div></div></div>`;
-		document.querySelector(this.parent).innerHTML = html;
+   defaultHTML() {
+      let newCarousel = document.createElement("DIV");
+      let html = `<div class="carousel-swipe-overlay"></div><div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"><div class="radio-btn rbtn-0"></div><div class="radio-btn rbtn-1"></div><div class="radio-btn rbtn-2"></div></div></div>`;
+      newCarousel.innerHTML = html;
+      newCarousel.classList.add("carousel-html-place-holder");
+      if (this.id.split("")[0] == "#") {
+         let newId = this.id.split("");
+         newId.shift();
+         newId = newId.join("");
+         newCarousel.setAttribute("id", newId);
+      } else {
+         let newClass = this.id.split("");
+         newClass.shift();
+         newClass = newClass.join("");
+         newCarousel.classList.add(newClass);
+      }
+		document.querySelector(this.parent).appendChild(newCarousel);
 	}
 
 	// Generates the default CSS styling
@@ -597,9 +613,8 @@ class Carousel {
 
 	// Create each new page from the this.pages array and append to the parent element
 	generatePages() {
-		let leftSidePages = Math.floor((this.pages.length - 1) / 2);
+      this.leftSidePages = Math.floor((this.pages.length - this.static_showPages) / 2);
 		let baseHeight = 100;
-		let wrapWidth = document.querySelector(".carousel-page-wrap").offsetWidth;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
 			newPage.classList.add("carousel-page-" + a, "carousel-page", "carousel-page-has-transition");
@@ -622,9 +637,9 @@ class Carousel {
 						") / " +
 						this.static_showPages +
 						") * " +
-						(a - leftSidePages) +
+						(a - this.leftSidePages) +
 						") + " +
-						(this.static_pageSpacing * (a - leftSidePages + 1) + this.static_pageSpacingUnits) +
+						(this.static_pageSpacing * (a - this.leftSidePages + 1) + this.static_pageSpacingUnits) +
 						")";
 				} else {
 					let pageWidth =
@@ -642,12 +657,11 @@ class Carousel {
 						") / " +
 						this.static_showPages +
 						") * " +
-						(a - leftSidePages) +
+						(a - this.leftSidePages) +
 						") + " +
-						(this.static_pageSpacing * (a - leftSidePages) + this.static_pageSpacingUnits) +
+						(this.static_pageSpacing * (a - this.leftSidePages) + this.static_pageSpacingUnits) +
 						")";
 				}
-				this.pageOffset = 100 / this.static_showPages;
 			} else {
 				newPage.style.width = "100%";
 			}
@@ -672,10 +686,10 @@ class Carousel {
 			this.positions.push(newPos);
 		}
 
-		this.orderedPagesMainIndex = leftSidePages / 1;
+		this.orderedPagesMainIndex = this.leftSidePages / 1;
 
 		// Alter the positional arrays as necessary
-		for (let b = 1; b <= leftSidePages; b++) {
+		for (let b = 1; b <= this.leftSidePages; b++) {
 			this.orderedPages.unshift(this.orderedPages.pop());
 			if (b > 0) {
 				this.positions.push(this.positions.shift());
@@ -705,14 +719,14 @@ class Carousel {
 
 	// Runs through applicable settings and takes actions based on them. Mostly to reduce constructor clutter
 	initialActions() {
-		if (this.dev__allowInternalStyles) {
+		if (this.allowInternalStyles) {
 			this.internalCSS();
 		}
 		if (this.checkForErrors()) {
 			if (this.autoGenHTML) {
 				this.defaultHTML();
 			}
-			if (this.autoGenCSS && this.dev__allowInternalStyles) {
+			if (this.autoGenCSS && this.allowInternalStyles) {
 				this.defaultCSS();
 			}
 			if (this.throttle_matchTransition) {
@@ -780,23 +794,36 @@ class Carousel {
 
 	// prevents breakage by providing constraints and displaying an error message
 	checkForErrors() {
-		if (this.pages.length - this.static_showPages <= 0) {
+		if (this.pages.length - this.static_showPages <= 1) {
 			this.displayError(
-				"For the number of pages supplied, there are too many being shown. There must be at least 1 fewer page shown than the number of pages."
+				"For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages."
 			);
 			return false;
-		}
+      }
+      if (this.id.split("")[0] !== "#" && this.id.split("")[0] !== ".") {
+         this.displayError(
+            "An invalid selector prefix was given for the parent. Valid selector prefixes are '#' for IDs or '.' for classes."
+         );
+         return false;
+      }
+         
 		return true;
 	}
 
+   // creates error message box
 	displayError(message, title = "Error:") {
 		let em = document.createElement("DIV");
 		em.classList.add("carousel-error-message");
 		let t = document.createElement("SPAN");
 		t.innerHTML = title;
 		t.style.color = "red";
-		t.style.fontWeight = "bold";
-		em.innerHTML = t + "<br/>" + message;
+      t.style.fontWeight = "bold";
+      em.appendChild(t);
+      let m = document.createElement("SPAN");
+      m.innerHTML = message;
+      let lb = document.createElement("BR");
+      em.appendChild(lb);
+      em.appendChild(m);
 		document.querySelector(this.parent).appendChild(em);
 	}
 
