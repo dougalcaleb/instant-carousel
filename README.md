@@ -18,6 +18,7 @@
 Setting | Type | Effect | Default | Example
 --------|------|--------|---------|--------
 pages | Array | Contains unnamed objects containing elements for each corresponding page. | [] | [<br/>{background_image: "../images/numbers/1.png"},<br/>{background_image: "../images/numbers/2.png"}<br/>]
+id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel | ".myCarousel" |
 type | Integer | Integer from 0-2 that defines which carousl type to use: <ul><li>0 defines static (all pages are directly adjacent and can be swiped/dragged)</li><li>1 defines overlap (pages slide in from the sides to overlap the current page and can be swiped/dragged)</li><li>2 defines fade (pages fade in and out over each other)</li></ul> | 0 |
 parent | String | Selector of an HTML tag to be the parent of the carousel. | "body" | ".myCarouselWrap"
 autoGenHTML | Boolean | Determines whether the required HTML structure will be automatically generated inside the element specified by the "parent" setting, or if it will be created by the user. A reference for custom HTML will be available soon. | true | 
@@ -108,6 +109,7 @@ radioBubbles | Not implemented | Upcoming
     * New extensions for type 0: multiple pages can now be visible at once
     * Swiping can now be throttled
     * Different types of user interactions can be individually throttled or not throttled
+    * Swiping now supports moving multiple pages at once
     * New settings (refer to documentation above for descriptions):
       * static_showPages
       * static_pageSpacing
@@ -132,6 +134,7 @@ radioBubbles | Not implemented | Upcoming
     * Page order could break when non-infinite and spamming nav buttons
     * Static non-infinite scroll with multiple pages could show pages beyond the end
     * Positions were being incorrectly set and read, causing "ghost pages"
+    * When using spacing, pages would follow mouse movement incorrectly
 
 ##### v0.1.0:
 * Features:
