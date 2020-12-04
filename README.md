@@ -65,7 +65,7 @@ Setting | Type | Effect | Default | Applies To
 static_showPages | Integer | Defines the number of pages to show. | 1 | type 0 (static)
 static_enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | type 0 (static)
 static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | type 0 (static)
-static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 20 | type 0 (static)
+static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 0 | type 0 (static)
 static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing" | "px" | type 0 (static)
 static_spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | type 0 (static)
 overlap_direction | Integer | Integer between 0-2 that defines the movement of pages. <ul><li>0: New pages come from both sides and always are on top</li><li>1: Scrolling right removes the topmost page to uncover pages below. Scrolling left brings in a new page that sits on top.</li><li>2: Scrolling left uncovers the topmost page to uncover pages below. Scrolling right brings in a new page that sits on top.</li></ul> | 0 | type 1 (overlap)
@@ -135,6 +135,10 @@ radioBubbles | Not implemented | Upcoming
     * Static non-infinite scroll with multiple pages could show pages beyond the end
     * Positions were being incorrectly set and read, causing "ghost pages"
     * When using spacing, pages would follow mouse movement incorrectly
+    * Ending a swipe with multiple pages visible would set incorrect positions
+    * Pop-in would occur during swiping when more than half of the pages were visible
+    * Swiping past the right end of a non-infinite carousel when showing multiple pages caused jumping
+    * When using multiple pages with spacing, swiping would ignore the spacing and jump between pages
 
 ##### v0.1.0:
 * Features:
