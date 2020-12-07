@@ -47,11 +47,11 @@ new Carousel = ({
       },
       {
          background_image: "../images/mySecondPage.png"
-      }
+      },
       {
          background_image: "../images/myThirdPage.png"
       }
-   ];
+   ]
 });
 ```
 
@@ -75,7 +75,7 @@ The only required setting is the ```pages``` array, all others are optional.
 
 Setting | Type | Description | Default
 --------|------|-------------|--------
-pages | Array | Contains unnamed objects containing elements for each corresponding page. | []
+pages | Array | Contains unnamed objects containing elements for each corresponding page. See [Pages Settings](https://github.com/dougalcaleb/instant-carousel#pages-settings) for all available options. | []
 id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel. Accepts both IDs and classes. | ".myCarousel"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"stack": pages slide in from the sides to overlap the current page and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
@@ -91,7 +91,7 @@ mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to app
 
 Setting | Type | Description
 --------|------|------------
-background_image | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to ```carousel.js```.
+background_image | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to the ```carousel.js``` file.
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
 css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead.
 
