@@ -85,6 +85,7 @@ EXTRA
 // To do:
 /*
 -  Optimize swiping to not need to scroll all pages at once, only visible and ends
+-  Change things from using numbers to using strings
 */
 
 class Carousel {
@@ -93,7 +94,7 @@ class Carousel {
 
       this.pages = settings.pages ? settings.pages : {};
       this.id = settings.id ? settings.id : ".myCarousel";
-		this.type = settings.type ? settings.type : 0;
+		this.type = settings.type ? settings.type : "normal";
 		// this.subtype = (settings.subtype) ? settings.subtype : 0;
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenHTML = settings.autoGenHTML == false ? settings.autoGenHTML : true;
@@ -119,7 +120,7 @@ class Carousel {
 		this.swipe = settings.swipe == false ? settings.swipe : true;
 		this.swipe_threshold = settings.swipe_threshold ? settings.swipe_threshold : 300;
 		this.swipe_multiplier = settings.swipe_multiplier ? settings.swipe_multiplier : 1;
-		this.swipe_resistance = settings.swipe_resistance ? settings.swipe_resistance : 0.95;
+		this.swipe_resistance = (settings.swipe_resistance != undefined) ? settings.swipe_resistance : 0.95;
 		// this.rtl = (settings.rtl) ? settings.rtl : false;
 
 		this.static_showPages = settings.static_showPages ? settings.static_showPages : 1;
@@ -195,7 +196,7 @@ class Carousel {
 	scrollRight(valuesOnly = false) {
 		if (
 			(this.onPage >= this.pages.length - this.static_showPages && !this.infinite) ||
-			(this.onPage >= this.pages.length - this.static_showPages && !this.infinite && this.type == 0)
+			(this.onPage >= this.pages.length - this.static_showPages && !this.infinite && this.type == "normal")
 		) {
 			return;
 		} else {
@@ -619,7 +620,7 @@ class Carousel {
 			let newPage = document.createElement("DIV");
 			newPage.classList.add("carousel-page-" + a, "carousel-page", "carousel-page-has-transition");
 			let newPos;
-			if (this.type == 0) {
+			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and #pages
 				if (this.static_spacingMode == "evenly") {
 					let pageWidth =
@@ -666,7 +667,7 @@ class Carousel {
 				newPage.style.width = "100%";
 			}
 			// Create falloff //! not working
-			if (this.static_sizeFalloff && this.type == 0) {
+			if (this.static_sizeFalloff && this.type == "normal") {
 				newPage.style.height = baseHeight + "%";
 				baseHeight -= this.static_sizeFalloff;
 				newPage.style.top = "0";
@@ -739,7 +740,7 @@ class Carousel {
 			this.boundFollow = this.execMM.bind(this);
 			this.boundEnd = this.execMU.bind(this);
 			this.boundCancel = this.execTC.bind(this);
-			if (this.type == 0) {
+			if (this.type == "normal") {
 				this.swipe_threshold /= this.static_showPages;
 			}
 		}
