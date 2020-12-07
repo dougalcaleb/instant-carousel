@@ -1,13 +1,14 @@
 let c = new Carousel({
 	parent: ".carousel-wrap",
-	static_showPages: 3,
+	static_showPages: 1,
 	static_pageSpacing: 20,
 	// static_pageSpacingUnits: "px",
 	static_spacingMode: "evenly",
 	static_sizeFalloff: 0,
 	// transition: 0,
 	throttle_matchTransition: true,
-	// infinite: false,
+   infinite: false,
+   swipe_resistance: 1,
 	pages: [
 		{
 			background_image: "./images/numbers/1.png",
