@@ -1,6 +1,6 @@
 # Instant Carousel
 
-#### This plugin is in active development. Check back for updates.
+#### This plugin is unfinished but is in active development. Check back for updates.
 
 <br/>
 
