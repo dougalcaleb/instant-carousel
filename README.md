@@ -7,9 +7,9 @@
 ### Jump to:
 [General Settings](https://github.com/dougalcaleb/instant-carousel#general-settings)
 
-[Behavorial Settings](https://github.com/dougalcaleb/instant-carousel#behavorial-settings)
-
 [Pages Settings](https://github.com/dougalcaleb/instant-carousel#pages-settings)
+
+[Behavorial Settings](https://github.com/dougalcaleb/instant-carousel#behavorial-settings)
 
 [Type-Specific Settings](https://github.com/dougalcaleb/instant-carousel#type-specific-settings)
 
@@ -101,7 +101,7 @@ css | String | Contains the CSS to apply to the HTML of the corresponding page. 
 
 Setting | Type | Description | Default
 --------|------|-------------|--------
-autoScroll | Boolean | Determines if the autoscroll will be active or not. | false
+autoScroll | Boolean | Determines whether the autoscroll will be active or not. | false
 autoScroll_speed | Integer | Time in miliseconds between automatically scrolling between pages. | 5000
 autoScroll_timeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000
 autoScroll_pauseOnHover | Boolean | Determines if autoscroll will be paused when user mouses over the carousel. | false
@@ -136,7 +136,7 @@ static_sizeFalloff | Integer | Defines the percentage that each successive page 
 static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 0 | "normal"
 static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing" | "px" | "normal"
 static_spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal"
-overlap_direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": new pages come from both sides and always are on top</li><li>"left": scrolling right removes the topmost page to uncover pages below. Scrolling left brings in a new page that sits on top.</li><li>"right": scrolling left uncovers the topmost page to uncover pages below. Scrolling right brings in a new page that sits on top.</li></ul> | "both" | "stack"
+overlap_direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
 fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
 fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade"
