@@ -23,7 +23,7 @@
 
 The focus of this plugin is quick and easy setup, with the option to customize extensively.
 
-To add Roundabout to your project, download and link the carousel.js file to your HTML. Create another script file to contain your settings, linked *after* carousel.js.
+To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file to contain your settings, linked *after* ```roundabout.js```.
 
 Initialization is done with a simple object constructor, passed an object containing all of your settings:
 ```javascript
@@ -91,7 +91,7 @@ mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to app
 
 Setting | Type | Description
 --------|------|------------
-background_image | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to the ```carousel.js``` file.
+background_image | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to the ```roundabout.js``` file.
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
 css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead.
 
