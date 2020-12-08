@@ -1,4 +1,4 @@
-# Instant Carousel
+# Roundabout.js
 
 #### This plugin is unfinished but is in active development. Check back for updates.
 
@@ -23,11 +23,11 @@
 
 The focus of this plugin is quick and easy setup, with the option to customize extensively.
 
-To add Instant Carousel to your project, download and link the carousel.js file to your HTML. Create another script file to contain your settings, linked *after* carousel.js.
+To add Roundabout to your project, download and link the carousel.js file to your HTML. Create another script file to contain your settings, linked *after* carousel.js.
 
 Initialization is done with a simple object constructor, passed an object containing all of your settings:
 ```javascript
-new Carousel =({
+new Roundabout =({
    // include your settings here...
 });
 ```
@@ -35,7 +35,7 @@ new Carousel =({
 Here's an example of a simple carousel you can get up and running quickly:
 
 ```javascript
-new Carousel = ({
+new Roundabout = ({
    parent: "#myCarouselWrap",
    autoScroll: true,
    type: "stack",
@@ -57,17 +57,17 @@ new Carousel = ({
 
 Multiple carousels can be created on one page by invoking the constructor multiple times. Be sure to give them unique CSS selectors with the ```id``` property so you can interact with them individually in your CSS:
 ```javascript
-new Carousel = ({
+new Roundabout = ({
    id: "#carouselNumberOne",
    // other settings...
 });
-new Carousel = ({
+new Roundabout = ({
    id: ".carouselNumberTwo",
    // other settings...
 });
 ```
 
-The only required setting is the ```pages``` array, all others are optional.
+Included is a ```settings.js``` file, which contains a simple template for a new Roundabout constructor.
 
 <br/>
 

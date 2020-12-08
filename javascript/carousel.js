@@ -88,7 +88,7 @@ EXTRA
 -  Change things from using numbers to using strings
 */
 
-class Carousel {
+class Roundabout {
 	constructor(settings) {
 		// User defined (commented out = not used yet)
 
@@ -833,7 +833,7 @@ class Carousel {
 	}
 }
 
-Carousel.prototype.rightPressed = function (parent, isKey) {
+Roundabout.prototype.rightPressed = function (parent, isKey) {
 	parent.resetScrollTimeout();
 	if (parent.scrollIsAllowed && !parent.dragging) {
 		parent.scrollRight();
@@ -846,7 +846,7 @@ Carousel.prototype.rightPressed = function (parent, isKey) {
 	}
 };
 
-Carousel.prototype.leftPressed = function (parent, isKey) {
+Roundabout.prototype.leftPressed = function (parent, isKey) {
 	parent.resetScrollTimeout();
 	if (parent.scrollIsAllowed && !parent.dragging) {
 		parent.scrollLeft();
