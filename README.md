@@ -180,6 +180,7 @@ radioBubbles | Not implemented | Upcoming
     * Swiping now supports moving multiple pages at once
     * Type settings is no longer defined by arbitrary integers, now uses names (strings) instead
     * Improved documentation
+    * Swiping has been optimized for large page counts
     * New settings (refer to documentation above for descriptions):
       * static_showPages
       * static_pageSpacing
