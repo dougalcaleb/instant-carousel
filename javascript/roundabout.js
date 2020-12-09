@@ -41,6 +41,7 @@ PAGES
 ✖ Support for interactive pages
 ✖ Can define HTML and CSS per page for interactivity
 ✔ Transition timings can be custom
+✖ Supports as few as 2 pages
 
 SWIPE
 ✔ User can swipe to advance pages
@@ -72,6 +73,10 @@ EXTRA
 ✖ Presets for bubble visuals
 ✖ Which keys to include in navigation can be specified
 
+RELEASES
+-  Each release has a full file and a .min file
+-  Replace variables names with extremely short versions and letters where possible
+-  Create a gitignored key file to easily replace variable names
 */
 
 //? IDEAS:
@@ -205,7 +210,9 @@ class Roundabout {
 			this.positions.unshift(this.positions.pop());
 			if (!valuesOnly) {
 				for (let a = 0; a < this.pages.length; a++) {
-					document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
+               document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
+               // document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-transition");
+               // document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-no-transition");
 				}
          }
 
@@ -228,11 +235,15 @@ class Roundabout {
 				document
 					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
 					.classList.remove("carousel-page-has-transition");
-         } else if (!document.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + Math.ceil(this.static_showPages / 2)]).classList.contains("carousel-page-has-transition")) {
-            document.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + Math.ceil(this.static_showPages / 2)]).classList.add("carousel-page-has-transition");
-            document.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + Math.ceil(this.static_showPages / 2)]).classList.remove("carousel-page-has-no-transition");
-         }
-		}
+			} else {
+            document
+               .querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages + this.static_showPages])
+					.classList.add("carousel-page-has-transition");
+				document
+					.querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages + this.static_showPages])
+					.classList.remove("carousel-page-has-no-transition");
+			}
+      } 
 	}
 
 	// Scrolls left. Does not handle actual clicks
@@ -266,6 +277,13 @@ class Roundabout {
 				document
 					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
 					.classList.remove("carousel-page-has-transition");
+			} else {
+            document
+               .querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages - 1])
+					.classList.add("carousel-page-has-transition");
+				document
+					.querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages - 1])
+					.classList.remove("carousel-page-has-no-transition");
 			}
 		}
 	}
@@ -450,12 +468,7 @@ class Roundabout {
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
-		// for (let a = 0; a < parent.pages.length; a++) {
-		// 	document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-transition");
-		// 	document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-no-transition");
-      // }
-      
-      for (let a = 0; a < parent.static_showPages + 2; a++) {
+      for (let a = 0; a <= parent.static_showPages + 2; a++) {
          let pos = a + parent.leftSidePages - 1;
          if (!document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.contains("carousel-page-has-transition")) {
             document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.add("carousel-page-has-transition");
@@ -485,7 +498,7 @@ class Roundabout {
 		document.removeEventListener("touchcancel", parent.boundCancel, false);
 	}
 
-	// handle touch cancle
+	// handle touch cancel
 	tCancel(event, parent) {
 		event.preventDefault();
 		document.removeEventListener(
