@@ -21,6 +21,8 @@
 
 ### Setup
 
+Note: minified files will be available once development has matured past v1.0.
+
 The focus of this plugin is quick and easy setup, with the option to customize extensively.
 
 To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file to contain your settings, linked *after* ```roundabout.js```.
@@ -82,6 +84,7 @@ parent | String | Selector of an HTML element to be the parent of the carousel. 
 autoGenHTML | Boolean | Determines whether the required HTML structure will be automatically generated inside the element specified by the "parent" setting, or if it will be created by the user. A reference for custom HTML will be available soon. | true
 autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS will be available soon. | true
 radioBubbles | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
+visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
 mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobile_breakpoint". | { <br/>swipe_threshold: 50 <br/>}
 mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700
 
@@ -118,7 +121,7 @@ throttle_keys | Boolean | Determines if user interaction from keyboard keys are 
 throttle_buttons | Boolean | Determines if user interaction from left and right buttons are throttled. | true
 throttle_swipe | Boolean | Determines if user interaction from swiping is throttled. | true
 throttle_navigation | Boolean | Determines if user interaction from navigation is throttled. | true
-keys | Boolean | Determines if the arrow keys can be used for navigation. | true
+keys | Boolean | Determines if the arrow keys can be used for navigation. All carousels on the page will be affected by the keypress. | true
 infinite | Boolean | Determines if the carousel can scroll infinitely. | true
 swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true
 swipe_threshold | Integer | Defines the distance in px that the user must swipe or drag to advance to the next page instead of snapping back to the current one. | 300
@@ -138,7 +141,7 @@ static_sizeFalloff | Integer | Defines the percentage that each successive page 
 static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 0 | "normal"
 static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing" | "px" | "normal"
 static_spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal"
-overlap_direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
+stack_direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
 fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
 fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
 fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade"
@@ -155,7 +158,7 @@ static_sizeFalloff | Not implemented | Upcoming
 static_pageSpacing | Almost finished | In progress
 static_pageSpacingUnits | Almost finished | In progress
 static_spacingMode | Almost finished | In progress
-overlap_direction | Not implemented | Upcoming
+stack_direction | Not implemented | Upcoming
 fade_offsetIn | Not implemented | Upcoming
 fade_offsetOut | Not implemented | Upcoming
 fade_offsetUnits | Not implemented | Upcoming
@@ -193,6 +196,7 @@ radioBubbles | Not implemented | Upcoming
       * throttle_keys
       * throttle_buttons
       * throttle_navigation
+      * visualPreset
     * Added comprehensive list of settings to README
 * Bugfixes:
     * Scrolling quickly with fewer pages caused a pop-in effect
