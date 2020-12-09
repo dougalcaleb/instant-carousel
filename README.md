@@ -1,5 +1,5 @@
 # Roundabout.js
-![Roundabout Logo](/images/logo-full.png)
+![Roundabout Logo](/images/logo-full-gray-small.png)
 
 #### This plugin is unfinished but is in active development. Check back for updates.
 
