@@ -60,9 +60,12 @@ MISC
 ✖ Can have multiple carousels in a single page with object constructors
 ⚠ Any relevant setting has a default, but can be overridden
 ✖ Unique class names
-✖ Can be vertical
 ✖ Adding a new carousel appends without using innerHTML
 ✖ Errors are thrown when using incorrect settings for the type
+
+RESPONSIVENESS
+✖ Can be vertical
+✖ Multiple breakpoints and value sets can be specified
 
 EXTRA
 ✖ Presets for carousel visuals
@@ -84,8 +87,7 @@ EXTRA
 
 // To do:
 /*
--  Optimize swiping to not need to scroll all pages at once, only visible and ends
--  Change things from using numbers to using strings
+
 */
 
 class Roundabout {
@@ -97,8 +99,8 @@ class Roundabout {
 		this.type = settings.type ? settings.type : "normal";
 		// this.subtype = (settings.subtype) ? settings.subtype : 0;
 		this.parent = settings.parent ? settings.parent : "body";
-		this.autoGenHTML = settings.autoGenHTML == false ? settings.autoGenHTML : true;
-		this.autoGenCSS = settings.autoGenCSS == false ? settings.autoGenCSS : true;
+		this.autoGenHTML = (settings.autoGenHTML === false) ? settings.autoGenHTML : true;
+		this.autoGenCSS = (settings.autoGenCSS === false) ? settings.autoGenCSS : true;
 		// this.navigation = (settings.navigation == false) ? settings.navigation : true;
 		this.autoScroll = settings.autoScroll ? settings.autoScroll : false;
 		this.autoScroll_speed = settings.autoScroll_speed ? settings.autoScroll_speed : 5000;
@@ -108,16 +110,16 @@ class Roundabout {
 		this.autoScroll_direction = settings.autoScroll_direction ? settings.autoScroll_direction : "right";
 		this.transition = (settings.transition != undefined) ? settings.transition : 300;
 		this.transition_timingFunction = settings.transition_timingFunction ? settings.transition_timingFunction : "ease";
-		this.throttle = settings.throttle == false ? settings.throttle : true;
+		this.throttle = (settings.throttle === false) ? settings.throttle : true;
 		this.throttle_timeout = settings.throttle_timeout ? settings.throttle_timeout : 300;
 		this.throttle_matchTransition = settings.throttle_matchTransition ? settings.throttle_matchTransition : false;
-		this.throttle_keys = settings.throttle_keys == false ? settings.throttle_keys : true;
-		this.throttle_swipe = settings.throttle_swipe == false ? settings.throttle_swipe : true;
-		this.throttle_buttons = settings.throttle_buttons == false ? settings.throttle_buttons : true;
+		this.throttle_keys = (settings.throttle_keys === false) ? settings.throttle_keys : true;
+		this.throttle_swipe = (settings.throttle_swipe === false) ? settings.throttle_swipe : true;
+		this.throttle_buttons = (settings.throttle_buttons === false) ? settings.throttle_buttons : true;
 		// this.throttle_navigation = settings.throttle_navigation == false ? settings.throttle_navigation : true;
-		this.keys = settings.keys == false ? settings.keys : true;
-		this.infinite = settings.infinite == false ? settings.infinite : true;
-		this.swipe = settings.swipe == false ? settings.swipe : true;
+		this.keys = (settings.keys === false) ? settings.keys : true;
+		this.infinite = (settings.infinite === false) ? settings.infinite : true;
+		this.swipe = (settings.swipe === false) ? settings.swipe : true;
 		this.swipe_threshold = settings.swipe_threshold ? settings.swipe_threshold : 300;
 		this.swipe_multiplier = settings.swipe_multiplier ? settings.swipe_multiplier : 1;
 		this.swipe_resistance = (settings.swipe_resistance != undefined) ? settings.swipe_resistance : 0.95;
@@ -141,7 +143,7 @@ class Roundabout {
       
 
 		// this.val = settings.val ? settings.val : default;
-		// this.val = settings.val == false ? settings.val : true;
+		// this.val = (settings.val === false) ? settings.val : true;
 		// this.val = settings.val ? settings.val : false;
 
 		// Private
@@ -172,7 +174,7 @@ class Roundabout {
 		// autoscroll
 		this.scrollTimeoutHolder = null;
 		this.scrollIntervalHolder = null;
-		// functions
+		// bound functions
 		this.boundFollow = null;
 		this.boundEnd = null;
 		this.boundCancel = null;
@@ -205,16 +207,13 @@ class Roundabout {
 				for (let a = 0; a < this.pages.length; a++) {
 					document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
 				}
-			}
+         }
 
 			let currentMoving = this.orderedPages[0];
-			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-moving-page");
 			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-no-transition");
          document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
          
-         document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
 			setTimeout(() => {
-            // document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
             if (!valuesOnly) {
 					document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-no-transition");
 					document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-transition");
@@ -229,9 +228,11 @@ class Roundabout {
 				document
 					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
 					.classList.remove("carousel-page-has-transition");
-			}
+         } else if (!document.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + Math.ceil(this.static_showPages / 2)]).classList.contains("carousel-page-has-transition")) {
+            document.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + Math.ceil(this.static_showPages / 2)]).classList.add("carousel-page-has-transition");
+            document.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + Math.ceil(this.static_showPages / 2)]).classList.remove("carousel-page-has-no-transition");
+         }
 		}
-		console.log(this.onPage);
 	}
 
 	// Scrolls left. Does not handle actual clicks
@@ -244,15 +245,13 @@ class Roundabout {
 				for (let a = 0; a < this.pages.length; a++) {
 					document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
 				}
-			}
-			let currentMoving = arr_last(this.orderedPages);
-			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-moving-page");
+         }
+         
+         let currentMoving = this.orderedPages[this.orderedPages.length - 1];
 			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-no-transition");
          document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
 
-			document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
 			setTimeout(() => {
-				// document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-moving-page");
 				if (!valuesOnly) {
 					document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-no-transition");
 					document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-transition");
@@ -440,15 +439,7 @@ class Roundabout {
 				parent.sx = parent.x / 1;
 				parent.dx = 0;
          } else {
-            // sets the position of all pages
-            //! needs to be optomized to only move visible pages and edge pages. not necessary for smaller page counts, but will matter in large quantities
-            // mostly works, just causes some weird glitches that likely need to be fixed with snap
-
-            // for (let a = 0; a < parent.pages.length; a++) {
-            //    document.querySelector(".carousel-page-" + a).style.left =
-				// 		"calc((" + parent.positions[a] + ") + " + parent.dx + "px)";
-            // }
-
+            // sets the position of all necessary pages
             for (let a = 0; a < parent.static_showPages + 2; a++) {
                let pos = a + parent.leftSidePages - 1;
                document.querySelector(".carousel-page-" + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
@@ -459,10 +450,18 @@ class Roundabout {
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
-		for (let a = 0; a < parent.pages.length; a++) {
-			document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-transition");
-			document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-no-transition");
-		}
+		// for (let a = 0; a < parent.pages.length; a++) {
+		// 	document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-transition");
+		// 	document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-no-transition");
+      // }
+      
+      for (let a = 0; a < parent.static_showPages + 2; a++) {
+         let pos = a + parent.leftSidePages - 1;
+         if (!document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.contains("carousel-page-has-transition")) {
+            document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.add("carousel-page-has-transition");
+			   document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.remove("carousel-page-has-no-transition");
+         }
+      }
 		parent.dragging = false;
 
 		// log the end of touch position
@@ -582,7 +581,7 @@ class Roundabout {
 
 	// Generates the default CSS styling
 	defaultCSS() {
-		let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:calc(100% - 50px);}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2} .carousel-page {position:absolute;}`;
+		let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:100%}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2} .carousel-page {position:absolute;}`;
 		//
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
@@ -592,7 +591,7 @@ class Roundabout {
 
 	// Generates the required CSS. Seperate from default styling
 	internalCSS() {
-		let css = `.carousel-moving-page{z-index:-100} .carousel-page-has-transition{transition:${
+		let css = `.carousel-page-has-transition{transition:${
 			this.transition / 1000
 		}s; transition-timing-function:${
 			this.transition_timingFunction
@@ -859,7 +858,7 @@ Roundabout.prototype.leftPressed = function (parent, isKey) {
 	}
 };
 
-// TYPICAL FUNCTIONS
+// ASSISTIVE FUNCTIONS
 
 function obj_length(obj) {
 	if (typeof obj !== "object") {
@@ -872,11 +871,4 @@ function obj_length(obj) {
 		}
 	}
 	return length;
-}
-
-function arr_last(arr) {
-	if (typeof arr !== "object") {
-		return "INVALID PARAMETERS";
-	}
-	return arr[arr.length - 1];
 }
