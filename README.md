@@ -1,22 +1,21 @@
-# Roundabout.js
-![Roundabout Logo](/images/logo-full-gray-small.png)
+![Roundabout](/images/logo-full-gray-small.png)
 
 #### This plugin is unfinished but is in active development. Check back for updates.
 
 <br/>
 
 ### Jump to:
-[General Settings](https://github.com/dougalcaleb/instant-carousel#general-settings)
+[General Settings](#general-settings)
 
-[Pages Settings](https://github.com/dougalcaleb/instant-carousel#pages-settings)
+[Pages Settings](#pages-settings)
 
-[Behavorial Settings](https://github.com/dougalcaleb/instant-carousel#behavorial-settings)
+[Behavorial Settings](#behavorial-settings)
 
-[Type-Specific Settings](https://github.com/dougalcaleb/instant-carousel#type-specific-settings)
+[Type-Specific Settings](#type-specific-settings)
 
-[Inactive, Unfinished or Deprecated Settings](https://github.com/dougalcaleb/instant-carousel#inactive-unfinished-or-deprecated-settings)
+[Inactive, Unfinished or Deprecated Settings](#inactive-unfinished-or-deprecated-settings)
 
-[Patch Notes](https://github.com/dougalcaleb/instant-carousel#patch-notes)
+[Patch Notes](#patch-notes)
 
 <br/>
 
@@ -225,7 +224,3 @@ radioBubbles | Not implemented | Upcoming
     * Autoscroll
     * Auto-generating HTML and CSS structure
     * User interaction throttling
-
-<br/><br/>
-
-[Back to top](https://github.com/dougalcaleb/instant-carousel#instant-carousel)
