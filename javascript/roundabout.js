@@ -3,18 +3,18 @@
 INTENDED FEATURES:
 
 3 TYPES
-⚠ Static (including full-screen and multiview)
-✖ Overlap
+⚠ Normal (including full-screen and multiview)
+✖ Stack
 ✖ Fade
 
-SPECS (STATIC)
+SPECS (NORMAL)
 ⚠ Can define page size and show however many fit or 
     define number to show and resize dynamically
 ✖ Can be all equal size or have an emphasized center slide
 ✖ Size falloff: center is biggest, and all side slides
     continually get smaller by set percentage
 
-SPECS (OVERLAP)
+SPECS (STACK)
 ✖ Left subtype
 ✖ Right subtype
 ✖ Both subtype
@@ -47,6 +47,7 @@ SWIPE
 ✔ User can swipe to advance pages
 ✔ User can swipe past the edge and experience resistance
 ✔ A page always shows
+✖ Inertia movement
 
 BUBBLES
 ✖ Show current and available pages
@@ -63,6 +64,9 @@ MISC
 ✖ Unique class names
 ✖ Adding a new carousel appends without using innerHTML
 ✖ Errors are thrown when using incorrect settings for the type
+
+INTERACTIVITY
+✖ Selectors for different elements can be specified
 
 RESPONSIVENESS
 ✖ Can be vertical
@@ -94,6 +98,8 @@ RELEASES
 /*
 
 */
+
+let on = -1;
 
 class Roundabout {
 	constructor(settings) {
@@ -137,7 +143,7 @@ class Roundabout {
 		this.static_pageSpacingUnits = settings.static_pageSpacingUnits ? settings.static_pageSpacingUnits : "px";
 		this.static_spacingMode = settings.static_spacingMode ? settings.static_spacingMode : "fill";
 
-		// this.overlap_direction = (settings.overlap_direction) ? settings.overlap_direction : 0;
+		// this.stack_direction = (settings.stack_direction) ? settings.stack_direction : 0;
 
 		// this.fade_offsetIn = (settings.fade_offsetIn) ? settings.fade_offsetIn : 20;
 		// this.fade_offsetOut = (settings.fade_offsetOut) ? settings.fade_offsetOut : -20;
@@ -162,6 +168,7 @@ class Roundabout {
       this.onPage = 0;
       this.allowInternalStyles = true;
       this.leftSidePages = 0;
+      this.uniqueId = (on + 1);
 		// swipe
 		this.sx = 0;
 		this.sy = 0;
@@ -211,8 +218,6 @@ class Roundabout {
 			if (!valuesOnly) {
 				for (let a = 0; a < this.pages.length; a++) {
                document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
-               // document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-transition");
-               // document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-no-transition");
 				}
          }
 
@@ -575,7 +580,7 @@ class Roundabout {
 	// Generates the default HTML structure
    defaultHTML() {
       let newCarousel = document.createElement("DIV");
-      let html = `<div class="carousel-swipe-overlay"></div><div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"><div class="radio-btn rbtn-0"></div><div class="radio-btn rbtn-1"></div><div class="radio-btn rbtn-2"></div></div></div>`;
+      let html = `<div class="carousel-swipe-overlay"></div><div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"></div></div>`;
       newCarousel.innerHTML = html;
       newCarousel.classList.add("carousel-html-place-holder");
       if (this.id.split("")[0] == "#") {
@@ -735,7 +740,8 @@ class Roundabout {
 		if (this.allowInternalStyles) {
 			this.internalCSS();
 		}
-		if (this.checkForErrors()) {
+      if (this.checkForErrors()) {
+         on++;
 			if (this.autoGenHTML) {
 				this.defaultHTML();
 			}
