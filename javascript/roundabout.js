@@ -85,18 +85,20 @@ RELEASES
 
 //? IDEAS:
 /*
-- Unique class names can be achieved through storing instances in an array, and using the array index in the names
-   - Alternatively, an incremental integer value can be stored in each Carousel, placed as a this. value
+
 */
 
 //! KNOWN ISSUES:
 /*
-
+-  3 pages has visual glitches
 */
 
 // To do:
 /*
-
+- Working on: support for multiple carousels
+   - Finish and integrate the improved CSS
+   - Validate no duplicate classes or events
+   - Make sure documentation is up-to-date
 */
 
 let on = -1;
@@ -151,6 +153,7 @@ class Roundabout {
 
 		this.mobile = settings.mobile ? settings.mobile : {swipe_threshold: 50};
       this.mobile_breakpoint = settings.mobile_breakpoint ? settings.mobile_breakpoint : 700;
+      this.visualPreset = settings.visualPreset ? settings.visualPreset : 0;
       
 
 		// this.val = settings.val ? settings.val : default;
@@ -217,36 +220,36 @@ class Roundabout {
 			this.positions.unshift(this.positions.pop());
 			if (!valuesOnly) {
 				for (let a = 0; a < this.pages.length; a++) {
-               document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
+               document.querySelector(".roundabout-"+this.uniqueId+"-page-" + a).style.left = this.positions[a];
 				}
          }
 
 			let currentMoving = this.orderedPages[0];
-			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-no-transition");
-         document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
+			document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-no-transition");
+         document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-transition");
          
 			setTimeout(() => {
             if (!valuesOnly) {
-					document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-no-transition");
-					document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-transition");
+					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-no-transition");
+					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-transition");
 				}
 			}, this.transition);
 			this.onPage++;
 			this.orderedPages.push(this.orderedPages.shift());
 			if (valuesOnly) {
 				document
-					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
-					.classList.add("carousel-page-has-no-transition");
+					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
+					.classList.add("roundabout-has-no-transition");
 				document
-					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
-					.classList.remove("carousel-page-has-transition");
+					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
+					.classList.remove("roundabout-has-transition");
 			} else {
             document
-               .querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages + this.static_showPages])
-					.classList.add("carousel-page-has-transition");
+               .querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages + this.static_showPages])
+					.classList.add("roundabout-has-transition");
 				document
-					.querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages + this.static_showPages])
-					.classList.remove("carousel-page-has-no-transition");
+					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages + this.static_showPages])
+					.classList.remove("roundabout-has-no-transition");
 			}
       } 
 	}
@@ -259,36 +262,36 @@ class Roundabout {
 			this.positions.push(this.positions.shift());
 			if (!valuesOnly) {
 				for (let a = 0; a < this.pages.length; a++) {
-					document.querySelector(".carousel-page-" + a).style.left = this.positions[a];
+					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + a).style.left = this.positions[a];
 				}
          }
          
          let currentMoving = this.orderedPages[this.orderedPages.length - 1];
-			document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-no-transition");
-         document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-transition");
+			document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-no-transition");
+         document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-transition");
 
 			setTimeout(() => {
 				if (!valuesOnly) {
-					document.querySelector(".carousel-page-" + currentMoving).classList.remove("carousel-page-has-no-transition");
-					document.querySelector(".carousel-page-" + currentMoving).classList.add("carousel-page-has-transition");
+					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-no-transition");
+					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-transition");
 				}
 			}, this.transition);
 			this.onPage--;
 			this.orderedPages.unshift(this.orderedPages.pop());
 			if (valuesOnly) {
 				document
-					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
-					.classList.add("carousel-page-has-no-transition");
+					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
+					.classList.add("roundabout-has-no-transition");
 				document
-					.querySelector(".carousel-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
-					.classList.remove("carousel-page-has-transition");
+					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
+					.classList.remove("roundabout-has-transition");
 			} else {
             document
-               .querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages - 1])
-					.classList.add("carousel-page-has-transition");
+               .querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages - 1])
+					.classList.add("roundabout-has-transition");
 				document
-					.querySelector(".carousel-page-" + this.orderedPages[this.leftSidePages - 1])
-					.classList.remove("carousel-page-has-no-transition");
+					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages - 1])
+					.classList.remove("roundabout-has-no-transition");
 			}
 		}
 	}
@@ -373,8 +376,8 @@ class Roundabout {
 
 		// remove transitions to prevent elastic-y movement         
       for (let a = 0; a < parent.pages.length; a++) {
-         document.querySelector(".carousel-page-" + a).classList.remove("carousel-page-has-transition");
-         document.querySelector(".carousel-page-" + a).classList.add("carousel-page-has-no-transition");
+         document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + a).classList.remove("roundabout-has-transition");
+         document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + a).classList.add("roundabout-has-no-transition");
       }
 
 		// log the first touch position
@@ -451,7 +454,7 @@ class Roundabout {
 				parent.canSnap = false;
          }
          
-         let totalSize = document.querySelector(".carousel-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth + parent.static_pageSpacing;
+         let totalSize = document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth + parent.static_pageSpacing;
 
 			if (dist >= totalSize) {
 				if (parent.dx > 0) {
@@ -465,7 +468,7 @@ class Roundabout {
             // sets the position of all necessary pages
             for (let a = 0; a < parent.static_showPages + 2; a++) {
                let pos = a + parent.leftSidePages - 1;
-               document.querySelector(".carousel-page-" + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
+               document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
             }
 			}
 		}
@@ -475,9 +478,9 @@ class Roundabout {
 	tEnd(event, parent) {
       for (let a = 0; a <= parent.static_showPages + 2; a++) {
          let pos = a + parent.leftSidePages - 1;
-         if (!document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.contains("carousel-page-has-transition")) {
-            document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.add("carousel-page-has-transition");
-			   document.querySelector(".carousel-page-" + parent.orderedPages[pos]).classList.remove("carousel-page-has-no-transition");
+         if (!document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).classList.contains("roundabout-has-transition")) {
+            document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).classList.add("roundabout-has-transition");
+			   document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).classList.remove("roundabout-has-no-transition");
          }
       }
 		parent.dragging = false;
@@ -540,7 +543,7 @@ class Roundabout {
 		}
       
       for (let a = 0; a < parent.pages.length; a++) {
-			document.querySelector(".carousel-page-" + a).style.left = parent.positions[a];
+			document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + a).style.left = parent.positions[a];
 		}
 	}
 
@@ -580,9 +583,23 @@ class Roundabout {
 	// Generates the default HTML structure
    defaultHTML() {
       let newCarousel = document.createElement("DIV");
-      let html = `<div class="carousel-swipe-overlay"></div><div class="carousel-page-wrap"></div></div><div class="carousel-nav"><div class="btn-r nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="btn-l nav-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div><div class="radio-btn-wrap"></div></div>`;
+      let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>
+                  <div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap"></div>
+                  <div class="roundabout-${this.uniqueId}-nav roundabout-nav">
+                     <div class="roundabout-${this.uniqueId}-btn-r roundabout-btn-r roundabout-nav-btn">
+                        <svg viewBox="0 0 24 24">
+                           <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                        </svg>
+                     </div>
+                     <div class="roundabout-${this.uniqueId}-btn-l roundabout-btn-l roundabout-nav-btn">
+                        <svg viewBox="0 0 24 24">
+                           <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                        </svg>
+                     </div>
+                     <div class="radio-btn-wrap"></div>
+                  </div>`;
       newCarousel.innerHTML = html;
-      newCarousel.classList.add("carousel-html-place-holder");
+      newCarousel.classList.add("roundabout-wrapper");
       if (this.id.split("")[0] == "#") {
          let newId = this.id.split("");
          newId.shift();
@@ -598,9 +615,13 @@ class Roundabout {
 	}
 
 	// Generates the default CSS styling
-	defaultCSS() {
-		let css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:100%}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .carousel-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .carousel-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2} .carousel-page {position:absolute;}`;
-		//
+   defaultCSS() {
+      let css;
+      switch (this.visualPreset) {
+         case 0:
+            // css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:100%}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .roundabout-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .roundabout-${this.uniqueId}-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2} .roundabout-page {position:absolute;}`;
+            break;
+      }
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
 		newStyle.innerHTML = css;
@@ -609,11 +630,11 @@ class Roundabout {
 
 	// Generates the required CSS. Seperate from default styling
 	internalCSS() {
-		let css = `.carousel-page-has-transition{transition:${
+		let css = `.roundabout-has-transition{transition:${
 			this.transition / 1000
 		}s; transition-timing-function:${
 			this.transition_timingFunction
-		}} .carousel-page-has-no-transition{transition:0s;} .carousel-error-message {position:relative;margin: auto;left: 0;right: 0;top: 0;bottom: 0;border-radius:5px;border:3px solid black;background: white;
+		}} .roundabout-has-no-transition{transition:0s;} .carousel-error-message {position:relative;margin: auto;left: 0;right: 0;top: 0;bottom: 0;border-radius:5px;border:3px solid black;background: white;
       text-align:center;font-family:sans-serif;width:30%;}`;
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
@@ -635,7 +656,7 @@ class Roundabout {
 		let baseHeight = 100;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
-			newPage.classList.add("carousel-page-" + a, "carousel-page", "carousel-page-has-transition");
+			newPage.classList.add("roundabout-"+this.uniqueId+"-page-" + a, "roundabout-page", "roundabout-has-transition");
 			let newPos;
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and #pages
@@ -699,7 +720,7 @@ class Roundabout {
 				newPage.style.backgroundSize = "cover";
 				newPage.style.backgroundPosition = "center center";
 			}
-			document.querySelector(".carousel-page-wrap").appendChild(newPage);
+			document.querySelector(".roundabout-"+this.uniqueId+"-page-wrap").appendChild(newPage);
 			this.orderedPages.push(a);
 			this.positions.push(newPos);
 		}
@@ -716,7 +737,7 @@ class Roundabout {
 
 		// position each page
 		for (let c = 0; c < this.positions.length; c++) {
-			document.querySelector(".carousel-page-" + c).style.left = this.positions[c];
+			document.querySelector(".roundabout-"+this.uniqueId+"-page-" + c).style.left = this.positions[c];
 		}
 	}
 
@@ -766,10 +787,10 @@ class Roundabout {
 
 	// Sets all required eventListeners for the carousel
 	setListeners() {
-		document.querySelector(".btn-r").addEventListener("click", () => {
+		document.querySelector(".roundabout-"+this.uniqueId+"-btn-r").addEventListener("click", () => {
 			this.rightPressed(this);
 		});
-		document.querySelector(".btn-l").addEventListener("click", () => {
+		document.querySelector(".roundabout-"+this.uniqueId+"-btn-l").addEventListener("click", () => {
 			this.leftPressed(this);
 		});
 		if (this.keys) {
@@ -794,14 +815,14 @@ class Roundabout {
 			});
 		}
 		if (this.swipe) {
-			document.querySelector(".carousel-swipe-overlay").addEventListener(
+			document.querySelector(".roundabout-"+this.uniqueId+"-swipe-overlay").addEventListener(
 				"mousedown",
 				(event) => {
 					this.tStart(event, this);
 				},
 				false
 			);
-			document.querySelector(".carousel-swipe-overlay").addEventListener(
+			document.querySelector(".roundabout-"+this.uniqueId+"-swipe-overlay").addEventListener(
 				"touchstart",
 				(event) => {
 					this.setTouch(event, this);
