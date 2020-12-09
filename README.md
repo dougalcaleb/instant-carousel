@@ -95,6 +95,8 @@ background_image | String | Defines the path to an image to use as the backgroun
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
 css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead.
 
+Note: there is a minimum requirement of 3 pages as of version 0.2.0. Support for as few as 2 pages will arrive in a future update.
+
 <br/>
 
 ### Behavorial Settings:
