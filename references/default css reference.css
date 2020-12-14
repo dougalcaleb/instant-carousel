@@ -1,0 +1,78 @@
+/*
+This reference file is for use when creating a custom visual style. Values that should not be overridden are shown.
+This file is not linked to any other file.
+*/
+
+
+.roundabout-wrapper { /* Wraps the entire carousel */
+	height: 80vh;
+   margin-top: 30px;
+   width: 100%;
+
+   /* Cannot change: position */
+}
+
+.roundabout-nav-btn svg { /* SVG arrows indide the navigational left and right buttons */
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	height: 70px;
+}
+
+.roundabout-nav-wrap { /* Wrapper for the navigation bar */
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin: auto;
+	display: flex;
+	justify-content: space-evenly;
+	bottom: 0;
+	height: 40px;
+	width: 25%;
+}
+
+.roundabout-nav-btn { /* Navigation bar interactables */
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	height: 80px;
+	width: 80px;
+	cursor: pointer;
+	color: #fff;
+}
+
+.roundabout-nav { /* Wraps all of the user-interactable navigation */
+	height: 100%;
+	width: 100%;
+}
+
+.roundabout-btn-l { /* Button for scrolling left */
+	left: 0;
+}
+
+.roundabout-btn-r { /* Button for scrolling right */
+	right: 0;
+}
+
+.roundabout-swipe-overlay { /* Box to detect swipe on */
+	width: calc(100% - 140px);
+	height: calc(100% - 40px);
+	top: 0;
+	left: 0;
+	right: 0;
+	position: absolute;
+	margin: auto;
+	z-index: 2;
+}
+
+.roundabout-page-wrap { /* Contains all pages */
+   /* Cannot change: height, width, overflow, position */
+}
+
+.roundabout-page { /* One indivdual page */
+   /* Cannot change: position */
+}
