@@ -1,4 +1,4 @@
-![Roundabout](/images/logo-full-gray-small.png)
+![Roundabout](/images/logos/r-small.png)
 
 #### This plugin is unfinished but is in active development. Check back for updates.
 
@@ -14,6 +14,8 @@
 [Type-Specific Settings](#type-specific-settings)
 
 [Inactive, Unfinished or Deprecated Settings](#inactive-unfinished-or-deprecated-settings)
+
+[Page Flow](#page-flow)
 
 [Patch Notes](#patch-notes)
 
@@ -138,8 +140,8 @@ Setting | Type | Description | Default | Applies to Type
 static_showPages | Integer | Defines the number of pages to show. | 1 | "normal"
 static_enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | "normal"
 static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | "normal"
-static_pageSpacing | Integer | Defines the space between pages (when more than 1 are shown) | 0 | "normal"
-static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing" | "px" | "normal"
+static_pageSpacing | Integer | Defines the space between pages. | 0 | "normal"
+static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing". | "px" | "normal"
 static_spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal"
 stack_direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
 fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
@@ -164,9 +166,17 @@ fade_offsetOut | Not implemented | Upcoming
 fade_offsetUnits | Not implemented | Upcoming
 rtl | Not implemented | Low priority
 type | Partially implemented | In progress
-autoGenHTML | Partially implemented | In progress
+autoGenHTML | Deprecated | Next major update
 autoGenCSS | Partially implemented | In progress
 radioBubbles | Not implemented | Upcoming
+
+<br/>
+
+### Page Flow:
+
+Each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is positioned as ```relative```, which cannot be changed.
+
+Reference files for creating custom visuals can be found in the "references" folder in the main directory of the project.
 
 <br/>
 
