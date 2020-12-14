@@ -42,6 +42,7 @@ PAGES
 ✖ Can define HTML and CSS per page for interactivity
 ✔ Transition timings can be custom
 ✖ Supports as few as 2 pages
+✖ Can scroll by a determined number of pages
 
 SWIPE
 ✔ User can swipe to advance pages
@@ -95,13 +96,19 @@ RELEASES
 
 // To do:
 /*
-- Working on: support for multiple carousels
+-  Working on: support for multiple carousels
    - Finish and integrate the improved CSS
    - Validate no duplicate classes or events
    - Make sure documentation is up-to-date
+-  Normalize setting names (autoGen mostly)
+   -  Remove type-specific prefixes
+-  Scroll By setting
 */
 
-let on = -1;
+let roundabout = {
+   on: -1,
+   usedIds: []
+};
 
 class Roundabout {
 	constructor(settings) {
@@ -171,7 +178,7 @@ class Roundabout {
       this.onPage = 0;
       this.allowInternalStyles = true;
       this.leftSidePages = 0;
-      this.uniqueId = (on + 1);
+      this.uniqueId = (roundabout.on + 1);
 		// swipe
 		this.sx = 0;
 		this.sy = 0;
@@ -596,7 +603,7 @@ class Roundabout {
                            <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
                         </svg>
                      </div>
-                     <div class="radio-btn-wrap"></div>
+                     <div class="roundabout-nav-wrap"></div>
                   </div>`;
       newCarousel.innerHTML = html;
       newCarousel.classList.add("roundabout-wrapper");
@@ -617,15 +624,21 @@ class Roundabout {
 	// Generates the default CSS styling
    defaultCSS() {
       let css;
+      let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute}.roundabout-wrapper{position:relative}`;
       switch (this.visualPreset) {
          case 0:
-            // css = `.carousel-wrap,.carousel-wrap .carousel-nav .nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto}.carousel-wrap .carousel-nav .radio-btn-wrap{position:absolute;left:0;right:0;margin:auto}.carousel-wrap .carousel-nav .nav-btn{position:absolute;top:0;bottom:0;margin:auto}.carousel-wrap{height:calc(100% - 50px);width:100%}.carousel-wrap .carousel-nav{height:100%;width:100%}.carousel-wrap .carousel-nav .nav-btn{height:80px;width:80px;cursor:pointer;color:white;}.carousel-wrap .carousel-nav .nav-btn svg{height:70px}.carousel-wrap .carousel-nav .btn-l{left:0px}.carousel-wrap .carousel-nav .btn-r{right:0px}.carousel-wrap .carousel-nav .radio-btn-wrap{display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.carousel-wrap .carousel-nav .radio-btn-wrap .radio-btn{border-radius:100%;border:2px solid #fff;height:15px;width:15px;align-self:center;cursor:pointer} .roundabout-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute;} .roundabout-${this.uniqueId}-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2} .roundabout-page {position:absolute;}`;
+            css = `.roundabout-wrapper{height:80vh;margin-top:30px}.roundabout-nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-nav-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
             break;
       }
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
 		newStyle.innerHTML = css;
-		document.getElementsByTagName("head")[0].appendChild(newStyle);
+      document.getElementsByTagName("head")[0].appendChild(newStyle);
+
+      let newReqStyle = document.createElement("STYLE");
+		newReqStyle.setAttribute("type", "text/css");
+		newReqStyle.innerHTML = requiredCss;
+		document.getElementsByTagName("head")[0].appendChild(newReqStyle);
 	}
 
 	// Generates the required CSS. Seperate from default styling
@@ -762,7 +775,7 @@ class Roundabout {
 			this.internalCSS();
 		}
       if (this.checkForErrors()) {
-         on++;
+         roundabout.on++;
 			if (this.autoGenHTML) {
 				this.defaultHTML();
 			}
@@ -846,7 +859,14 @@ class Roundabout {
          );
          return false;
       }
-         
+      if (roundabout.usedIds.includes(this.id)) {
+         this.displayError(
+            "The selector " + this.id + " is already in use by another carousel. Please use a unique selector."
+         );
+         return false;
+      } else {
+         roundabout.usedIds.push(this.id);
+      }
 		return true;
 	}
 
@@ -864,7 +884,8 @@ class Roundabout {
       let lb = document.createElement("BR");
       em.appendChild(lb);
       em.appendChild(m);
-		document.querySelector(this.parent).appendChild(em);
+      document.querySelector(this.parent).appendChild(em);
+      console.error(message);
 	}
 
 	debug_output() {
