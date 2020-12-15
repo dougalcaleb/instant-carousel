@@ -135,18 +135,18 @@ rtl | Boolean | Determines if the carousel will be laid out right-to-left. | fal
 
 ### Type-Specific Settings:
 
-Setting | Type | Description | Default | Applies to Type
---------|------|-------------|---------|----------------
-static_showPages | Integer | Defines the number of pages to show. | 1 | "normal"
-static_enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | "normal"
-static_sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | "normal"
-static_pageSpacing | Integer | Defines the space between pages. | 0 | "normal"
-static_pageSpacingUnits | String | Defines the units used for "static_pageSpacing". | "px" | "normal"
-static_spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal"
-stack_direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
-fade_offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
-fade_offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
-fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade"
+Setting | Type | Description | Default | Applies to Type(s)
+--------|------|-------------|---------|-------------------
+showPages | Integer | Defines the number of pages to show. | 1 | "normal", "fade"
+enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | "normal"
+sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | "normal"
+pageSpacing | Integer | Defines the space between pages. | 0 | "normal", "fade"
+pageSpacingUnits | String | Defines the units used for "pageSpacing". | "px" | "normal", "fade"
+spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal", "fade"
+direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
+offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
+offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
+offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade"
 
 <br/>
 
@@ -154,16 +154,16 @@ fade_offsetUnits | String | Defines the units to use for offsetIn and offsetOut.
 
 Setting | Status | Time Frame
 --------|--------|-----------
-static_showPages | Almost finished | In progress
-static_enlargeCenter | Not implemented | Upcoming
-static_sizeFalloff | Not implemented | Upcoming
-static_pageSpacing | Almost finished | In progress
-static_pageSpacingUnits | Almost finished | In progress
-static_spacingMode | Almost finished | In progress
-stack_direction | Not implemented | Upcoming
-fade_offsetIn | Not implemented | Upcoming
-fade_offsetOut | Not implemented | Upcoming
-fade_offsetUnits | Not implemented | Upcoming
+showPages | Almost finished | In progress
+enlargeCenter | Not implemented | Upcoming
+sizeFalloff | Not implemented | Upcoming
+pageSpacing | Almost finished | In progress
+pageSpacingUnits | Almost finished | In progress
+spacingMode | Almost finished | In progress
+direction | Not implemented | Upcoming
+offsetIn | Not implemented | Upcoming
+offsetOut | Not implemented | Upcoming
+offsetUnits | Not implemented | Upcoming
 rtl | Not implemented | Low priority
 type | Partially implemented | In progress
 autoGenHTML | Deprecated | Next major update
@@ -189,18 +189,19 @@ Reference files for creating custom visuals can be found in the "references" fol
 ##### v0.2.0:
 * Features:
     * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
-    * New extensions for type 0: multiple pages can now be visible at once
+    * New extensions for type "static": multiple pages can now be visible at once
     * Swiping can now be throttled
     * Different types of user interactions can be individually throttled or not throttled
     * Swiping now supports moving multiple pages at once
     * Type settings is no longer defined by arbitrary integers, now uses names (strings) instead
     * Improved documentation
     * Swiping has been optimized for large page counts
+    * Support for multiple carousels on one page
     * New settings (refer to documentation above for descriptions):
-      * static_showPages
-      * static_pageSpacing
-      * static_pageSpacingUnits
-      * static_spacingMode
+      * showPages
+      * pageSpacing
+      * pageSpacingUnits
+      * spacingMode
       * transition_timingFunction
       * throttle_swipe
       * throttle_keys
