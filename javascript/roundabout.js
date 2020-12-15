@@ -3,7 +3,7 @@
 INTENDED FEATURES:
 
 3 TYPES
-⚠ Normal (including full-screen and multiview)
+⚠ Normal
 ✖ Stack
 ✖ Fade
 
@@ -15,9 +15,7 @@ SPECS (NORMAL)
     continually get smaller by set percentage
 
 SPECS (STACK)
-✖ Left subtype
-✖ Right subtype
-✖ Both subtype
+✖ Can determine direction
 ✖ Can have a parallax effect
 
 SPECS (FADE)
@@ -27,14 +25,6 @@ HAS AUTOSCROLL
 ✔ Scrolls over an interval
 ✔ Pauses on interaction or hover
 ✔ Can go either direction
-
-HTML
-✔ Can be auto-genned
-✖ Can be custom
-✔ Includes default styles
-✖ Can overwrite or create new styles
-✖ When not autogenning, classes can be specified to use
-   instead of the default class names
 
 PAGES
 ✔ Can be as simple as an image URL
@@ -97,6 +87,10 @@ RELEASES
 // To do:
 /*
 -  Scroll By setting
+-  Define HTML and CSS per page
+-  Size falloff
+-  Minimal pages support
+-  Page size setting
 */
 
 let roundabout = {
@@ -111,7 +105,6 @@ class Roundabout {
       this.pages = settings.pages ? settings.pages : {};
       this.id = settings.id ? settings.id : ".myCarousel";
 		this.type = settings.type ? settings.type : "normal";
-		// this.subtype = (settings.subtype) ? settings.subtype : 0;
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenCSS = (settings.autoGenCSS === false) ? settings.autoGenCSS : true;
 		// this.navigation = (settings.navigation == false) ? settings.navigation : true;
@@ -143,7 +136,8 @@ class Roundabout {
 		this.sizeFalloff = settings.sizeFalloff ? settings.sizeFalloff : 0;
 		this.pageSpacing = settings.pageSpacing ? settings.pageSpacing : 0;
 		this.pageSpacingUnits = settings.pageSpacingUnits ? settings.pageSpacingUnits : "px";
-		this.spacingMode = settings.spacingMode ? settings.spacingMode : "fill";
+      this.spacingMode = settings.spacingMode ? settings.spacingMode : "fill";
+      this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
 
 		// this.direction = (settings.direction) ? settings.direction : 0;
 
@@ -295,7 +289,33 @@ class Roundabout {
 					.classList.remove("roundabout-has-no-transition");
 			}
 		}
-	}
+   }
+   
+   rightPressed(parent, isKey) {
+      parent.resetScrollTimeout();
+      if (parent.scrollIsAllowed && !parent.dragging) {
+         parent.scrollRight();
+         if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
+            parent.scrollIsAllowed = false;
+            setTimeout(() => {
+               parent.scrollIsAllowed = true;
+            }, parent.throttle_timeout);
+         }
+      }
+   }
+   
+   leftPressed(parent, isKey) {
+      parent.resetScrollTimeout();
+      if (parent.scrollIsAllowed && !parent.dragging) {
+         parent.scrollLeft();
+         if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
+            parent.scrollIsAllowed = false;
+            setTimeout(() => {
+               parent.scrollIsAllowed = true;
+            }, parent.throttle_timeout);
+         }
+      }
+   }
 
 	/*
    ==================================================================================================================
@@ -886,32 +906,6 @@ class Roundabout {
 		console.log(this.orderedPages);
 	}
 }
-
-Roundabout.prototype.rightPressed = function (parent, isKey) {
-	parent.resetScrollTimeout();
-	if (parent.scrollIsAllowed && !parent.dragging) {
-		parent.scrollRight();
-		if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
-			parent.scrollIsAllowed = false;
-			setTimeout(() => {
-				parent.scrollIsAllowed = true;
-			}, parent.throttle_timeout);
-		}
-	}
-};
-
-Roundabout.prototype.leftPressed = function (parent, isKey) {
-	parent.resetScrollTimeout();
-	if (parent.scrollIsAllowed && !parent.dragging) {
-		parent.scrollLeft();
-		if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
-			parent.scrollIsAllowed = false;
-			setTimeout(() => {
-				parent.scrollIsAllowed = true;
-			}, parent.throttle_timeout);
-		}
-	}
-};
 
 // ASSISTIVE FUNCTIONS
 
