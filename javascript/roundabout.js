@@ -205,87 +205,90 @@ class Roundabout {
    */
 
 	// Scrolls right. Does not handle actual clicks
-	scrollRight(valuesOnly = false) {
+	scrollRight(valuesOnly = false, scrollDistance) {
 		if (
 			(this.onPage >= this.pages.length - this.showPages && !this.infinite) ||
 			(this.onPage >= this.pages.length - this.showPages && !this.infinite && this.type == "normal")
 		) {
 			return;
-		} else {
-			this.positions.unshift(this.positions.pop());
+      } else {
+         for (let a = 0; a < scrollDistance; a++) {
+            this.positions.unshift(this.positions.pop());
+         }
+			
 			if (!valuesOnly) {
-				for (let a = 0; a < this.pages.length; a++) {
-               document.querySelector(".roundabout-"+this.uniqueId+"-page-" + a).style.left = this.positions[a];
+				for (let b = 0; b < this.pages.length; b++) {
+               document.querySelector(`.roundabout-${this.uniqueId}-page-` + b).style.left = this.positions[b];
 				}
          }
 
 			let currentMoving = this.orderedPages[0];
-			document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-no-transition");
-         document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-transition");
+			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
+         document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
          
 			setTimeout(() => {
             if (!valuesOnly) {
-					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-no-transition");
-					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-transition");
+					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
+					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				}
 			}, this.transition);
 			this.onPage++;
 			this.orderedPages.push(this.orderedPages.shift());
 			if (valuesOnly) {
 				document
-					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
 					.classList.add("roundabout-has-no-transition");
 				document
-					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex + 1])
-					.classList.remove("roundabout-has-transition");
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
+					.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 			} else {
             document
-               .querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages + this.showPages])
-					.classList.add("roundabout-has-transition");
+               .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
+					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				document
-					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages + this.showPages])
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
 					.classList.remove("roundabout-has-no-transition");
 			}
       } 
 	}
 
 	// Scrolls left. Does not handle actual clicks
-	scrollLeft(valuesOnly = false) {
+	scrollLeft(valuesOnly = false, scrollDistance) {
 		if (this.onPage <= 0 && !this.infinite) {
 			return;
 		} else {
 			this.positions.push(this.positions.shift());
 			if (!valuesOnly) {
 				for (let a = 0; a < this.pages.length; a++) {
-					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + a).style.left = this.positions[a];
+					document.querySelector(`.roundabout-${this.uniqueId}-page-` + a).style.left = this.positions[a];
 				}
          }
          
          let currentMoving = this.orderedPages[this.orderedPages.length - 1];
-			document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-no-transition");
-         document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-transition");
+			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
+         document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 
 			setTimeout(() => {
 				if (!valuesOnly) {
-					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.remove("roundabout-has-no-transition");
-					document.querySelector(".roundabout-"+this.uniqueId+"-page-" + currentMoving).classList.add("roundabout-has-transition");
+					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
+					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				}
 			}, this.transition);
 			this.onPage--;
 			this.orderedPages.unshift(this.orderedPages.pop());
 			if (valuesOnly) {
 				document
-					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex - 1])
 					.classList.add("roundabout-has-no-transition");
 				document
-					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.orderedPagesMainIndex - 1])
-					.classList.remove("roundabout-has-transition");
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex - 1])
+					.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 			} else {
             document
-               .querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages - 1])
-					.classList.add("roundabout-has-transition");
+               .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
+					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				document
-					.querySelector(".roundabout-"+this.uniqueId+"-page-" + this.orderedPages[this.leftSidePages - 1])
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
 					.classList.remove("roundabout-has-no-transition");
 			}
 		}
@@ -294,7 +297,7 @@ class Roundabout {
    rightPressed(parent, isKey) {
       parent.resetScrollTimeout();
       if (parent.scrollIsAllowed && !parent.dragging) {
-         parent.scrollRight();
+         parent.scrollRight(false, this.scrollBy);
          if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
             parent.scrollIsAllowed = false;
             setTimeout(() => {
@@ -307,7 +310,7 @@ class Roundabout {
    leftPressed(parent, isKey) {
       parent.resetScrollTimeout();
       if (parent.scrollIsAllowed && !parent.dragging) {
-         parent.scrollLeft();
+         parent.scrollLeft(false, this.scrollBy);
          if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
             parent.scrollIsAllowed = false;
             setTimeout(() => {
@@ -397,8 +400,8 @@ class Roundabout {
 
 		// remove transitions to prevent elastic-y movement         
       for (let a = 0; a < parent.pages.length; a++) {
-         document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + a).classList.remove("roundabout-has-transition");
-         document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + a).classList.add("roundabout-has-no-transition");
+         document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+         document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.add("roundabout-has-no-transition");
       }
 
 		// log the first touch position
@@ -475,7 +478,7 @@ class Roundabout {
 				parent.canSnap = false;
          }
          
-         let totalSize = document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth + parent.pageSpacing;
+         let totalSize = document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth + parent.pageSpacing;
 
 			if (dist >= totalSize) {
 				if (parent.dx > 0) {
@@ -489,7 +492,7 @@ class Roundabout {
             // sets the position of all necessary pages
             for (let a = 0; a < parent.showPages + 2; a++) {
                let pos = a + parent.leftSidePages - 1;
-               document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
+               document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
             }
 			}
 		}
@@ -499,9 +502,9 @@ class Roundabout {
 	tEnd(event, parent) {
       for (let a = 0; a <= parent.showPages + 2; a++) {
          let pos = a + parent.leftSidePages - 1;
-         if (!document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).classList.contains("roundabout-has-transition")) {
-            document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).classList.add("roundabout-has-transition");
-			   document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + parent.orderedPages[pos]).classList.remove("roundabout-has-no-transition");
+         if (!document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).classList.contains(`roundabout-${this.uniqueId}-has-transition`)) {
+            document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+			   document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).classList.remove("roundabout-has-no-transition");
          }
       }
 		parent.dragging = false;
@@ -564,7 +567,7 @@ class Roundabout {
 		}
       
       for (let a = 0; a < parent.pages.length; a++) {
-			document.querySelector(".roundabout-"+parent.uniqueId+"-page-" + a).style.left = parent.positions[a];
+			document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).style.left = parent.positions[a];
 		}
 	}
 
@@ -656,8 +659,8 @@ class Roundabout {
 	}
 
 	// Generates the required CSS. Seperate from default styling
-	internalCSS() {
-		let css = `.roundabout-has-transition{transition:${
+   internalCSS() {
+		let css = `.roundabout-${this.uniqueId}-has-transition{transition:${
 			this.transition / 1000
 		}s; transition-timing-function:${
 			this.transition_timingFunction
@@ -683,7 +686,7 @@ class Roundabout {
 		let baseHeight = 100;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
-			newPage.classList.add("roundabout-"+this.uniqueId+"-page-" + a, "roundabout-page", "roundabout-has-transition");
+			newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this.uniqueId}-has-transition`);
 			let newPos;
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and #pages
@@ -747,7 +750,7 @@ class Roundabout {
 				newPage.style.backgroundSize = "cover";
 				newPage.style.backgroundPosition = "center center";
 			}
-			document.querySelector(".roundabout-"+this.uniqueId+"-page-wrap").appendChild(newPage);
+			document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).appendChild(newPage);
 			this.orderedPages.push(a);
 			this.positions.push(newPos);
 		}
@@ -764,7 +767,7 @@ class Roundabout {
 
 		// position each page
 		for (let c = 0; c < this.positions.length; c++) {
-			document.querySelector(".roundabout-"+this.uniqueId+"-page-" + c).style.left = this.positions[c];
+			document.querySelector(`.roundabout-${this.uniqueId}-page-` + c).style.left = this.positions[c];
 		}
 	}
 
@@ -814,10 +817,10 @@ class Roundabout {
 
 	// Sets all required eventListeners for the carousel
 	setListeners() {
-		document.querySelector(".roundabout-"+this.uniqueId+"-btn-r").addEventListener("click", () => {
+		document.querySelector(`.roundabout-${this.uniqueId}-btn-r`).addEventListener("click", () => {
 			this.rightPressed(this);
 		});
-		document.querySelector(".roundabout-"+this.uniqueId+"-btn-l").addEventListener("click", () => {
+		document.querySelector(`.roundabout-${this.uniqueId}-btn-l`).addEventListener("click", () => {
 			this.leftPressed(this);
 		});
 		if (this.keys) {
@@ -842,14 +845,14 @@ class Roundabout {
 			});
 		}
 		if (this.swipe) {
-			document.querySelector(".roundabout-"+this.uniqueId+"-swipe-overlay").addEventListener(
+			document.querySelector(`.roundabout-${this.uniqueId}-swipe-overlay`).addEventListener(
 				"mousedown",
 				(event) => {
 					this.tStart(event, this);
 				},
 				false
 			);
-			document.querySelector(".roundabout-"+this.uniqueId+"-swipe-overlay").addEventListener(
+			document.querySelector(`.roundabout-${this.uniqueId}-swipe-overlay`).addEventListener(
 				"touchstart",
 				(event) => {
 					this.setTouch(event, this);
@@ -875,7 +878,7 @@ class Roundabout {
       }
       if (roundabout.usedIds.includes(this.id)) {
          this.displayError(
-            "The selector " + this.id + " is already in use by another carousel. Please use a unique selector."
+            `The selector ${this.id} is already in use by another carousel. Please use a unique selector.`
          );
          return false;
       } else {
