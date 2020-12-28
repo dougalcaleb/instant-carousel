@@ -83,7 +83,6 @@ pages | Array | Contains unnamed objects containing elements for each correspond
 id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel. Accepts both IDs and classes. | ".myCarousel"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"stack": pages slide in from the sides to overlap the current page and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
-autoGenHTML | Boolean | Determines whether the required HTML structure will be automatically generated inside the element specified by the "parent" setting, or if it will be created by the user. A reference for custom HTML will be available soon. | true
 autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS will be available soon. | true
 radioBubbles | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
 visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
@@ -164,7 +163,6 @@ offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-autoGenHTML | Deprecated | Next major update
 autoGenCSS | Partially implemented | In progress
 radioBubbles | Not implemented | Upcoming
 
