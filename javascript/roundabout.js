@@ -68,14 +68,38 @@ EXTRA
 ✖ Presets for bubble visuals
 ✖ Which keys to include in navigation can be specified
 
+SCRIPTING (after v1.0)
+✖ onScroll(callback, includeAutoscroll)
+✖ onScrollEnd(callback, includeAutoscroll)
+✖ onDragStart(callback)
+✖ onDragEnd(callback)
+✖ onScrollRight(callback, includeAutoscroll)
+✖ onScrollLeft(callback, includeAutoscroll)
+✖ onScrollRightEnd(callback, includeAutoscroll)
+✖ onScrollLeftEnd(callback, includeAutoscroll)
+
 RELEASES
 -  Each release has a full file and a .min file
 -  Replace variables names with extremely short versions and letters where possible
 -  Create a gitignored key file to easily replace variable names
+-  Update checker with Github API (https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-releases)
 */
 
-//? IDEAS:
+//? WORKING ON:
 /*
+Refactoring Positions
+
+- Generate new structure --DONE
+- Scroll accepts it --PARTIAL (right works)
+- Swipe accepts it --PARTIAL (zoomies)
+- scrollBy works --PARTIAL (instant transitions)
+
+
+
+- bug: rightmost page gets instant transition for 2x transition
+
+to do:
+- apply positions at the end of the transition, calculate them manually during transition to stop instant movement
 
 */
 
@@ -87,6 +111,7 @@ RELEASES
 // To do:
 /*
 -  Scroll By setting
+! Refactor scrollRight and scrollLeft
 -  Define HTML and CSS per page
 -  Size falloff
 -  Minimal pages support
@@ -94,19 +119,19 @@ RELEASES
 */
 
 let roundabout = {
-   on: -1,
-   usedIds: []
+	on: -1,
+	usedIds: [],
 };
 
 class Roundabout {
 	constructor(settings) {
 		// User defined (commented out = not used yet)
 
-      this.pages = settings.pages ? settings.pages : {};
-      this.id = settings.id ? settings.id : ".myCarousel";
+		this.pages = settings.pages ? settings.pages : {};
+		this.id = settings.id ? settings.id : ".myCarousel";
 		this.type = settings.type ? settings.type : "normal";
 		this.parent = settings.parent ? settings.parent : "body";
-		this.autoGenCSS = (settings.autoGenCSS === false) ? settings.autoGenCSS : true;
+		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
 		// this.navigation = (settings.navigation == false) ? settings.navigation : true;
 		this.autoScroll = settings.autoScroll ? settings.autoScroll : false;
 		this.autoScroll_speed = settings.autoScroll_speed ? settings.autoScroll_speed : 5000;
@@ -114,30 +139,29 @@ class Roundabout {
 		this.autoScroll_pauseOnHover = settings.autoScroll_pauseOnHover ? settings.autoScroll_pauseOnHover : false;
 		this.autoScroll_startAfter = settings.autoScroll_startAfter ? settings.autoScroll_startAfter : 5000;
 		this.autoScroll_direction = settings.autoScroll_direction ? settings.autoScroll_direction : "right";
-		this.transition = (settings.transition != undefined) ? settings.transition : 300;
+		this.transition = settings.transition != undefined ? settings.transition : 300;
 		this.transition_timingFunction = settings.transition_timingFunction ? settings.transition_timingFunction : "ease";
-		this.throttle = (settings.throttle === false) ? settings.throttle : true;
+		this.throttle = settings.throttle === false ? settings.throttle : true;
 		this.throttle_timeout = settings.throttle_timeout ? settings.throttle_timeout : 300;
 		this.throttle_matchTransition = settings.throttle_matchTransition ? settings.throttle_matchTransition : false;
-		this.throttle_keys = (settings.throttle_keys === false) ? settings.throttle_keys : true;
-		this.throttle_swipe = (settings.throttle_swipe === false) ? settings.throttle_swipe : true;
-		this.throttle_buttons = (settings.throttle_buttons === false) ? settings.throttle_buttons : true;
+		this.throttle_keys = settings.throttle_keys === false ? settings.throttle_keys : true;
+		this.throttle_swipe = settings.throttle_swipe === false ? settings.throttle_swipe : true;
+		this.throttle_buttons = settings.throttle_buttons === false ? settings.throttle_buttons : true;
 		// this.throttle_navigation = settings.throttle_navigation == false ? settings.throttle_navigation : true;
-		this.keys = (settings.keys === false) ? settings.keys : true;
-		this.infinite = (settings.infinite === false) ? settings.infinite : true;
-		this.swipe = (settings.swipe === false) ? settings.swipe : true;
+		this.keys = settings.keys === false ? settings.keys : true;
+		this.infinite = settings.infinite === false ? settings.infinite : true;
+		this.swipe = settings.swipe === false ? settings.swipe : true;
 		this.swipe_threshold = settings.swipe_threshold ? settings.swipe_threshold : 300;
 		this.swipe_multiplier = settings.swipe_multiplier ? settings.swipe_multiplier : 1;
-		this.swipe_resistance = (settings.swipe_resistance != undefined) ? settings.swipe_resistance : 0.95;
-		// this.rtl = (settings.rtl) ? settings.rtl : false;
+		this.swipe_resistance = settings.swipe_resistance != undefined ? settings.swipe_resistance : 0.95;
 
 		this.showPages = settings.showPages ? settings.showPages : 1;
 		this.enlargeCenter = settings.enlargeCenter ? settings.enlargeCenter : 100;
 		this.sizeFalloff = settings.sizeFalloff ? settings.sizeFalloff : 0;
 		this.pageSpacing = settings.pageSpacing ? settings.pageSpacing : 0;
 		this.pageSpacingUnits = settings.pageSpacingUnits ? settings.pageSpacingUnits : "px";
-      this.spacingMode = settings.spacingMode ? settings.spacingMode : "fill";
-      this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
+		this.spacingMode = settings.spacingMode ? settings.spacingMode : "fill";
+		this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
 
 		// this.direction = (settings.direction) ? settings.direction : 0;
 
@@ -146,9 +170,8 @@ class Roundabout {
 		// this.offsetUnits = (settings.offsetUnits) ? settings.offsetUnits : "px";
 
 		this.mobile = settings.mobile ? settings.mobile : {swipe_threshold: 50};
-      this.mobile_breakpoint = settings.mobile_breakpoint ? settings.mobile_breakpoint : 700;
-      this.visualPreset = settings.visualPreset ? settings.visualPreset : 0;
-      
+		this.mobile_breakpoint = settings.mobile_breakpoint ? settings.mobile_breakpoint : 700;
+		this.visualPreset = settings.visualPreset ? settings.visualPreset : 0;
 
 		// this.val = settings.val ? settings.val : default;
 		// this.val = (settings.val === false) ? settings.val : true;
@@ -161,12 +184,12 @@ class Roundabout {
 		this.positions = [];
 		this.orderedPagesMainIndex = 0;
 		this.scrollIsAllowed = true;
-      this.onPage = 0;
-      this.leftSidePages = 0;
-      this.uniqueId = (roundabout.on + 1);
-      // internal
-      this.allowInternalStyles = true;
-      this.allowInternalHTML = true;
+		this.onPage = 0;
+		// this.leftSidePages = 0;
+		this.uniqueId = roundabout.on + 1;
+		// internal
+		this.allowInternalStyles = true;
+		this.allowInternalHTML = true;
 		// swipe
 		this.sx = 0;
 		this.sy = 0;
@@ -204,56 +227,126 @@ class Roundabout {
    ==================================================================================================================
    */
 
-	// Scrolls right. Does not handle actual clicks
-	scrollRight(valuesOnly = false, scrollDistance) {
-		if (
-			(this.onPage >= this.pages.length - this.showPages && !this.infinite) ||
-			(this.onPage >= this.pages.length - this.showPages && !this.infinite && this.type == "normal")
-		) {
-			return;
-      } else {
-         for (let a = 0; a < scrollDistance; a++) {
-            this.positions.unshift(this.positions.pop());
-         }
-			
-			if (!valuesOnly) {
-				for (let b = 0; b < this.pages.length; b++) {
-               document.querySelector(`.roundabout-${this.uniqueId}-page-` + b).style.left = this.positions[b];
-				}
-         }
+	/*
+   Ideal flow:
+   1. Check if scrolling is possible. If not, adjust as necessary to do as much as possible.
+   2. Adjust positions.
+   3a. If not values only, give correct classes to corresponding elements.
+   3b. If values only, skip class assignments
+   4. Animate if necessary
 
-			let currentMoving = this.orderedPages[0];
-			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
-         document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-         
-			setTimeout(() => {
-            if (!valuesOnly) {
-					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
-					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+   Notes:
+      -  For pages moving to places where the will NOT rest, calculate the position rather than pulling from storage.
+
+   
+   */
+
+	scrollNext(distance, valuesOnly = false) {
+		console.log("scrolling");
+		if (this.onPage >= this.pages.length - this.showPages && !this.infinite && this.type == "normal") {
+			return;
+		} else if (distance > this.pages.length - this.showPages - this.onPage && !this.infinite) {
+			let remainingDistance = this.pages.length - this.showPages - this.onPage;
+			this.scrollNext(remainingDistance, valuesOnly);
+		} else {
+			for (let a = 0; a < distance; a++) {
+				this.positions.unshift(this.positions.pop());
+
+				// move pages to the visually correct place
+				for (let b = 0; b < this.showPages + 1; b++) {
+					let newPos = this.calculatePosition(b, "next");
+					// console.log("New position for page", b, "is", newPos, ". Will move to ", this.positions[b], "after transition is complete");
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).style.left = newPos;
+					// const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
 				}
-			}, this.transition);
-			this.onPage++;
-			this.orderedPages.push(this.orderedPages.shift());
-			if (valuesOnly) {
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
-					.classList.add("roundabout-has-no-transition");
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
-					.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-			} else {
-            document
-               .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
-					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
-					.classList.remove("roundabout-has-no-transition");
+
+				this.orderedPages.push(this.orderedPages.shift());
+
+				// once transition has ended, place pages where they should be for the next movement
+				setTimeout(() => {
+					// console.log("        positionpages");
+					this.positionPages(!valuesOnly);
+				}, this.transition);
+
+				/*
+            click ->
+            calculate positions and move visible ->
+            timeout ->
+            move all (no transitions) ->
+            set transtions correctly ->
+            END
+            */
+
+				// document
+				// 	.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[this.orderedPages.length - 1]}`)
+				// 	.classList.add(`roundabout-${this.uniqueId}-has-transition`);
+				// document
+				// 	.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[this.orderedPages.length - 1]}`)
+				// 	.classList.remove(`roundabout-has-no-transition`);
+
+				// setTimeout(() => {
+				// 	document
+				// 		.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`)
+				// 		.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.add(`roundabout-has-no-transition`);
+				// 	const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).offsetWidth;
+				// }, (this.transition / distance) * a);
 			}
-      } 
+
+			this.onPage += distance;
+		}
 	}
 
+	// Scrolls right. Does not handle actual clicks
+	// scrollNext(valuesOnly = false, scrollDistance) {
+	// 	if (
+	// 		(this.onPage >= this.pages.length - this.showPages && !this.infinite) ||
+	// 		(this.onPage >= this.pages.length - this.showPages && !this.infinite && this.type == "normal")
+	// 	) {
+	// 		return;
+	//    } else {
+	//       for (let a = 0; a < scrollDistance; a++) {
+	//          this.positions.unshift(this.positions.pop());
+	//       }
+
+	// 		if (!valuesOnly) {
+	// 			for (let b = 0; b < this.pages.length; b++) {
+	//             document.querySelector(`.roundabout-${this.uniqueId}-page-` + b).style.left = this.positions[b];
+	// 			}
+	//       }
+
+	// 		let currentMoving = this.orderedPages[0];
+	// 		document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
+	//       document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+
+	// 		setTimeout(() => {
+	//          if (!valuesOnly) {
+	// 				document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
+	// 				document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+	// 			}
+	// 		}, this.transition);
+	// 		this.onPage++;
+	// 		this.orderedPages.push(this.orderedPages.shift());
+	// 		if (valuesOnly) {
+	// 			document
+	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
+	// 				.classList.add("roundabout-has-no-transition");
+	// 			document
+	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
+	// 				.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+	// 		} else {
+	//          document
+	//             .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
+	// 				.classList.add(`roundabout-${this.uniqueId}-has-transition`);
+	// 			document
+	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
+	// 				.classList.remove("roundabout-has-no-transition");
+	// 		}
+	//    }
+	// }
+
 	// Scrolls left. Does not handle actual clicks
-	scrollLeft(valuesOnly = false, scrollDistance) {
+	scrollPrevious(valuesOnly = false, scrollDistance) {
 		if (this.onPage <= 0 && !this.infinite) {
 			return;
 		} else {
@@ -262,16 +355,18 @@ class Roundabout {
 				for (let a = 0; a < this.pages.length; a++) {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-` + a).style.left = this.positions[a];
 				}
-         }
-         
-         let currentMoving = this.orderedPages[this.orderedPages.length - 1];
+			}
+
+			let currentMoving = this.orderedPages[this.orderedPages.length - 1];
 			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
-         document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 
 			setTimeout(() => {
 				if (!valuesOnly) {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
-					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+					document
+						.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving)
+						.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				}
 			}, this.transition);
 			this.onPage--;
@@ -284,41 +379,43 @@ class Roundabout {
 					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex - 1])
 					.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 			} else {
-            document
-               .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
+				document
+					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
 					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				document
 					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
 					.classList.remove("roundabout-has-no-transition");
 			}
 		}
-   }
-   
-   rightPressed(parent, isKey) {
-      parent.resetScrollTimeout();
-      if (parent.scrollIsAllowed && !parent.dragging) {
-         parent.scrollRight(false, this.scrollBy);
-         if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
-            parent.scrollIsAllowed = false;
-            setTimeout(() => {
-               parent.scrollIsAllowed = true;
-            }, parent.throttle_timeout);
-         }
-      }
-   }
-   
-   leftPressed(parent, isKey) {
-      parent.resetScrollTimeout();
-      if (parent.scrollIsAllowed && !parent.dragging) {
-         parent.scrollLeft(false, this.scrollBy);
-         if ((parent.throttle && parent.throttle_buttons && !isKey) || (parent.throttle && parent.throttle_keys && isKey)) {
-            parent.scrollIsAllowed = false;
-            setTimeout(() => {
-               parent.scrollIsAllowed = true;
-            }, parent.throttle_timeout);
-         }
-      }
-   }
+	}
+
+	rightPressed(parent, from) {
+		let sd = from == "snap" ? 1 : parent.scrollBy;
+		parent.resetScrollTimeout();
+		if (parent.scrollIsAllowed && !parent.dragging) {
+			parent.scrollNext(sd);
+			if ((parent.throttle && parent.throttle_buttons && from != "key") || (parent.throttle && parent.throttle_keys && from == "key")) {
+				parent.scrollIsAllowed = false;
+				setTimeout(() => {
+					parent.scrollIsAllowed = true;
+				}, parent.throttle_timeout);
+			}
+		}
+	}
+
+	leftPressed(parent, from) {
+		let sd = from == "snap" ? 1 : parent.scrollBy;
+		parent.resetScrollTimeout();
+		if (parent.scrollIsAllowed && !parent.dragging) {
+			parent.scrollPrevious(sd);
+			if ((parent.throttle && parent.throttle_buttons && from != "key") || (parent.throttle && parent.throttle_keys && from == "key")) {
+				parent.scrollIsAllowed = false;
+				setTimeout(() => {
+					parent.scrollIsAllowed = true;
+				}, parent.throttle_timeout);
+			}
+		}
+	}
 
 	/*
    ==================================================================================================================
@@ -356,9 +453,9 @@ class Roundabout {
 	// Called at each interval, determines how to scroll
 	scrollAuto(parent) {
 		if (parent.autoScroll_direction.toLowerCase() == "left" && parent.scrollIsAllowed) {
-			parent.scrollLeft();
+			parent.scrollPrevious(this.scrollBy);
 		} else if (parent.autoScroll_direction.toLowerCase() == "right" && parent.scrollIsAllowed) {
-			parent.scrollRight();
+			parent.scrollNext(this.scrollBy);
 		}
 	}
 
@@ -398,11 +495,11 @@ class Roundabout {
 		parent.dragging = true;
 		parent.swipeFrom = parent.orderedPages[parent.orderedPagesMainIndex];
 
-		// remove transitions to prevent elastic-y movement         
-      for (let a = 0; a < parent.pages.length; a++) {
-         document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-         document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.add("roundabout-has-no-transition");
-      }
+		// remove transitions to prevent elastic-y movement
+		for (let a = 0; a < parent.pages.length; a++) {
+			document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+			document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.add("roundabout-has-no-transition");
+		}
 
 		// log the first touch position
 		parent.lastMove = event.touches;
@@ -476,37 +573,44 @@ class Roundabout {
 				parent.canSnap = true;
 			} else {
 				parent.canSnap = false;
-         }
-         
-         let totalSize = document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth + parent.pageSpacing;
+			}
+
+			let totalSize =
+				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth +
+				parent.pageSpacing;
 
 			if (dist >= totalSize) {
 				if (parent.dx > 0) {
-					parent.scrollLeft(true);
+					parent.scrollPrevious(1, true);
 				} else if (parent.dx < 0) {
-					parent.scrollRight(true);
+					parent.scrollNext(1, true);
 				}
 				parent.sx = parent.x / 1;
 				parent.dx = 0;
-         } else {
-            // sets the position of all necessary pages
-            for (let a = 0; a < parent.showPages + 2; a++) {
-               let pos = a + parent.leftSidePages - 1;
-               document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).style.left = "calc((" + parent.positions[parent.orderedPages[pos]] + ") + " + parent.dx + "px)";
-            }
+			} else {
+				// sets the position of all necessary pages
+				for (let a = 0; a < parent.showPages + 2; a++) {
+					document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).style.left =
+						"calc((" + parent.positions[parent.orderedPages[a]] + ") + " + parent.dx + "px)";
+				}
 			}
 		}
 	}
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
-      for (let a = 0; a <= parent.showPages + 2; a++) {
-         let pos = a + parent.leftSidePages - 1;
-         if (!document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).classList.contains(`roundabout-${this.uniqueId}-has-transition`)) {
-            document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).classList.add(`roundabout-${this.uniqueId}-has-transition`);
-			   document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[pos]).classList.remove("roundabout-has-no-transition");
-         }
-      }
+		for (let a = 0; a <= parent.showPages + 2; a++) {
+			if (
+				!document
+					.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
+					.classList.contains(`roundabout-${this.uniqueId}-has-transition`)
+			) {
+				document
+					.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
+					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
+				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).classList.remove("roundabout-has-no-transition");
+			}
+		}
 		parent.dragging = false;
 
 		// log the end of touch position
@@ -560,15 +664,19 @@ class Roundabout {
 	snap(al, dir, parent) {
 		if (al) {
 			if (dir > 0) {
-				parent.leftPressed(parent);
+				parent.leftPressed(parent, "snap");
 			} else if (dir < 0) {
-				parent.rightPressed(parent);
+				parent.rightPressed(parent, "snap");
 			}
 		}
-      
-      for (let a = 0; a < parent.pages.length; a++) {
-			document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).style.left = parent.positions[a];
+
+		for (let a = 0; a < parent.showPages + 2; a++) {
+			document
+				.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
+				.classList.add(`roundabout-${parent.uniqueId}-has-transition`);
+			document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).classList.remove(`roundabout-has-no-transition`);
 		}
+		parent.positionPages();
 	}
 
 	// reset all variables to defaults to avoid strange movements when a new touch starts
@@ -605,9 +713,9 @@ class Roundabout {
    */
 
 	// Generates the default HTML structure
-   defaultHTML() {
-      let newCarousel = document.createElement("DIV");
-      let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>
+	defaultHTML() {
+		let newCarousel = document.createElement("DIV");
+		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>
                   <div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap"></div>
                   <div class="roundabout-${this.uniqueId}-nav roundabout-nav">
                      <div class="roundabout-${this.uniqueId}-btn-r roundabout-btn-r roundabout-nav-btn">
@@ -622,50 +730,64 @@ class Roundabout {
                      </div>
                      <div class="roundabout-nav-wrap"></div>
                   </div>`;
-      newCarousel.innerHTML = html;
-      newCarousel.classList.add("roundabout-wrapper");
-      if (this.id.split("")[0] == "#") {
-         let newId = this.id.split("");
-         newId.shift();
-         newId = newId.join("");
-         newCarousel.setAttribute("id", newId);
-      } else {
-         let newClass = this.id.split("");
-         newClass.shift();
-         newClass = newClass.join("");
-         newCarousel.classList.add(newClass);
-      }
+		newCarousel.innerHTML = html;
+		newCarousel.classList.add("roundabout-wrapper");
+		if (this.id.split("")[0] == "#") {
+			let newId = this.id.split("");
+			newId.shift();
+			newId = newId.join("");
+			newCarousel.setAttribute("id", newId);
+		} else {
+			let newClass = this.id.split("");
+			newClass.shift();
+			newClass = newClass.join("");
+			newCarousel.classList.add(newClass);
+		}
 		document.querySelector(this.parent).appendChild(newCarousel);
 	}
 
 	// Generates the default CSS styling
-   defaultCSS() {
-      let css;
-      let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute}.roundabout-wrapper{position:relative}`;
-      switch (this.visualPreset) {
-         case 0:
-            css = `.roundabout-wrapper{height:80vh;margin-top:30px}.roundabout-nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-nav-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
-            break;
-      }
+	defaultCSS() {
+		let css;
+		let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;overflow:hidden;position:absolute}.roundabout-wrapper{position:relative}`;
+		switch (this.visualPreset) {
+			case 0:
+				css = `.roundabout-wrapper{height:80vh;margin-top:30px}.roundabout-nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-nav-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
+				break;
+		}
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
 		newStyle.innerHTML = css;
-      document.getElementsByTagName("head")[0].appendChild(newStyle);
+		document.getElementsByTagName("head")[0].appendChild(newStyle);
 
-      let newReqStyle = document.createElement("STYLE");
+		let newReqStyle = document.createElement("STYLE");
 		newReqStyle.setAttribute("type", "text/css");
 		newReqStyle.innerHTML = requiredCss;
 		document.getElementsByTagName("head")[0].appendChild(newReqStyle);
 	}
 
 	// Generates the required CSS. Seperate from default styling
-   internalCSS() {
-		let css = `.roundabout-${this.uniqueId}-has-transition{transition:${
-			this.transition / 1000
-		}s; transition-timing-function:${
-			this.transition_timingFunction
-		}} .roundabout-has-no-transition{transition:0s;} .carousel-error-message {position:relative;margin: auto;left: 0;right: 0;top: 0;bottom: 0;border-radius:5px;border:3px solid black;background: white;
-      text-align:center;font-family:sans-serif;width:30%;}`;
+	internalCSS() {
+		let css = `.roundabout-${this.uniqueId}-has-transition {
+         transition:${this.transition / 1000}s; 
+         transition-timing-function:${this.transition_timingFunction}} 
+         .roundabout-has-no-transition{
+            transition:none;} 
+         .roundabout-hidden-page {
+            visibility: hidden}
+         .carousel-error-message {
+            position:relative;
+            margin:auto;
+            left:0;
+            right:0;
+            top:0;
+            bottom:0;
+            border-radius:5px;
+            border:3px solid black;
+            background: white;
+            text-align:center;
+            font-family:sans-serif;
+            width:30%;}`;
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
 		newStyle.innerHTML = css;
@@ -680,9 +802,10 @@ class Roundabout {
    ==================================================================================================================
    */
 
-	// Create each new page from the this.pages array and append to the parent element
+	// Create each new page from the pages array and append to the parent element
 	generatePages() {
-      this.leftSidePages = Math.floor((this.pages.length - this.showPages) / 2);
+		//? this.leftSidePages = Math.floor((this.pages.length - this.showPages) / 2);
+
 		let baseHeight = 100;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
@@ -690,47 +813,64 @@ class Roundabout {
 			let newPos;
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and #pages
+
+				let iteratorMod, iteratorMod2;
 				if (this.spacingMode == "evenly") {
-					let pageWidth =
-						"calc((100% - " +
-						(this.showPages + 1) * this.pageSpacing +
-						this.pageSpacingUnits +
-						")/" +
-						this.showPages +
-						")";
-					newPage.style.width = pageWidth;
-					newPos =
-						"calc((((100% - " +
-						(this.showPages + 1) * this.pageSpacing +
-						this.pageSpacingUnits +
-						") / " +
-						this.showPages +
-						") * " +
-						(a - this.leftSidePages) +
-						") + " +
-						(this.pageSpacing * (a - this.leftSidePages + 1) + this.pageSpacingUnits) +
-						")";
+					iteratorMod = 1;
+					iteratorMod2 = 0;
 				} else {
-					let pageWidth =
-						"calc((100% - " +
-						(this.showPages - 1) * this.pageSpacing +
-						this.pageSpacingUnits +
-						") / " +
-						this.showPages +
-						")";
-					newPage.style.width = pageWidth;
+					iteratorMod = -1;
+					iteratorMod2 = -1;
+				}
+
+				let pageWidth =
+					"calc((100% - " + (this.showPages + iteratorMod) * this.pageSpacing + this.pageSpacingUnits + ") / " + this.showPages + ")";
+				newPage.style.width = pageWidth;
+				if (a <= this.showPages + 2) {
 					newPos =
 						"calc((((100% - " +
-						(this.showPages - 1) * this.pageSpacing +
+						(this.showPages + iteratorMod) * this.pageSpacing +
 						this.pageSpacingUnits +
 						") / " +
 						this.showPages +
 						") * " +
-						(a - this.leftSidePages) +
+						(a - 1) +
 						") + " +
-						(this.pageSpacing * (a - this.leftSidePages) + this.pageSpacingUnits) +
+						(this.pageSpacing * (a + iteratorMod2) + this.pageSpacingUnits) +
 						")";
 				}
+
+				// if (this.spacingMode == "evenly") {
+				//    let pageWidth = "calc((100% - " + (this.showPages + 1) * this.pageSpacing + this.pageSpacingUnits + ")/" + this.showPages + ")";
+				// 	newPage.style.width = pageWidth;
+				// 	if (a <= this.showPages + 2) {
+				// 		newPos =
+				// 			"calc((((100% - " +
+				// 			(this.showPages + 1) * this.pageSpacing + this.pageSpacingUnits +
+				// 			") / " +
+				// 			this.showPages +
+				// 			") * " +
+				// 			(a - 1) +
+				// 			") + " +
+				// 			(this.pageSpacing * a + this.pageSpacingUnits) +
+				// 			")";
+				// 	}
+				// } else {
+				//    let pageWidth = "calc((100% - " + (this.showPages - 1) * this.pageSpacing + this.pageSpacingUnits + ") / " + this.showPages + ")";
+				//    newPage.style.width = pageWidth;
+				//    if (a <= this.showPages + 2) {
+				//       newPos =
+				//          "calc((((100% - " +
+				//          (this.showPages - 1) * this.pageSpacing + this.pageSpacingUnits +
+				//          ") / " +
+				//          this.showPages +
+				//          ") * " +
+				//          (a - 1) +
+				//          ") + " +
+				//          (this.pageSpacing * a + this.pageSpacingUnits) +
+				//          ")";
+				//    }
+				// }
 			} else {
 				newPage.style.width = "100%";
 			}
@@ -747,39 +887,46 @@ class Roundabout {
 			// Give a background image (if supplied)
 			if (this.pages[a].background_image) {
 				newPage.style.background = "url(" + this.pages[a].background_image + ")";
+				//! make changeable
 				newPage.style.backgroundSize = "cover";
 				newPage.style.backgroundPosition = "center center";
 			}
 			document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).appendChild(newPage);
 			this.orderedPages.push(a);
-			this.positions.push(newPos);
-		}
 
-		this.orderedPagesMainIndex = this.leftSidePages / 1;
-
-		// Alter the positional arrays as necessary
-		for (let b = 1; b <= this.leftSidePages; b++) {
-			this.orderedPages.unshift(this.orderedPages.pop());
-			if (b > 0) {
-				this.positions.push(this.positions.shift());
+			if (a <= this.showPages + 1) {
+				this.positions.push(newPos);
+			} else {
+				this.positions.push("0px");
 			}
 		}
 
-		// position each page
-		for (let c = 0; c < this.positions.length; c++) {
-			document.querySelector(`.roundabout-${this.uniqueId}-page-` + c).style.left = this.positions[c];
-		}
+		this.positions.push(this.positions.shift());
+
+		this.positionPages();
 	}
 
 	// If mobile replacement values are provided, the defaults are overridden when the screen is assumed to be that of a mobile
 	replaceWithMobile() {
+		let mobileL = 0;
+		for (let key in this.mobile) {
+			if (this.mobile.hasOwnProperty(key)) {
+				mobileL++;
+			}
+		}
+		let settingsL = 0;
+		for (let key in this) {
+			if (this.hasOwnProperty(key)) {
+				settingsL++;
+			}
+		}
 		if (screen.width <= this.mobile_breakpoint) {
 			let c = Object.entries(this);
 			let cm = Object.entries(this.mobile);
-			for (let a = 0; a < obj_length(this.mobile); a++) {
-				for (let b = 0; b < obj_length(this); b++) {
+			for (let a = 0; a < mobileL; a++) {
+				for (let b = 0; b < settingsL; b++) {
 					if (c[b][0] == cm[a][0]) {
-						this["" + c[b][0]] = cm[a][1];
+						this[c[b][0].toString()] = cm[a][1];
 					}
 				}
 			}
@@ -791,8 +938,8 @@ class Roundabout {
 		if (this.allowInternalStyles) {
 			this.internalCSS();
 		}
-      if (this.checkForErrors()) {
-         roundabout.on++;
+		if (this.checkForErrors()) {
+			roundabout.on++;
 			if (this.allowInternalHTML) {
 				this.defaultHTML();
 			}
@@ -827,10 +974,10 @@ class Roundabout {
 			document.addEventListener("keydown", (event) => {
 				switch (event.key) {
 					case "ArrowLeft":
-						this.leftPressed(this, true);
+						this.leftPressed(this, "key");
 						break;
 					case "ArrowRight":
-						this.rightPressed(this, true);
+						this.rightPressed(this, "key");
 						break;
 				}
 			});
@@ -869,58 +1016,150 @@ class Roundabout {
 				"For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages."
 			);
 			return false;
-      }
-      if (this.id.split("")[0] !== "#" && this.id.split("")[0] !== ".") {
-         this.displayError(
-            "An invalid selector prefix was given for the parent. Valid selector prefixes are '#' for IDs or '.' for classes."
-         );
-         return false;
-      }
-      if (roundabout.usedIds.includes(this.id)) {
-         this.displayError(
-            `The selector ${this.id} is already in use by another carousel. Please use a unique selector.`
-         );
-         return false;
-      } else {
-         roundabout.usedIds.push(this.id);
-      }
+		}
+		if (this.id.split("")[0] !== "#" && this.id.split("")[0] !== ".") {
+			this.displayError("An invalid selector prefix was given for the parent. Valid selector prefixes are '#' for IDs or '.' for classes.");
+			return false;
+		}
+		if (roundabout.usedIds.includes(this.id)) {
+			this.displayError(`The selector ${this.id} is already in use by another carousel. Please use a unique selector.`);
+			return false;
+		} else {
+			roundabout.usedIds.push(this.id);
+		}
 		return true;
 	}
 
-   // creates error message box
+	/*
+   ==================================================================================================================
+
+   UTILITY
+   
+   ==================================================================================================================
+   */
+
+	/*
+   click ->
+   calculate positions and move visible ->
+   timeout during move ->
+   move all (no transitions) ->
+   set transtions correctly ->
+   END
+   */
+
+	// after a transition, places each page where they should be for the next transiton
+	positionPages(setTransitions = true) {
+      for (let a = 0; a < this.positions.length; a++) {
+         document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
+			if (this.positions[a] == "0px") {
+				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
+				if (setTransitions) {
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
+					// const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+				}
+			} else {
+				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
+				if (setTransitions) {
+					setTimeout(() => {
+					   document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+					   document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-has-no-transition`);
+					   // const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+					}, 0);
+				}
+			}
+		}
+		// console.log("    position done");
+	}
+
+	// returns the position that a page will move to. Not necessarily the final position after transition
+	calculatePosition(page, direction) {
+		if (direction == "next" || direction == "n") {
+		} else if (direction == "previous" || direction == "p") {
+			page++;
+		}
+
+		let iteratorMod, iteratorMod2;
+		if (this.spacingMode == "evenly") {
+			iteratorMod = 1;
+			iteratorMod2 = 0;
+		} else {
+			iteratorMod = -1;
+			iteratorMod2 = -1;
+		}
+
+		let newPos =
+			"calc((((100% - " +
+			(this.showPages + iteratorMod) * this.pageSpacing +
+			this.pageSpacingUnits +
+			") / " +
+			this.showPages +
+			") * " +
+			(page - 1) +
+			") + " +
+			(this.pageSpacing * (page + iteratorMod2) + this.pageSpacingUnits) +
+			")";
+
+		return newPos;
+	}
+
+	/*
+   ==================================================================================================================
+
+   OTHER
+   
+   ==================================================================================================================
+   */
+
+	// creates error message box
 	displayError(message, title = "Error:") {
 		let em = document.createElement("DIV");
 		em.classList.add("carousel-error-message");
 		let t = document.createElement("SPAN");
 		t.innerHTML = title;
 		t.style.color = "red";
-      t.style.fontWeight = "bold";
-      em.appendChild(t);
-      let m = document.createElement("SPAN");
-      m.innerHTML = message;
-      let lb = document.createElement("BR");
-      em.appendChild(lb);
-      em.appendChild(m);
-      document.querySelector(this.parent).appendChild(em);
-      console.error(message);
+		t.style.fontWeight = "bold";
+		em.appendChild(t);
+		let m = document.createElement("SPAN");
+		m.innerHTML = message;
+		let lb = document.createElement("BR");
+		em.appendChild(lb);
+		em.appendChild(m);
+		document.querySelector(this.parent).appendChild(em);
+		console.error(message);
 	}
 
 	debug_output() {
 		console.log(this.orderedPages);
+		console.log(this.positions);
 	}
 }
 
 // ASSISTIVE FUNCTIONS
 
-function obj_length(obj) {
-	if (typeof obj !== "object") {
-		return "INVALID PARAMETERS";
-	}
-	let length = 0;
-	for (let key in obj) {
-		if (obj.hasOwnProperty(key)) {
-			length++;
-		}
-	}
-	return length;
-}
+// function obj_length(obj) {
+// 	if (typeof obj !== "object") {
+// 		return "INVALID PARAMETERS";
+// 	}
+// 	let length = 0;
+// 	for (let key in obj) {
+// 		if (obj.hasOwnProperty(key)) {
+// 			length++;
+// 		}
+// 	}
+// 	return length;
+// }
+
+
+
+
+
+
+//? debug helper
+document.addEventListener("keydown", function (e) {
+   switch (e.key) {
+      case "a":
+         console.log(c1.orderedPages);
+         break;
+   }
+});
