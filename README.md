@@ -129,7 +129,6 @@ swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | t
 swipe_threshold | Integer | Defines the distance in px that the user must swipe or drag to advance to the next page instead of snapping back to the current one. | 300
 swipe_multiplier | Integer | Defines the multiplier for swipe interactions. | 1
 swipe_resistance | Number | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1, where 0 is no resistance and 1 is full resistance. | 0.95
-rtl | Boolean | Determines if the carousel will be laid out right-to-left. | false
 
 <br/>
 
@@ -164,7 +163,6 @@ direction | Not implemented | Upcoming
 offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
-rtl | Not implemented | Low priority
 type | Partially implemented | In progress
 autoGenHTML | Deprecated | Next major update
 autoGenCSS | Partially implemented | In progress
