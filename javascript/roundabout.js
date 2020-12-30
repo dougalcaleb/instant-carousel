@@ -263,10 +263,11 @@ class Roundabout {
 				this.orderedPages.push(this.orderedPages.shift());
 
 				// once transition has ended, place pages where they should be for the next movement
-				setTimeout(() => {
-					// console.log("        positionpages");
-					this.positionPages(!valuesOnly);
-				}, this.transition);
+				// setTimeout(() => {
+				// 	// console.log("        positionpages");
+					
+            // }, this.transition);
+            this.positionPages(!valuesOnly);
 
 				/*
             click ->
@@ -292,7 +293,6 @@ class Roundabout {
 				// 	const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).offsetWidth;
 				// }, (this.transition / distance) * a);
 			}
-
 			this.onPage += distance;
 		}
 	}
