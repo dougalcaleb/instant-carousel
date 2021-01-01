@@ -29,7 +29,7 @@ The focus of this plugin is quick and easy setup, with the option to customize e
 
 To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file to contain your settings, linked *after* ```roundabout.js```.
 
-Initialization is done with a simple object constructor, passed an object containing all of your settings:
+Initialization is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified by extensions.
 ```javascript
 new Roundabout =({
    // include your settings here...
@@ -66,12 +66,14 @@ new Roundabout = ({
    // other settings...
 });
 new Roundabout = ({
-   id: ".carouselNumberTwo",
+   id: "#carouselNumberTwo",
    // other settings...
 });
 ```
 
 Included is a ```settings.js``` file, which contains a simple template for a new Roundabout constructor.
+
+Settings do not need to be declared in any specific order
 
 <br/>
 
@@ -114,10 +116,10 @@ autoScroll_pauseOnHover | Boolean | Determines if autoscroll will be paused when
 autoScroll_startAfter | Integer | Time in miliseconds for the first automatic scroll to happen after the page loads. | 5000
 autoScroll_direction | String | Defines the direction for the autoscroll to scroll. Either "right" or "left". | "right"
 transition | Integer | Time in miliseconds to transition between pages when scrolling. | 300
-transition_timingFunction | String | Defines the timing function for transitions between pages. Can be any valid CSS timing value. | "ease"
+transition_timingFunction | String | Defines the timing function for transitions between pages. Can be any valid CSS3 timing value. | "ease"
 throttle | Boolean | Determines if user interactions will be throttled. | true
 throttle_timeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300
-throttle_matchTransition | Boolean | Determines if the "throttle_timeout" setting will match the "transition" setting. Overrides "throttle_timeout". | false
+throttle_matchTransition | Boolean | Determines if the "throttle_timeout" setting will match the "transition" setting. Overrides "throttle_timeout". | true
 throttle_keys | Boolean | Determines if user interaction from keyboard keys are throttled. | true
 throttle_buttons | Boolean | Determines if user interaction from left and right buttons are throttled. | true
 throttle_swipe | Boolean | Determines if user interaction from swiping is throttled. | true
@@ -135,7 +137,7 @@ swipe_resistance | Number | Defines the resistance when attempting to drag past 
 
 Setting | Type | Description | Default | Applies to Type(s)
 --------|------|-------------|---------|-------------------
-showPages | Integer | Defines the number of pages to show. | 1 | "normal", "fade"
+pagesToShow | Integer | Defines the number of pages to show. | 1 | "normal", "fade"
 enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | "normal"
 sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | "normal"
 pageSpacing | Integer | Defines the space between pages. | 0 | "normal", "fade"
@@ -152,18 +154,13 @@ offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "p
 
 Setting | Status | Time Frame
 --------|--------|-----------
-showPages | Almost finished | In progress
 enlargeCenter | Not implemented | Upcoming
 sizeFalloff | Not implemented | Upcoming
-pageSpacing | Almost finished | In progress
-pageSpacingUnits | Almost finished | In progress
-spacingMode | Almost finished | In progress
 direction | Not implemented | Upcoming
 offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-autoGenCSS | Partially implemented | In progress
 radioBubbles | Not implemented | Upcoming
 
 <br/>
@@ -182,6 +179,9 @@ Reference files for creating custom visuals can be found in the "references" fol
 [v0.2.0](https://github.com/dougalcaleb/instant-carousel#v020)
 [v0.1.0](https://github.com/dougalcaleb/instant-carousel#v010)
 
+#### v1.0.0:
+
+
 ##### v0.2.0:
 * Features:
     * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
@@ -194,7 +194,7 @@ Reference files for creating custom visuals can be found in the "references" fol
     * Swiping has been optimized for large page counts
     * Support for multiple carousels on one page
     * New settings (refer to documentation above for descriptions):
-      * showPages
+      * pagesToShow
       * pageSpacing
       * pageSpacingUnits
       * spacingMode
