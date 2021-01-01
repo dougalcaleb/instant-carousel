@@ -249,9 +249,6 @@ class Roundabout {
 			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 			this.scrollNext(remainingDistance, valuesOnly);
 		} else {
-         //< for (let a = 0; a < distance; a++) {
-            // console.log(" -- NEW DISTANCE IT -- ");
-            // console.log("");
          for (let a = 0; a < distance; a++) {
             this.positions.unshift(this.positions.pop());
          }
@@ -280,7 +277,6 @@ class Roundabout {
                   let beforeMove = this.calcPagePos(b+1);
                   document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).style.left = beforeMove;
                }
-               // console.log("beforeMove with a distance of", distance, "for page", this.orderedPages[b], "is", beforeMove);
                // flush to ensure instant transitions
                const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).offsetWidth;
                // reinstate transitions
@@ -290,56 +286,16 @@ class Roundabout {
                }
 					let afterMove = this.calcPagePos(b - distance + 1);
                document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).style.left = afterMove;
-               // console.log("afterMove with a distance of", distance, "for page", this.orderedPages[b], "is", afterMove);
-               // console.log("");
-
 				}
 
             for (let c = 0; c < distance; c++) {
                this.orderedPages.push(this.orderedPages.shift());
             }
-
-				// once transition has ended, place pages where they should be for the next movement
-				// setTimeout(() => {
-				// 	// console.log("        positionpages");
-					
-            // }, this.transition);
-
-
-
-            // this.positionPages(!valuesOnly);
-
          this.swipeIsAllowed = false;
          setTimeout(() => {
             this.swipeIsAllowed = true;
          }, this.throttle_timeout);
 
-
-
-				/*
-            click ->
-            calculate positions and move visible ->
-            timeout ->
-            move all (no transitions) ->
-            set transtions correctly ->
-            END
-            */
-
-				// document
-				// 	.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[this.orderedPages.length - 1]}`)
-				// 	.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-				// document
-				// 	.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[this.orderedPages.length - 1]}`)
-				// 	.classList.remove(`roundabout-has-no-transition`);
-
-				// setTimeout(() => {
-				// 	document
-				// 		.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`)
-				// 		.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.add(`roundabout-has-no-transition`);
-				// 	const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).offsetWidth;
-				// }, (this.transition / distance) * a);
-         //> }
          if (valuesOnly) {
             this.positionPages(!valuesOnly);
          } else {
@@ -352,97 +308,7 @@ class Roundabout {
 		}
 	}
 
-	// Scrolls right. Does not handle actual clicks
-	// scrollNext(valuesOnly = false, scrollDistance) {
-	// 	if (
-	// 		(this.onPage >= this.pages.length - this.pagesToShow && !this.infinite) ||
-	// 		(this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal")
-	// 	) {
-	// 		return;
-	//    } else {
-	//       for (let a = 0; a < scrollDistance; a++) {
-	//          this.positions.unshift(this.positions.pop());
-	//       }
-
-	// 		if (!valuesOnly) {
-	// 			for (let b = 0; b < this.pages.length; b++) {
-	//             document.querySelector(`.roundabout-${this.uniqueId}-page-` + b).style.left = this.positions[b];
-	// 			}
-	//       }
-
-	// 		let currentMoving = this.orderedPages[0];
-	// 		document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
-	//       document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-
-	// 		setTimeout(() => {
-	//          if (!valuesOnly) {
-	// 				document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
-	// 				document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add(`roundabout-${this.uniqueId}-has-transition`);
-	// 			}
-	// 		}, this.transition);
-	// 		this.onPage++;
-	// 		this.orderedPages.push(this.orderedPages.shift());
-	// 		if (valuesOnly) {
-	// 			document
-	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
-	// 				.classList.add("roundabout-has-no-transition");
-	// 			document
-	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex + 1])
-	// 				.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-	// 		} else {
-	//          document
-	//             .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.pagesToShow])
-	// 				.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-	// 			document
-	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.pagesToShow])
-	// 				.classList.remove("roundabout-has-no-transition");
-	// 		}
-	//    }
-	// }
-
-	// Scrolls left. Does not handle actual clicks
-	scrollPrevious(valuesOnly = false, scrollDistance) {
-		if (this.onPage <= 0 && !this.infinite) {
-			return;
-		} else {
-			this.positions.push(this.positions.shift());
-			if (!valuesOnly) {
-				for (let a = 0; a < this.pages.length; a++) {
-					document.querySelector(`.roundabout-${this.uniqueId}-page-` + a).style.left = this.positions[a];
-				}
-			}
-
-			let currentMoving = this.orderedPages[this.orderedPages.length - 1];
-			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.add("roundabout-has-no-transition");
-			document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-
-			setTimeout(() => {
-				if (!valuesOnly) {
-					document.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving).classList.remove("roundabout-has-no-transition");
-					document
-						.querySelector(`.roundabout-${this.uniqueId}-page-` + currentMoving)
-						.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-				}
-			}, this.transition);
-			this.onPage--;
-			this.orderedPages.unshift(this.orderedPages.pop());
-			if (valuesOnly) {
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex - 1])
-					.classList.add("roundabout-has-no-transition");
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.orderedPagesMainIndex - 1])
-					.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-			} else {
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
-					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-				document
-					.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages - 1])
-					.classList.remove("roundabout-has-no-transition");
-			}
-		}
-	}
+	scrollPrevious() {}
 
 	rightPressed(parent, from) {
       let sd = from == "snap" ? 1 : parent.scrollBy;
@@ -661,17 +527,11 @@ class Roundabout {
 
       if (!parent.canSnap) {
          for (let a = 0; a <= parent.pagesToShow + 2; a++) {
-            //< if (
-            //    !document
-            //       .querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
-            //       .classList.contains(`roundabout-${this.uniqueId}-has-transition`)
-            // ) {
-               document
-                  .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`)
-                  .classList.add(`roundabout-${this.uniqueId}-has-transition`);
-               document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`).classList.remove("roundabout-has-no-transition");
-            //> }
-         }
+				document
+					.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`)
+					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
+				document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`).classList.remove("roundabout-has-no-transition");
+			}
          setTimeout(() => {
             document
                   .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`)
@@ -742,13 +602,6 @@ class Roundabout {
 				parent.rightPressed(parent, "snap");
 			}
 		}
-
-		// for (let a = 0; a < parent.pagesToShow + 2; a++) {
-		// 	document
-		// 		.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
-		// 		.classList.add(`roundabout-${parent.uniqueId}-has-transition`);
-		// 	document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).classList.remove(`roundabout-has-no-transition`);
-		// }
 		parent.positionPages(true, true);
 	}
 
@@ -877,8 +730,6 @@ class Roundabout {
 
 	// Create each new page from the pages array and append to the parent element
 	generatePages() {
-		//? this.leftSidePages = Math.floor((this.pages.length - this.pagesToShow) / 2);
-
 		let baseHeight = 100;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
@@ -889,8 +740,7 @@ class Roundabout {
          }
 			let newPos;
 			if (this.type == "normal") {
-				// Set width and positions based on mode: calculated to accomodate spacing and #pages
-
+				// Set width and positions based on mode: calculated to accomodate spacing and number of pages
 				let iteratorMod, iteratorMod2;
 				if (this.spacingMode == "evenly") {
 					iteratorMod = 1;
@@ -1176,26 +1026,6 @@ class Roundabout {
 		console.log(this.positions);
 	}
 }
-
-// ASSISTIVE FUNCTIONS
-
-// function obj_length(obj) {
-// 	if (typeof obj !== "object") {
-// 		return "INVALID PARAMETERS";
-// 	}
-// 	let length = 0;
-// 	for (let key in obj) {
-// 		if (obj.hasOwnProperty(key)) {
-// 			length++;
-// 		}
-// 	}
-// 	return length;
-// }
-
-
-
-
-
 
 //? debug helper
 document.addEventListener("keydown", function (e) {
