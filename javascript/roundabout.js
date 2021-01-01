@@ -526,22 +526,22 @@ class Roundabout {
       }, parent.throttle_timeout);
 
       if (!parent.canSnap) {
-         for (let a = 0; a <= parent.pagesToShow + 2; a++) {
+         for (let a = 0; a < parent.pagesToShow + 2; a++) {
 				document
 					.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`)
 					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`).classList.remove("roundabout-has-no-transition");
 			}
-         setTimeout(() => {
-            document
-                  .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`)
-                  .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-            document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`).classList.add("roundabout-has-no-transition");
-            document
-                  .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`)
-                  .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-               document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`).classList.add("roundabout-has-no-transition");
-         }, parent.transition);
+         // setTimeout(() => {
+         //    document
+         //          .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`)
+         //          .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+         //    document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`).classList.add("roundabout-has-no-transition");
+         //    document
+         //          .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`)
+         //          .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+         //       document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`).classList.add("roundabout-has-no-transition");
+         // }, parent.transition);
       }
 		
 		parent.dragging = false;
@@ -733,11 +733,11 @@ class Roundabout {
 		let baseHeight = 100;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
-         newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page");
-         // newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this.uniqueId}-has-transition`);
-         if (a != this.pagesToShow && a != this.pages.length - 1) {
-            newPage.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-         }
+         // newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page");
+         newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this.uniqueId}-has-transition`);
+         // if (a != this.pagesToShow && a != this.pages.length - 1) {
+         //    newPage.classList.add(`roundabout-${this.uniqueId}-has-transition`);
+         // }
 			let newPos;
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and number of pages
@@ -934,24 +934,35 @@ class Roundabout {
    
    ==================================================================================================================
    */
+   //! problem:
+   /*
+   - page has no "hidden-page" class, so is constantly visible
+   
+   - always the off-screen right page when done with transition
+   */
 
 	// after a transition, places each page where they should be for the next transiton
    positionPages(setTransitions = true, ignoreVisible = false) {
       for (let a = 0; a < this.positions.length; a++) {
-         if (setTransitions) {
-            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
-            const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
-         }
+         // if (setTransitions) {
+         //    document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+         //    document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
+         //    const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+         // }
 			if (this.positions[a] == "0px") {
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
-				// if (setTransitions) {
-				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
-            //    const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
-            // }
+				if (setTransitions) {
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
+               const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+            }
             document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
          } else {
+            if (a == this.orderedPages[this.pagesToShow]) {
+               document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
+               const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+            }
             document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
             document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
             if (setTransitions) {
@@ -962,7 +973,6 @@ class Roundabout {
 					      document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-has-no-transition`);
                      const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
                   }
-                  
 					}, 0);
 				}
 			}
