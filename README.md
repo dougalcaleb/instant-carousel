@@ -1,5 +1,3 @@
-![Roundabout](/images/logos/r-small.png)
-
 #### This plugin is unfinished but is in active development. Check back for updates.
 
 <br/>
@@ -73,7 +71,7 @@ new Roundabout = ({
 
 Included is a ```settings.js``` file, which contains a simple template for a new Roundabout constructor.
 
-Settings do not need to be declared in any specific order
+Settings do not need to be declared in any specific order.
 
 <br/>
 
