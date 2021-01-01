@@ -77,45 +77,45 @@ SCRIPTING (after v1.0)
 ✖ onScrollLeft(callback, includeAutoscroll)
 ✖ onScrollRightEnd(callback, includeAutoscroll)
 ✖ onScrollLeftEnd(callback, includeAutoscroll)
+-  Change page stuff?
 
 RELEASES
--  Each release has a full file and a .min file
+-  Each release has a .min file
 -  Replace variables names with extremely short versions and letters where possible
 -  Create a gitignored key file to easily replace variable names
 -  Update checker with Github API (https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-releases)
+
+Try to find a way to add "expansions": additional featuresets included in seperate files to reduce the total load size
+-  scripting
+-  presets pack
 */
 
 //? WORKING ON:
 /*
-Refactoring Positions
-
-- Generate new structure --DONE
-- Scroll accepts it --PARTIAL (right works)
-- Swipe accepts it --PARTIAL (zoomies)
-- scrollBy works --PARTIAL (instant transitions)
-
-
-
-- bug: rightmost page gets instant transition for 2x transition
-
-to do:
-- apply positions at the end of the transition, calculate them manually during transition to stop instant movement
-
+-  Finishing scrollNext refactor
+   -  Mostly done
+   -  Some glitches with scrollBy > 1
+   -  Swipe works, except on end, a page is not given the correct classes before moving
 */
 
 //! KNOWN ISSUES:
 /*
--  3 pages has visual glitches
+-  Extreme hitching
 */
 
 // To do:
 /*
--  Scroll By setting
-! Refactor scrollRight and scrollLeft
--  Define HTML and CSS per page
+-  Per-page HTML & CSS
 -  Size falloff
 -  Minimal pages support
 -  Page size setting
+*/
+
+//? FOR v1.0:
+/*
+✖ Finish "Normal" type
+✖ Bubbles
+✖ Enough error checkers
 */
 
 let roundabout = {
@@ -134,16 +134,16 @@ class Roundabout {
 		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
 		// this.navigation = (settings.navigation == false) ? settings.navigation : true;
 		this.autoScroll = settings.autoScroll ? settings.autoScroll : false;
-		this.autoScroll_speed = settings.autoScroll_speed ? settings.autoScroll_speed : 5000;
-		this.autoScroll_timeout = settings.autoScroll_timeout ? settings.autoScroll_timeout : 15000;
+		this.autoScroll_speed = (settings.autoScroll_speed >= 0) ? settings.autoScroll_speed : 5000;
+		this.autoScroll_timeout = (settings.autoScroll_timeout >= 0) ? settings.autoScroll_timeout : 15000;
 		this.autoScroll_pauseOnHover = settings.autoScroll_pauseOnHover ? settings.autoScroll_pauseOnHover : false;
-		this.autoScroll_startAfter = settings.autoScroll_startAfter ? settings.autoScroll_startAfter : 5000;
+      this.autoScroll_startAfter = (settings.autoScroll_startAfter >= 0) ? settings.autoScroll_startAfter : 5000;
 		this.autoScroll_direction = settings.autoScroll_direction ? settings.autoScroll_direction : "right";
-		this.transition = settings.transition != undefined ? settings.transition : 300;
+		this.transition = (settings.transition >= 0) ? settings.transition : 300;
 		this.transition_timingFunction = settings.transition_timingFunction ? settings.transition_timingFunction : "ease";
-		this.throttle = settings.throttle === false ? settings.throttle : true;
-		this.throttle_timeout = settings.throttle_timeout ? settings.throttle_timeout : 300;
-		this.throttle_matchTransition = settings.throttle_matchTransition ? settings.throttle_matchTransition : false;
+		this.throttle = (settings.throttle === false) ? settings.throttle : true;
+		this.throttle_timeout = (settings.throttle_timeout >= 0) ? settings.throttle_timeout : 300;
+		this.throttle_matchTransition = settings.throttle_matchTransition ? settings.throttle_matchTransition : true;
 		this.throttle_keys = settings.throttle_keys === false ? settings.throttle_keys : true;
 		this.throttle_swipe = settings.throttle_swipe === false ? settings.throttle_swipe : true;
 		this.throttle_buttons = settings.throttle_buttons === false ? settings.throttle_buttons : true;
@@ -151,11 +151,11 @@ class Roundabout {
 		this.keys = settings.keys === false ? settings.keys : true;
 		this.infinite = settings.infinite === false ? settings.infinite : true;
 		this.swipe = settings.swipe === false ? settings.swipe : true;
-		this.swipe_threshold = settings.swipe_threshold ? settings.swipe_threshold : 300;
+		this.swipe_threshold = (settings.swipe_threshold >= 0) ? settings.swipe_threshold : 300;
 		this.swipe_multiplier = settings.swipe_multiplier ? settings.swipe_multiplier : 1;
-		this.swipe_resistance = settings.swipe_resistance != undefined ? settings.swipe_resistance : 0.95;
+		this.swipe_resistance = (settings.swipe_resistance >= 0) ? settings.swipe_resistance : 0.95;
 
-		this.showPages = settings.showPages ? settings.showPages : 1;
+		this.pagesToShow = settings.pagesToShow ? settings.pagesToShow : 1;
 		this.enlargeCenter = settings.enlargeCenter ? settings.enlargeCenter : 100;
 		this.sizeFalloff = settings.sizeFalloff ? settings.sizeFalloff : 0;
 		this.pageSpacing = settings.pageSpacing ? settings.pageSpacing : 0;
@@ -235,39 +235,86 @@ class Roundabout {
    3b. If values only, skip class assignments
    4. Animate if necessary
 
-   Notes:
-      -  For pages moving to places where the will NOT rest, calculate the position rather than pulling from storage.
-
+   flusher:
+   const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
    
    */
 
-	scrollNext(distance, valuesOnly = false) {
-		console.log("scrolling");
-		if (this.onPage >= this.pages.length - this.showPages && !this.infinite && this.type == "normal") {
+   // Scrolls to the next page. Does not handle clicks or keypresses
+   scrollNext(distance, valuesOnly = false, setBefore = true) {
+      console.log("moving", distance);
+		if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
 			return;
-		} else if (distance > this.pages.length - this.showPages - this.onPage && !this.infinite) {
-			let remainingDistance = this.pages.length - this.showPages - this.onPage;
+		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
+			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 			this.scrollNext(remainingDistance, valuesOnly);
 		} else {
-			for (let a = 0; a < distance; a++) {
-				this.positions.unshift(this.positions.pop());
+         //< for (let a = 0; a < distance; a++) {
+            // console.log(" -- NEW DISTANCE IT -- ");
+            // console.log("");
+         for (let a = 0; a < distance; a++) {
+            this.positions.unshift(this.positions.pop());
+         }
+				
+            // move pages to the visually correct place
+            /*
+            find all that need to move (showing + scrollby)
+            remove transitions
+            move to before place
+            flush buffer to cancel transitions
+            reinstate transitions
+            move to correct positions
+            positionPages
+            end            
+            */
+         
+            for (let b = 0; b < this.pagesToShow + this.scrollBy; b++) {
+               // remove transitions
+               if (!valuesOnly) {
+                  document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+                  document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).classList.add(`roundabout-has-no-transition`);
+               }
+               document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).classList.remove(`roundabout-hidden-page`);
+               // move all to pre-transition positions
+               if (setBefore) {
+                  let beforeMove = this.calcPagePos(b+1);
+                  document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).style.left = beforeMove;
+               }
+               // console.log("beforeMove with a distance of", distance, "for page", this.orderedPages[b], "is", beforeMove);
+               // flush to ensure instant transitions
+               const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).offsetWidth;
+               // reinstate transitions
+               if (!valuesOnly) {
+                  document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+                  document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).classList.remove(`roundabout-has-no-transition`);
+               }
+					let afterMove = this.calcPagePos(b - distance + 1);
+               document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).style.left = afterMove;
+               // console.log("afterMove with a distance of", distance, "for page", this.orderedPages[b], "is", afterMove);
+               // console.log("");
 
-				// move pages to the visually correct place
-				for (let b = 0; b < this.showPages + 1; b++) {
-					let newPos = this.calculatePosition(b, "next");
-					// console.log("New position for page", b, "is", newPos, ". Will move to ", this.positions[b], "after transition is complete");
-					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[b]}`).style.left = newPos;
-					// const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
 				}
 
-				this.orderedPages.push(this.orderedPages.shift());
+            for (let c = 0; c < distance; c++) {
+               this.orderedPages.push(this.orderedPages.shift());
+            }
 
 				// once transition has ended, place pages where they should be for the next movement
 				// setTimeout(() => {
 				// 	// console.log("        positionpages");
 					
             // }, this.transition);
-            this.positionPages(!valuesOnly);
+
+
+
+            // this.positionPages(!valuesOnly);
+
+         this.swipeIsAllowed = false;
+         setTimeout(() => {
+            this.swipeIsAllowed = true;
+         }, this.throttle_timeout);
+
+
 
 				/*
             click ->
@@ -292,7 +339,15 @@ class Roundabout {
 				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.add(`roundabout-has-no-transition`);
 				// 	const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).offsetWidth;
 				// }, (this.transition / distance) * a);
-			}
+         //> }
+         if (valuesOnly) {
+            this.positionPages(!valuesOnly);
+         } else {
+            setTimeout(() => {
+               this.positionPages(!valuesOnly);
+            }, this.transition);
+         }
+         
 			this.onPage += distance;
 		}
 	}
@@ -300,8 +355,8 @@ class Roundabout {
 	// Scrolls right. Does not handle actual clicks
 	// scrollNext(valuesOnly = false, scrollDistance) {
 	// 	if (
-	// 		(this.onPage >= this.pages.length - this.showPages && !this.infinite) ||
-	// 		(this.onPage >= this.pages.length - this.showPages && !this.infinite && this.type == "normal")
+	// 		(this.onPage >= this.pages.length - this.pagesToShow && !this.infinite) ||
+	// 		(this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal")
 	// 	) {
 	// 		return;
 	//    } else {
@@ -336,10 +391,10 @@ class Roundabout {
 	// 				.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 	// 		} else {
 	//          document
-	//             .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
+	//             .querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.pagesToShow])
 	// 				.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 	// 			document
-	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.showPages])
+	// 				.querySelector(`.roundabout-${this.uniqueId}-page-` + this.orderedPages[this.leftSidePages + this.pagesToShow])
 	// 				.classList.remove("roundabout-has-no-transition");
 	// 		}
 	//    }
@@ -390,10 +445,11 @@ class Roundabout {
 	}
 
 	rightPressed(parent, from) {
-		let sd = from == "snap" ? 1 : parent.scrollBy;
+      let sd = from == "snap" ? 1 : parent.scrollBy;
+      let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scrollNext(sd);
+			parent.scrollNext(sd, false, sb);
 			if ((parent.throttle && parent.throttle_buttons && from != "key") || (parent.throttle && parent.throttle_keys && from == "key")) {
 				parent.scrollIsAllowed = false;
 				setTimeout(() => {
@@ -404,10 +460,11 @@ class Roundabout {
 	}
 
 	leftPressed(parent, from) {
-		let sd = from == "snap" ? 1 : parent.scrollBy;
+      let sd = from == "snap" ? 1 : parent.scrollBy;
+      let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scrollPrevious(sd);
+			parent.scrollPrevious(sd, false, sb);
 			if ((parent.throttle && parent.throttle_buttons && from != "key") || (parent.throttle && parent.throttle_keys && from == "key")) {
 				parent.scrollIsAllowed = false;
 				setTimeout(() => {
@@ -481,10 +538,8 @@ class Roundabout {
 		if (parent.throttle_swipe) {
 			if (parent.swipeIsAllowed) {
 				if (parent.throttle) {
-					parent.swipeIsAllowed = false;
-					setTimeout(() => {
-						parent.swipeIsAllowed = true;
-					}, parent.throttle_timeout);
+               parent.swipeIsAllowed = false;
+               console.log("Swipe is disallowed");
 				}
 			} else {
 				return;
@@ -546,7 +601,7 @@ class Roundabout {
 			} else if (parent.dx < 0) {
 				if (parent.infinite) {
 					parent.dx -= (parent.dx + document.querySelector(parent.parent).offsetWidth) * parent.swipe_resistance;
-				} else if (parent.pages.length - parent.showPages == parent.onPage) {
+				} else if (parent.pages.length - parent.pagesToShow == parent.onPage) {
 					if (parent.swipe_resistance == 1) {
 						parent.dx = 0;
 					} else {
@@ -589,7 +644,7 @@ class Roundabout {
 				parent.dx = 0;
 			} else {
 				// sets the position of all necessary pages
-				for (let a = 0; a < parent.showPages + 2; a++) {
+				for (let a = 0; a < parent.pagesToShow + 1; a++) {
 					document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).style.left =
 						"calc((" + parent.positions[parent.orderedPages[a]] + ") + " + parent.dx + "px)";
 				}
@@ -598,19 +653,37 @@ class Roundabout {
 	}
 
 	// called once when the touch or click ends
-	tEnd(event, parent) {
-		for (let a = 0; a <= parent.showPages + 2; a++) {
-			if (
-				!document
-					.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
-					.classList.contains(`roundabout-${this.uniqueId}-has-transition`)
-			) {
-				document
-					.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
-					.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).classList.remove("roundabout-has-no-transition");
-			}
-		}
+   tEnd(event, parent) {
+      setTimeout(() => {
+         parent.swipeIsAllowed = true;
+         console.log("Swipe is now allowed");
+      }, parent.throttle_timeout);
+
+      if (!parent.canSnap) {
+         for (let a = 0; a <= parent.pagesToShow + 2; a++) {
+            //< if (
+            //    !document
+            //       .querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
+            //       .classList.contains(`roundabout-${this.uniqueId}-has-transition`)
+            // ) {
+               document
+                  .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`)
+                  .classList.add(`roundabout-${this.uniqueId}-has-transition`);
+               document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`).classList.remove("roundabout-has-no-transition");
+            //> }
+         }
+         setTimeout(() => {
+            document
+                  .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`)
+                  .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+            document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`).classList.add("roundabout-has-no-transition");
+            document
+                  .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`)
+                  .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+               document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`).classList.add("roundabout-has-no-transition");
+         }, parent.transition);
+      }
+		
 		parent.dragging = false;
 
 		// log the end of touch position
@@ -670,13 +743,13 @@ class Roundabout {
 			}
 		}
 
-		for (let a = 0; a < parent.showPages + 2; a++) {
-			document
-				.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
-				.classList.add(`roundabout-${parent.uniqueId}-has-transition`);
-			document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).classList.remove(`roundabout-has-no-transition`);
-		}
-		parent.positionPages();
+		// for (let a = 0; a < parent.pagesToShow + 2; a++) {
+		// 	document
+		// 		.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a])
+		// 		.classList.add(`roundabout-${parent.uniqueId}-has-transition`);
+		// 	document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).classList.remove(`roundabout-has-no-transition`);
+		// }
+		parent.positionPages(true, true);
 	}
 
 	// reset all variables to defaults to avoid strange movements when a new touch starts
@@ -804,12 +877,16 @@ class Roundabout {
 
 	// Create each new page from the pages array and append to the parent element
 	generatePages() {
-		//? this.leftSidePages = Math.floor((this.pages.length - this.showPages) / 2);
+		//? this.leftSidePages = Math.floor((this.pages.length - this.pagesToShow) / 2);
 
 		let baseHeight = 100;
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
-			newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this.uniqueId}-has-transition`);
+         newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page");
+         // newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this.uniqueId}-has-transition`);
+         if (a != this.pagesToShow && a != this.pages.length - 1) {
+            newPage.classList.add(`roundabout-${this.uniqueId}-has-transition`);
+         }
 			let newPos;
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and #pages
@@ -824,53 +901,21 @@ class Roundabout {
 				}
 
 				let pageWidth =
-					"calc((100% - " + (this.showPages + iteratorMod) * this.pageSpacing + this.pageSpacingUnits + ") / " + this.showPages + ")";
+					"calc((100% - " + (this.pagesToShow + iteratorMod) * this.pageSpacing + this.pageSpacingUnits + ") / " + this.pagesToShow + ")";
 				newPage.style.width = pageWidth;
-				if (a <= this.showPages + 2) {
+				if (a <= this.pagesToShow + 2) {
 					newPos =
 						"calc((((100% - " +
-						(this.showPages + iteratorMod) * this.pageSpacing +
+						(this.pagesToShow + iteratorMod) * this.pageSpacing +
 						this.pageSpacingUnits +
 						") / " +
-						this.showPages +
+						this.pagesToShow +
 						") * " +
 						(a - 1) +
 						") + " +
 						(this.pageSpacing * (a + iteratorMod2) + this.pageSpacingUnits) +
 						")";
 				}
-
-				// if (this.spacingMode == "evenly") {
-				//    let pageWidth = "calc((100% - " + (this.showPages + 1) * this.pageSpacing + this.pageSpacingUnits + ")/" + this.showPages + ")";
-				// 	newPage.style.width = pageWidth;
-				// 	if (a <= this.showPages + 2) {
-				// 		newPos =
-				// 			"calc((((100% - " +
-				// 			(this.showPages + 1) * this.pageSpacing + this.pageSpacingUnits +
-				// 			") / " +
-				// 			this.showPages +
-				// 			") * " +
-				// 			(a - 1) +
-				// 			") + " +
-				// 			(this.pageSpacing * a + this.pageSpacingUnits) +
-				// 			")";
-				// 	}
-				// } else {
-				//    let pageWidth = "calc((100% - " + (this.showPages - 1) * this.pageSpacing + this.pageSpacingUnits + ") / " + this.showPages + ")";
-				//    newPage.style.width = pageWidth;
-				//    if (a <= this.showPages + 2) {
-				//       newPos =
-				//          "calc((((100% - " +
-				//          (this.showPages - 1) * this.pageSpacing + this.pageSpacingUnits +
-				//          ") / " +
-				//          this.showPages +
-				//          ") * " +
-				//          (a - 1) +
-				//          ") + " +
-				//          (this.pageSpacing * a + this.pageSpacingUnits) +
-				//          ")";
-				//    }
-				// }
 			} else {
 				newPage.style.width = "100%";
 			}
@@ -894,7 +939,7 @@ class Roundabout {
 			document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).appendChild(newPage);
 			this.orderedPages.push(a);
 
-			if (a <= this.showPages + 1) {
+			if (a <= this.pagesToShow + 1) {
 				this.positions.push(newPos);
 			} else {
 				this.positions.push("0px");
@@ -957,7 +1002,7 @@ class Roundabout {
 			this.boundEnd = this.execMU.bind(this);
 			this.boundCancel = this.execTC.bind(this);
 			if (this.type == "normal") {
-				this.swipe_threshold /= this.showPages;
+				this.swipe_threshold /= this.pagesToShow;
 			}
 		}
 	}
@@ -1011,10 +1056,8 @@ class Roundabout {
 
 	// prevents breakage by providing constraints and displaying an error message
 	checkForErrors() {
-		if (this.pages.length - this.showPages <= 1) {
-			this.displayError(
-				"For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages."
-			);
+		if (this.pages.length - this.pagesToShow <= 1) {
+			this.displayError("For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages.");
 			return false;
 		}
 		if (this.id.split("")[0] !== "#" && this.id.split("")[0] !== ".") {
@@ -1026,7 +1069,11 @@ class Roundabout {
 			return false;
 		} else {
 			roundabout.usedIds.push(this.id);
-		}
+      }
+      if (this.pagesToShow < this.scrollBy) {
+         this.displayError("'scrollBy' must be less than or equal to 'pagesToShow'.");
+         return false;
+      }
 		return true;
 	}
 
@@ -1038,47 +1085,42 @@ class Roundabout {
    ==================================================================================================================
    */
 
-	/*
-   click ->
-   calculate positions and move visible ->
-   timeout during move ->
-   move all (no transitions) ->
-   set transtions correctly ->
-   END
-   */
-
 	// after a transition, places each page where they should be for the next transiton
-	positionPages(setTransitions = true) {
+   positionPages(setTransitions = true, ignoreVisible = false) {
       for (let a = 0; a < this.positions.length; a++) {
-         document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
+         if (setTransitions) {
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
+            const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+         }
 			if (this.positions[a] == "0px") {
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
-				if (setTransitions) {
-					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-					document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
-					// const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
-				}
-			} else {
-				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
-				if (setTransitions) {
-					setTimeout(() => {
-					   document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-${this.uniqueId}-has-transition`);
-					   document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-has-no-transition`);
-					   // const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+				// if (setTransitions) {
+				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
+				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
+            //    const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+            // }
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
+         } else {
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
+            if (setTransitions) {
+               setTimeout(() => {
+                  if (a != this.orderedPages[this.pagesToShow] && a != this.orderedPages[this.orderedPages.length - 1]) {
+                     console.log("gave page", a, "transitions");
+                     document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-${this.uniqueId}-has-transition`);
+					      document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-has-no-transition`);
+                     const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
+                  }
+                  
 					}, 0);
 				}
 			}
 		}
-		// console.log("    position done");
 	}
 
-	// returns the position that a page will move to. Not necessarily the final position after transition
-	calculatePosition(page, direction) {
-		if (direction == "next" || direction == "n") {
-		} else if (direction == "previous" || direction == "p") {
-			page++;
-		}
-
+	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
+	calcPagePos(pagePos) {
 		let iteratorMod, iteratorMod2;
 		if (this.spacingMode == "evenly") {
 			iteratorMod = 1;
@@ -1090,14 +1132,14 @@ class Roundabout {
 
 		let newPos =
 			"calc((((100% - " +
-			(this.showPages + iteratorMod) * this.pageSpacing +
+			(this.pagesToShow + iteratorMod) * this.pageSpacing +
 			this.pageSpacingUnits +
 			") / " +
-			this.showPages +
+			this.pagesToShow +
 			") * " +
-			(page - 1) +
+			(pagePos - 1) +
 			") + " +
-			(this.pageSpacing * (page + iteratorMod2) + this.pageSpacingUnits) +
+			(this.pageSpacing * (pagePos + iteratorMod2) + this.pageSpacingUnits) +
 			")";
 
 		return newPos;
@@ -1159,7 +1201,7 @@ class Roundabout {
 document.addEventListener("keydown", function (e) {
    switch (e.key) {
       case "a":
-         console.log(c1.orderedPages);
+         console.log(c1.swipeIsAllowed);
          break;
    }
 });
