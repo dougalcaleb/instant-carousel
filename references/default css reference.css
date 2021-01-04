@@ -1,6 +1,6 @@
 /*
 This reference file is for use when creating a custom visual style. Values that should not be overridden are shown.
-This file is not linked to any other file.
+Nothing is dependant on the styles contained in this file. Edit or delete as you see fit.
 */
 
 
@@ -8,8 +8,9 @@ This file is not linked to any other file.
 	height: 80vh;
    margin-top: 30px;
    width: 100%;
+   overflow: hidden;
 
-   /* Cannot change: position */
+   /* Cannot change: position, overflow */
 }
 
 .roundabout-nav-btn svg { /* SVG arrows indide the navigational left and right buttons */
