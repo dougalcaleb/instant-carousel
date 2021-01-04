@@ -3,6 +3,8 @@
 <br/>
 
 ### Jump to:
+[Setup](#setup)
+
 [General Settings](#general-settings)
 
 [Pages Settings](#pages-settings)
@@ -21,16 +23,34 @@
 
 ### Setup
 
-Note: minified files will be available once development has matured past v1.0.
+The focus of this plugin is quick and easy setup, with the freedom to customize extensively.
 
-The focus of this plugin is quick and easy setup, with the option to customize extensively.
+To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file (or use the one provided) to contain your settings, linked *after* ```roundabout.js```. Using this method, your HTML should look like this:
+```html
+<!-- ... -->
 
-To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file to contain your settings, linked *after* ```roundabout.js```.
+   <script src="path to roundabout.js"></script>
+   <script src="path to roundabout-settings.js"></script>
+</body>
+</html>
+```
 
-Initialization is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified by extensions.
+Creating a new carousel is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified by extensions.
 ```javascript
 new Roundabout =({
    // include your settings here...
+});
+```
+
+Multiple carousels can be created on one page by invoking the constructor multiple times. Be sure to give them unique CSS selectors with the ```id``` property so you can interact with them individually in your CSS:
+```javascript
+new Roundabout = ({
+   id: "#carouselNumberOne",
+   // other settings...
+});
+new Roundabout = ({
+   id: "#carouselNumberTwo",
+   // other settings...
 });
 ```
 
@@ -57,19 +77,7 @@ new Roundabout = ({
 });
 ```
 
-Multiple carousels can be created on one page by invoking the constructor multiple times. Be sure to give them unique CSS selectors with the ```id``` property so you can interact with them individually in your CSS:
-```javascript
-new Roundabout = ({
-   id: "#carouselNumberOne",
-   // other settings...
-});
-new Roundabout = ({
-   id: "#carouselNumberTwo",
-   // other settings...
-});
-```
-
-Included is a ```settings.js``` file, which contains a simple template for a new Roundabout constructor.
+Included is a ```roundabout-settings.js``` file, which contains a simple template for a Roundabout carousel.
 
 Settings do not need to be declared in any specific order.
 
@@ -83,7 +91,7 @@ pages | Array | Contains unnamed objects containing elements for each correspond
 id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel. Accepts both IDs and classes. | ".myCarousel"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"stack": pages slide in from the sides to overlap the current page and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
-autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS will be available soon. | true
+autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS is given in the "references" folder. | true
 radioBubbles | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
 visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
 mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobile_breakpoint". | { <br/>swipe_threshold: 50 <br/>}
@@ -126,7 +134,7 @@ keys | Boolean | Determines if the arrow keys can be used for navigation. All ca
 infinite | Boolean | Determines if the carousel can scroll infinitely. | true
 swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true
 swipe_threshold | Integer | Defines the distance in px that the user must swipe or drag to advance to the next page instead of snapping back to the current one. | 300
-swipe_multiplier | Integer | Defines the multiplier for swipe interactions. | 1
+swipe_multiplier | Number | Defines the multiplier for swipe interactions. | 1
 swipe_resistance | Number | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1, where 0 is no resistance and 1 is full resistance. | 0.95
 
 <br/>
@@ -160,6 +168,12 @@ offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
 radioBubbles | Not implemented | Upcoming
+html | Not implemented | Upcoming
+css | Not implemented | Upcoming
+autoGenCSS | Partially implemented | In progress
+visualPreset | Not implemented | Upcoming
+type: "fade" | Not implemented | Upcoming
+type: "stack" | Not implemented | Upcoming
 
 <br/>
 
@@ -176,8 +190,6 @@ Reference files for creating custom visuals can be found in the "references" fol
 ### Jump to:
 [v0.2.0](https://github.com/dougalcaleb/instant-carousel#v020)
 [v0.1.0](https://github.com/dougalcaleb/instant-carousel#v010)
-
-#### v1.0.0:
 
 
 ##### v0.2.0:
