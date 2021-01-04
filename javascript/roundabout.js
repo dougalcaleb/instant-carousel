@@ -454,11 +454,6 @@ class Roundabout {
 		parent.swipeFrom = parent.orderedPages[parent.orderedPagesMainIndex];
 
 		// remove transitions to prevent elastic-y movement
-		// for (let a = 0; a < parent.pages.length; a++) {
-		// 	document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-		// 	document.querySelector(`.roundabout-${parent.uniqueId}-page-${a}`).classList.add("roundabout-has-no-transition");
-		// }
-
 		document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 		document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).classList.add("roundabout-has-no-transition");
 
@@ -549,11 +544,6 @@ class Roundabout {
 				parent.sx = parent.x / 1;
 				parent.dx = 0;
 			} else {
-				// sets the position of all necessary pages
-				// for (let a = 0; a < parent.pagesToShow + 1; a++) {
-				// 	document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[a]).style.left =
-				// 		"calc((" + parent.positions[parent.orderedPages[a]] + ") + " + parent.dx + "px)";
-				// }
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).style.left = parent.dx + "px";
 			}
 		}
@@ -565,26 +555,8 @@ class Roundabout {
 			parent.swipeIsAllowed = true;
 		}, parent.throttle_timeout);
 
-		// if (!parent.canSnap) {
-		// for (let a = 0; a < parent.pagesToShow + 2; a++) {
-		// 	// document
-		// 		// .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`)
-		// 		// .classList.add(`roundabout-${this.uniqueId}-has-transition`);
-		// 	document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[a]}`).classList.remove("roundabout-has-no-transition");
-		// }
 		document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).classList.add(`roundabout-${this.uniqueId}-has-transition`);
 		document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).classList.remove(`roundabout-has-no-transition`);
-		// setTimeout(() => {
-		//    document
-		//          .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`)
-		//          .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-		//    document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.pagesToShow]}`).classList.add("roundabout-has-no-transition");
-		//    document
-		//          .querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`)
-		//          .classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-		//       document.querySelector(`.roundabout-${parent.uniqueId}-page-${parent.orderedPages[parent.orderedPages.length-1]}`).classList.add("roundabout-has-no-transition");
-		// }, parent.transition);
-      // }
 
 		parent.dragging = false;
 
