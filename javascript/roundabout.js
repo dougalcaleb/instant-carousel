@@ -92,10 +92,9 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 
 //? WORKING ON:
 /*
--  Finishing scrollNext refactor
-   -  Mostly done
-   -  Some glitches with scrollBy > 1
-   -  Swipe works, except on end, a page is not given the correct classes before moving
+-  Changing non-infinite behavior
+   -  Generates slightly differently
+   -  Cannot see another page when dragging past the end
 */
 
 //! KNOWN ISSUES:
@@ -248,31 +247,44 @@ class Roundabout {
    - undo transition change   
    */
 
-   scrollNext(distance, valuesOnly = false) {
+	scrollNext(distance, valuesOnly = false) {
 		if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
 			return;
 		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
 			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 			this.scrollNext(remainingDistance, valuesOnly);
 		} else {
-			for (let a = 0; a < distance; a++) {
-				this.positions.unshift(this.positions.pop());
+			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
+
+			// position all pages to correct place before move and remove hidden pages
+			for (let a = 0; a < this.positions.length; a++) {
+				let beforeMove = this.calcPagePos(a);
+				if (beforeMove != "0px") {
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
+				}
+				document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
 			}
 
-         let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
-         
-         if (!valuesOnly) {
-            wrapper.style.left = this.calcPagePos(distance * -1);
-         }
-			
+			// transition wrapper
+			if (!valuesOnly) {
+				wrapper.style.left = this.calcPagePos(distance * -1);
+			}
+
+			// adjust values
+			for (let a = 0; a < distance; a++) {
+				this.positions.unshift(this.positions.pop());
+				this.orderedPages.push(this.orderedPages.shift());
+			}
+
 			this.onPage += distance;
 
-         if (!valuesOnly) {
+			// finished positioning
+			if (!valuesOnly) {
 				setTimeout(() => {
 					this.positionWrap(!valuesOnly);
 					this.positionPages();
 				}, this.transition);
-         } else {
+			} else {
 				this.positionWrap(!valuesOnly);
 				this.positionPages();
 			}
@@ -436,7 +448,7 @@ class Roundabout {
 	}
 
 	// called once when touch or click starts
-   tStart(event, parent) {
+	tStart(event, parent) {
 		// throttling
 		parent.resetScrollTimeout();
 		if (parent.throttle_swipe) {
@@ -525,7 +537,19 @@ class Roundabout {
 			let dist = Math.abs(parent.dx);
 
 			// if user has swiped far enough, allow movement to next slide
-			if (dist >= parent.swipe_threshold) {
+			/*
+         - threshold and infinite or
+         - threshold and within bounds and noninfinite
+         
+         */
+			if (
+				(dist >= parent.swipe_threshold && parent.infinite) ||
+				(dist >= parent.swipe_threshold &&
+					parent.infinite &&
+					!parent.infinite &&
+					parent.onPage > 0 &&
+					parent.onPage < parent.pages.length - parent.pagesToShow)
+			) {
 				parent.canSnap = true;
 			} else {
 				parent.canSnap = false;
@@ -608,19 +632,20 @@ class Roundabout {
 	}
 
 	// snap to a new slide once touch or drag ends
-	snap(al, dir, parent) {
+   snap(al, dir, parent) {
+      console.log("snap");
 		if (al) {
 			if (dir > 0) {
-            parent.previousHandler(parent, "snap");
-            parent.positionWrap(false, 1); //? probably
+				parent.previousHandler(parent, "snap");
+				parent.positionWrap(false, 1); //? probably
 			} else if (dir < 0) {
-            parent.nextHandler(parent, "snap");
-            parent.positionWrap(false, -1);
+				parent.nextHandler(parent, "snap");
+				parent.positionWrap(false, -1);
 			}
-      } else {
-         parent.positionWrap(false, 0);
-      }
-		
+		} else {
+			parent.positionWrap(false, 0);
+		}
+
 		// parent.positionPages();
 	}
 
@@ -981,7 +1006,7 @@ class Roundabout {
 			wrapper.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 			wrapper.classList.add(`roundabout-has-no-transition`);
 		}
-      wrapper.style.left = this.calcPagePos(position);
+		wrapper.style.left = this.calcPagePos(position);
 		const flushCssBuffer = wrapper.offsetWidth;
 		if (setTransitions) {
 			wrapper.classList.add(`roundabout-${this.uniqueId}-has-transition`);
@@ -990,10 +1015,10 @@ class Roundabout {
 	}
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
-   calcPagePos(pagePos) {
-      if (pagePos == 0) {
-         return "0px";
-      }
+	calcPagePos(pagePos) {
+		if (pagePos == 0) {
+			return "0px";
+		}
 		pagePos += 1;
 		let iteratorMod, iteratorMod2;
 		if (this.spacingMode == "evenly") {
