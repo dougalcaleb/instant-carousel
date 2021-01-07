@@ -163,7 +163,8 @@ class Roundabout {
 		this.pageSpacing = settings.pageSpacing ? settings.pageSpacing : 0;
 		this.pageSpacingUnits = settings.pageSpacingUnits ? settings.pageSpacingUnits : "px";
 		this.spacingMode = settings.spacingMode ? settings.spacingMode : "fill";
-		this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
+      this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
+      this.showWrappedPage = settings.showWrappedPage ? settings.showWrappedPage : false;
 
 		// this.direction = (settings.direction) ? settings.direction : 0;
 
@@ -274,7 +275,7 @@ class Roundabout {
 			for (let a = 0; a < distance; a++) {
 				this.positions.unshift(this.positions.pop());
 				this.orderedPages.push(this.orderedPages.shift());
-			}
+         }
 
 			this.onPage += distance;
 
@@ -536,16 +537,9 @@ class Roundabout {
 			// get distance values
 			let dist = Math.abs(parent.dx);
 
-			// if user has swiped far enough, allow movement to next slide
-			/*
-         - threshold and infinite or
-         - threshold and within bounds and noninfinite
-         
-         */
 			if (
 				(dist >= parent.swipe_threshold && parent.infinite) ||
 				(dist >= parent.swipe_threshold &&
-					parent.infinite &&
 					!parent.infinite &&
 					parent.onPage > 0 &&
 					parent.onPage < parent.pages.length - parent.pagesToShow)
@@ -559,7 +553,7 @@ class Roundabout {
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth +
 				parent.pageSpacing;
 
-			if (dist >= totalSize) {
+			if ((dist >= totalSize && parent.infinite) || (dist >= totalSize && !parent.infinite && parent.onPage < parent.pages.length - parent.pagesToShow && parent.onPage >= 0)) {
 				if (parent.dx > 0) {
 					parent.scrollPrevious(1, true);
 				} else if (parent.dx < 0) {
@@ -633,7 +627,7 @@ class Roundabout {
 
 	// snap to a new slide once touch or drag ends
    snap(al, dir, parent) {
-      console.log("snap");
+      console.log("snap",al);
 		if (al) {
 			if (dir > 0) {
 				parent.previousHandler(parent, "snap");
@@ -994,7 +988,11 @@ class Roundabout {
 				//    const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
 				// }
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
-				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
+            
+            if (!this.infinite && a == 0 && this.onPage > 0 && !this.showWrappedPage) {
+               document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
+            }
 			}
 		}
 	}
