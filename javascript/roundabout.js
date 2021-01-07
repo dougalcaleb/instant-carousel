@@ -293,7 +293,55 @@ class Roundabout {
 		}
    }
    
-	scrollPrevious() {}
+	// Scrolls to the previous page. Does not handle clicks/taps
+	scrollPrevious(distance, valuesOnly = false) {
+		if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
+			return;
+		} else if (Math.abs(distance) > this.onPage && !this.infinite) {
+			let remainingDistance = -1 * this.onPage;
+			this.scrollPrevious(remainingDistance, valuesOnly);
+		} else {
+			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
+
+			// position all pages to correct place before move and remove hidden pages
+         for (let a = 0; a < this.positions.length; a++) {
+            let mod = a;
+            if (a == this.positions.length - 1) {
+               mod = -1;
+            }
+				let beforeMove = this.calcPagePos(mod);
+				if (beforeMove != "0px") {
+					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
+				}
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
+            console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}`);
+			}
+
+			// transition wrapper
+			if (!valuesOnly) {
+				wrapper.style.left = this.calcPagePos(distance * -1);
+			}
+
+			// adjust values
+         for (let a = 0; a < Math.abs(distance); a++) {
+            this.positions.push(this.positions.shift());
+            this.orderedPages.unshift(this.orderedPages.pop());
+         }
+
+			this.onPage += distance;
+
+			// finished positioning
+			if (!valuesOnly) {
+				setTimeout(() => {
+					this.positionWrap(!valuesOnly);
+					this.positionPages();
+				}, this.transition);
+			} else {
+				this.positionWrap(!valuesOnly);
+				this.positionPages();
+			}
+		}
+   }
 
 	nextHandler(parent, from) {
 		let sd = from == "snap" ? 1 : parent.scrollBy;
@@ -926,6 +974,9 @@ class Roundabout {
             
             if (!this.infinite && a == 0 && this.onPage > 0 && !this.showWrappedPage) {
                document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
+            }
+            if (!this.infinite && a == this.positions.length - 1 && this.onPage == 0 && !this.showWrappedPage) {
+               document.querySelector(`.roundabout-${this.uniqueId}-page-${this.positions.length - 1}`).classList.add("roundabout-hidden-page");
             }
 			}
 		}
