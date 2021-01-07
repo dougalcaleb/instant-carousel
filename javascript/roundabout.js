@@ -303,19 +303,44 @@ class Roundabout {
 		} else {
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
+         let pos = [];
+         for (let a = 0; a < this.positions.length; a++) {
+            pos.push(a - this.scrollBy);
+         }
+         for (let a = 0; a < this.scrollBy; a++) {
+            pos.push(pos.shift());
+         }
+         console.log(pos);
 			// position all pages to correct place before move and remove hidden pages
          for (let a = 0; a < this.positions.length; a++) {
-            let mod = a;
-            if (a == this.positions.length - 1) {
-               mod = -1;
-            }
-				let beforeMove = this.calcPagePos(mod);
+				let beforeMove = this.calcPagePos(pos[a]);
 				if (beforeMove != "0px") {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-            console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}`);
-			}
+            console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
+         }
+         
+         /*
+         0: 0
+         1: 1
+         2: 2
+         3: 3
+         4: 4
+         5: 5
+         6: 6
+         7: -3
+         8: -2
+         9:- 1
+
+         
+         
+         
+         
+         
+         
+         
+         */
 
 			// transition wrapper
 			if (!valuesOnly) {

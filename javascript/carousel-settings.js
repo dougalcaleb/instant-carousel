@@ -3,8 +3,8 @@ let c1 = new Roundabout({
 	pageSpacing: 20,
 	spacingMode: "fill",
    transition: 600,
-   infinite: false,
-   scrollBy: 2,
+   // infinite: false,
+   scrollBy: 3,
    showWrappedPage: true,
    pages: [
       {
