@@ -5,7 +5,6 @@ let c1 = new Roundabout({
    transition: 600,
    infinite: false,
    scrollBy: 4,
-   swipe_resistance: 0.5,
    pages: [
       {
          background_image: "../images/numbers/0.png",
