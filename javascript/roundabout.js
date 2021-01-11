@@ -90,19 +90,10 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 -  presets pack
 */
 
-//? WORKING ON:
-/*
--  Changing non-infinite behavior
-   -  Generates slightly differently
-   -  Cannot see another page when dragging past the end
-*/
 
 //! KNOWN ISSUES:
 /*
--  Extreme hitching
-   -  Convert from individual pages to a wrap containing all pages
-   -  Make page transitions instant, while wrap transitions
-   -  Could simplify code and significantly improve performance
+
 */
 
 // To do:
@@ -294,15 +285,17 @@ class Roundabout {
    }
    
 	// Scrolls to the previous page. Does not handle clicks/taps
-	scrollPrevious(distance, valuesOnly = false) {
+   scrollPrevious(distance, valuesOnly = false) {
 		if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
 			return;
 		} else if (Math.abs(distance) > this.onPage && !this.infinite) {
 			let remainingDistance = -1 * this.onPage;
 			this.scrollPrevious(remainingDistance, valuesOnly);
-		} else {
+      } else {
+         console.log("sp");
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
+         // set up a position modifier array to mutate the normal right-based positioning
          let pos = [];
          for (let a = 0; a < this.positions.length; a++) {
             pos.push(a - this.scrollBy);
@@ -320,27 +313,6 @@ class Roundabout {
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
             console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
          }
-         
-         /*
-         0: 0
-         1: 1
-         2: 2
-         3: 3
-         4: 4
-         5: 5
-         6: 6
-         7: -3
-         8: -2
-         9:- 1
-
-         
-         
-         
-         
-         
-         
-         
-         */
 
 			// transition wrapper
 			if (!valuesOnly) {
@@ -560,9 +532,11 @@ class Roundabout {
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth +
 				parent.pageSpacing;
 
-			if ((dist >= totalSize && parent.infinite) || (dist >= totalSize && !parent.infinite && parent.onPage < parent.pages.length - parent.pagesToShow && parent.onPage >= 0)) {
+         if (
+            (dist >= totalSize && parent.infinite) ||
+            (dist >= totalSize && !parent.infinite && parent.onPage <= parent.pages.length - parent.pagesToShow && parent.onPage >= 0)) {
 				if (parent.dx > 0) {
-					parent.scrollPrevious(1, true);
+               parent.scrollPrevious(-1, true);
 				} else if (parent.dx < 0) {
 					parent.scrollNext(1, true);
 				}

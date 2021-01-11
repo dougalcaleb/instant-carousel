@@ -3,9 +3,8 @@ let c1 = new Roundabout({
 	pageSpacing: 20,
 	spacingMode: "fill",
    transition: 600,
-   // infinite: false,
+   infinite: false,
    scrollBy: 3,
-   showWrappedPage: true,
    pages: [
       {
          background_image: "../images/numbers/0.png",
