@@ -29,8 +29,8 @@ To add Roundabout to your project, download and link the ```roundabout.js``` fil
 ```html
 <!-- ... -->
 
-   <script src="path to roundabout.js"></script>
-   <script src="path to roundabout-settings.js"></script>
+   <script src="path/to/roundabout.js"></script>
+   <script src="path/to/roundabout-settings.js"></script>
 </body>
 </html>
 ```
