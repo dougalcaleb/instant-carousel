@@ -92,7 +92,7 @@ id | String | Sets the CSS selector for the carousel's parent element to allow f
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"stack": pages slide in from the sides to overlap the current page and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
 autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS is given in the "references" folder. | true
-radioBubbles | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
+navigation | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
 visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
 mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobile_breakpoint". | { <br/>swipe_threshold: 50 <br/>}
 mobile_breakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700
@@ -168,7 +168,7 @@ offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-radioBubbles | Not implemented | Upcoming
+navigation | Partially implemented | In progress
 html | Not implemented | Upcoming
 css | Not implemented | Upcoming
 autoGenCSS | Partially implemented | In progress
