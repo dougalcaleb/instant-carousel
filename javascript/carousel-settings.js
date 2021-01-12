@@ -1,10 +1,10 @@
 let c1 = new Roundabout({
-	pagesToShow: 4,
+	pagesToShow: 3,
 	pageSpacing: 20,
 	spacingMode: "fill",
    transition: 600,
    // infinite: false,
-   scrollBy: 4,
+   scrollBy: 1,
    navigation: true,
    pages: [
       {

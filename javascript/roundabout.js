@@ -270,7 +270,16 @@ class Roundabout {
 				this.orderedPages.push(this.orderedPages.shift());
          }
 
-			this.onPage += distance;
+         this.onPage += distance;
+
+         if (this.onPage >= this.pages.length) {
+            this.onPage -= this.pages.length;
+         }
+         
+         if (this.navigation) {
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+         }
 
 			// finished positioning
 			if (!valuesOnly) {
@@ -281,7 +290,12 @@ class Roundabout {
 			} else {
 				this.positionWrap(!valuesOnly);
 				this.positionPages();
-			}
+         }
+         
+         if (this.navigation) {
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+         }
 		}
    }
    
@@ -293,7 +307,6 @@ class Roundabout {
 			let remainingDistance = -1 * this.onPage;
 			this.scrollPrevious(remainingDistance, valuesOnly);
       } else {
-         console.log("sp");
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
          // set up a position modifier array to mutate the normal right-based positioning
@@ -304,7 +317,7 @@ class Roundabout {
          for (let a = 0; a < this.scrollBy; a++) {
             pos.push(pos.shift());
          }
-         console.log(pos);
+         // console.log(pos);
 			// position all pages to correct place before move and remove hidden pages
          for (let a = 0; a < this.positions.length; a++) {
 				let beforeMove = this.calcPagePos(pos[a]);
@@ -312,7 +325,7 @@ class Roundabout {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-            console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
+            // console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
          }
 
 			// transition wrapper
@@ -326,7 +339,11 @@ class Roundabout {
             this.orderedPages.unshift(this.orderedPages.pop());
          }
 
-			this.onPage += distance;
+         this.onPage += distance;
+
+         if (this.onPage < 0) {
+            this.onPage += this.pages.length;
+         }
 
 			// finished positioning
 			if (!valuesOnly) {
@@ -337,16 +354,27 @@ class Roundabout {
 			} else {
 				this.positionWrap(!valuesOnly);
 				this.positionPages();
-			}
+         }
+         
+         if (this.navigation) {
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+         }
 		}
    }
 
    //! FINISH THIS
    scrollTo(page) {
-      if (page < this.onPage) {
-         this.scrollPrevious(page - this.onPage);
+      if (!this.infinite) {
+         if (page < this.onPage) {
+            this.scrollPrevious(page - this.onPage);
+         } else {
+            this.scrollNext(page - this.onPage);
+         }
       } else {
-         this.scrollNext(page - this.onPage);
+         if (this.onPage + (this.pages.length - page) < page - this.onPage) {
+            this.scrollPrevious(-1 * (this.onPage + (this.pages.length - page)));
+         }
       }
    }
 
@@ -834,7 +862,7 @@ class Roundabout {
             } else {
                newNavBtn.classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`);
             }
-            newNavBtn.classList.add(`roundabout-${this.uniqueId}-nav-btn`);
+            newNavBtn.classList.add(`roundabout-${this.uniqueId}-nav-btn`, `roundabout-${this.uniqueId}-nav-btn-${a}`);
             navbar.appendChild(newNavBtn);
             newNavBtn.addEventListener("click", () => {
                this.scrollTo(a);
