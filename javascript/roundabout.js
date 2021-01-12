@@ -3,7 +3,7 @@
 INTENDED FEATURES:
 
 3 TYPES
-⚠ Normal
+✔ Normal
 ✖ Stack
 ✖ Fade
 
@@ -32,7 +32,7 @@ PAGES
 ✖ Can define HTML and CSS per page for interactivity
 ✔ Transition timings can be custom
 ✖ Supports as few as 2 pages
-✖ Can scroll by a determined number of pages
+✔ Can scroll by a determined number of pages
 
 SWIPE
 ✔ User can swipe to advance pages
@@ -93,7 +93,8 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 
 //! KNOWN ISSUES:
 /*
-
+   -  page 0 can hide
+   -  cannot swipe to second page infinite:False
 */
 
 // To do:
@@ -125,7 +126,7 @@ class Roundabout {
 		this.type = settings.type ? settings.type : "normal";
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
-		// this.navigation = (settings.navigation == false) ? settings.navigation : true;
+		this.navigation = (settings.navigation == false) ? settings.navigation : true;
 		this.autoScroll = settings.autoScroll ? settings.autoScroll : false;
 		this.autoScroll_speed = settings.autoScroll_speed >= 0 ? settings.autoScroll_speed : 5000;
 		this.autoScroll_timeout = settings.autoScroll_timeout >= 0 ? settings.autoScroll_timeout : 15000;
@@ -338,6 +339,15 @@ class Roundabout {
 				this.positionPages();
 			}
 		}
+   }
+
+   //! FINISH THIS
+   scrollTo(page) {
+      if (page < this.onPage) {
+         this.scrollPrevious(page - this.onPage);
+      } else {
+         this.scrollNext(page - this.onPage);
+      }
    }
 
 	nextHandler(parent, from) {
@@ -663,17 +673,16 @@ class Roundabout {
 		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>
                   <div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div>
                   <div class="roundabout-${this.uniqueId}-nav roundabout-nav">
-                     <div class="roundabout-${this.uniqueId}-btn-r roundabout-btn-r roundabout-nav-btn">
+                     <div class="roundabout-${this.uniqueId}-btn-r roundabout-btn-r roundabout-scroll-btn">
                         <svg viewBox="0 0 24 24">
                            <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
                         </svg>
                      </div>
-                     <div class="roundabout-${this.uniqueId}-btn-l roundabout-btn-l roundabout-nav-btn">
+                     <div class="roundabout-${this.uniqueId}-btn-l roundabout-btn-l roundabout-scroll-btn">
                         <svg viewBox="0 0 24 24">
                            <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
                         </svg>
                      </div>
-                     <div class="roundabout-nav-wrap"></div>
                   </div>`;
 		newCarousel.innerHTML = html;
 		newCarousel.classList.add("roundabout-wrapper");
@@ -696,8 +705,9 @@ class Roundabout {
 		let css;
 		let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
 		switch (this.visualPreset) {
-			case 0:
-				css = `.roundabout-wrapper{height:80vh;margin-top:30px;overflow:hidden}.roundabout-nav-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-nav-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}`;
+         case 0:
+            //! don't forget to reset
+            css = `.roundabout-wrapper{height:80vh;margin-top:30px;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #000;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
 				break;
 		}
 		let newStyle = document.createElement("STYLE");
@@ -753,10 +763,6 @@ class Roundabout {
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
 			newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page");
-			// newPage.classList.add(`roundabout-${this.uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this.uniqueId}-has-transition`);
-			// if (a != this.pagesToShow && a != this.pages.length - 1) {
-			//    newPage.classList.add(`roundabout-${this.uniqueId}-has-transition`);
-			// }
 			let newPos;
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and number of pages
@@ -788,16 +794,7 @@ class Roundabout {
 			} else {
 				newPage.style.width = "100%";
 			}
-			// Create falloff //! not working
-			if (this.sizeFalloff && this.type == "normal") {
-				newPage.style.height = baseHeight + "%";
-				baseHeight -= this.sizeFalloff;
-				newPage.style.top = "0";
-				newPage.style.bottom = "0";
-				newPage.style.margin = "auto";
-			} else {
-				newPage.style.height = "100%";
-			}
+         newPage.style.height = "100%";
 			// Give a background image (if supplied)
 			if (this.pages[a].background_image) {
 				newPage.style.background = "url(" + this.pages[a].background_image + ")";
@@ -813,7 +810,37 @@ class Roundabout {
 			} else {
 				this.positions.push("0px");
 			}
-		}
+      }
+      
+      // create navigation
+
+      if (this.navigation) {
+         let navbar = document.createElement("div");
+         navbar.classList.add(`roundabout-${this.uniqueId}-nav-wrap`, "roundabout-nav-wrap");
+         document.querySelector(`.roundabout-${this.uniqueId}-nav`).appendChild(navbar);
+
+         let numButtons;
+         if (this.type == "normal") {
+            if (this.infinite) {
+               numButtons = this.pages.length;
+            } else {
+               numButtons = this.pages.length - 2;
+            }
+         }
+         for (let a = 0; a < numButtons; a++) {
+            let newNavBtn = document.createElement("div");
+            if (a == 0) {
+               newNavBtn.classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+            } else {
+               newNavBtn.classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`);
+            }
+            newNavBtn.classList.add(`roundabout-${this.uniqueId}-nav-btn`);
+            navbar.appendChild(newNavBtn);
+            newNavBtn.addEventListener("click", () => {
+               this.scrollTo(a);
+            });
+         }
+      }
 
 		this.positions.push(this.positions.shift());
 

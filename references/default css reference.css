@@ -13,7 +13,18 @@ Nothing is dependant on the styles contained in this file. Edit or delete as you
    /* Cannot change: position, overflow */
 }
 
-.roundabout-nav-btn svg { /* SVG arrows indide the navigational left and right buttons */
+.roundabout-scroll-btn { /* Scroll buttons */
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	height: 80px;
+	width: 80px;
+	cursor: pointer;
+	color: #fff;
+}
+
+.roundabout-scroll-btn svg { /* SVG arrows inside the scroll next and scroll previous buttons */
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -35,18 +46,23 @@ Nothing is dependant on the styles contained in this file. Edit or delete as you
 	width: 25%;
 }
 
-.roundabout-nav-btn { /* Navigation bar interactables */
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	margin: auto;
-	height: 80px;
-	width: 80px;
-	cursor: pointer;
-	color: #fff;
+.roundabout-ID-nav-btn {
+   margin: auto;
+   border-radius: 100%;
+   border: 2px solid black;
+   transition: 0.2s;
+   cursor: pointer;
 }
 
-.roundabout-nav { /* Wraps all of the user-interactable navigation */
+.roundabout-ID-inactive-nav-btn {
+   background: transparent;
+}
+
+.roundabout-ID-active-nav-btn {
+   background: white;
+}
+
+.roundabout-nav { /* Wraps all of the user-interactables */
 	height: 100%;
 	width: 100%;
 }

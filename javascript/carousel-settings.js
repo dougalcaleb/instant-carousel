@@ -1,10 +1,11 @@
 let c1 = new Roundabout({
-	pagesToShow: 3,
+	pagesToShow: 4,
 	pageSpacing: 20,
 	spacingMode: "fill",
    transition: 600,
-   infinite: false,
-   scrollBy: 3,
+   // infinite: false,
+   scrollBy: 4,
+   navigation: true,
    pages: [
       {
          background_image: "../images/numbers/0.png",
