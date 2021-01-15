@@ -95,6 +95,7 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 /*
    -  page 0 can hide
    -  cannot swipe to second page infinite:False
+   -  pages not bening positioned correctly on bubble movement
 */
 
 // To do:
@@ -114,7 +115,7 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 
 let roundabout = {
 	on: -1,
-	usedIds: [],
+	usedIds: []
 };
 
 class Roundabout {
@@ -123,10 +124,12 @@ class Roundabout {
 
 		this.pages = settings.pages ? settings.pages : {};
 		this.id = settings.id ? settings.id : ".myCarousel";
-		this.type = settings.type ? settings.type : "normal";
+      this.type = settings.type ? settings.type : "normal";
+      this.infinite = settings.infinite === false ? settings.infinite : true;
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
-		this.navigation = (settings.navigation == false) ? settings.navigation : true;
+      this.navigation = settings.navigation === false ? settings.navigation : true;
+      this.navigation_behavior = (settings.navigation_behavior && this.infinite) ? settings.navigation_behavior : "direction";
 		this.autoScroll = settings.autoScroll ? settings.autoScroll : false;
 		this.autoScroll_speed = settings.autoScroll_speed >= 0 ? settings.autoScroll_speed : 5000;
 		this.autoScroll_timeout = settings.autoScroll_timeout >= 0 ? settings.autoScroll_timeout : 15000;
@@ -141,9 +144,9 @@ class Roundabout {
 		this.throttle_keys = settings.throttle_keys === false ? settings.throttle_keys : true;
 		this.throttle_swipe = settings.throttle_swipe === false ? settings.throttle_swipe : true;
 		this.throttle_buttons = settings.throttle_buttons === false ? settings.throttle_buttons : true;
-		// this.throttle_navigation = settings.throttle_navigation == false ? settings.throttle_navigation : true;
+      this.throttle_navigation = settings.throttle_navigation == false ? settings.throttle_navigation : true;
+      
 		this.keys = settings.keys === false ? settings.keys : true;
-		this.infinite = settings.infinite === false ? settings.infinite : true;
 		this.swipe = settings.swipe === false ? settings.swipe : true;
 		this.swipe_threshold = settings.swipe_threshold >= 0 ? settings.swipe_threshold : 300;
 		this.swipe_multiplier = settings.swipe_multiplier ? settings.swipe_multiplier : 1;
@@ -312,9 +315,9 @@ class Roundabout {
          // set up a position modifier array to mutate the normal right-based positioning
          let pos = [];
          for (let a = 0; a < this.positions.length; a++) {
-            pos.push(a - this.scrollBy);
+            pos.push(a - Math.abs(distance));
          }
-         for (let a = 0; a < this.scrollBy; a++) {
+         for (let a = 0; a < Math.abs(distance); a++) {
             pos.push(pos.shift());
          }
          // console.log(pos);
@@ -325,7 +328,7 @@ class Roundabout {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-            // console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
+            console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
          }
 
 			// transition wrapper
@@ -363,23 +366,47 @@ class Roundabout {
 		}
    }
 
-   //! FINISH THIS
    scrollTo(page) {
-      if (!this.infinite) {
+      if (!this.infinite || this.navigation_behavior == "direction") {
          if (page < this.onPage) {
-            this.scrollPrevious(page - this.onPage);
+            if (this.throttle_navigation) {
+               this.previousHandler(this, "scrollto", page - this.onPage);
+            } else {
+               this.scrollPrevious(page - this.onPage);
+            }            
          } else {
-            this.scrollNext(page - this.onPage);
+            if (this.throttle_navigation) {
+               this.nextHandler(this, "scrollto", page - this.onPage);
+            } else {
+               this.scrollNext(page - this.onPage);
+            }
          }
       } else {
-         if (this.onPage + (this.pages.length - page) < page - this.onPage) {
-            this.scrollPrevious(-1 * (this.onPage + (this.pages.length - page)));
+         if (this.findOffset(this.onPage, page, "p") < this.findOffset(this.onPage, page, "n")) {
+            if (this.throttle_navigation) {
+               this.previousHandler(this, "scrollto", -1*this.findOffset(this.onPage, page, "p"));
+            } else {
+               this.scrollPrevious(-1*this.findOffset(this.onPage, page, "p"));
+            }
+         } else {
+            if (this.throttle_navigation) {
+               this.nextHandler(this, "scrollto", this.findOffset(this.onPage, page, "n"));
+            } else {
+               this.scrollNext(this.findOffset(this.onPage, page, "n"));
+            }            
          }
       }
    }
 
-	nextHandler(parent, from) {
-		let sd = from == "snap" ? 1 : parent.scrollBy;
+   nextHandler(parent, from, distance) {
+      let sd;
+      if (from == "snap") {
+         sd = 1;
+      } else if (from == "scrollto") {
+         sd = distance;
+      } else {
+         sd = parent.scrollBy;
+      }
 		let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
@@ -393,7 +420,7 @@ class Roundabout {
 		}
 	}
 
-	previousHandler(parent, from) {
+	previousHandler(parent, from, distance) {
 		let sd = from == "snap" ? -1 : -1 * parent.scrollBy;
 		let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
@@ -734,8 +761,7 @@ class Roundabout {
 		let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
 		switch (this.visualPreset) {
          case 0:
-            //! don't forget to reset
-            css = `.roundabout-wrapper{height:80vh;margin-top:30px;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #000;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
+            css = `.roundabout-wrapper{height:80vh;margin-top:30px;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #fff;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
 				break;
 		}
 		let newStyle = document.createElement("STYLE");
@@ -1049,7 +1075,24 @@ class Roundabout {
 			wrapper.classList.add(`roundabout-${this.uniqueId}-has-transition`);
 			wrapper.classList.remove(`roundabout-has-no-transition`);
 		}
-	}
+   }
+   
+   findOffset(start, end, direction) {
+      if (direction == "p") {
+         if (end < start) {
+            return start - end;
+         } else {
+            return start + this.pages.length - end;
+         }
+         
+      } else if (direction == "n") {
+         if (end < start) {
+            return this.pages.length - start + end;
+         } else {
+            return end - start;
+         }
+      }
+   }
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
 	calcPagePos(pagePos) {
