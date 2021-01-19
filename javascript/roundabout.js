@@ -882,7 +882,7 @@ class Roundabout {
             if (this.infinite) {
                numButtons = this.pages.length;
             } else {
-               numButtons = this.pages.length - 2;
+               numButtons = this.pages.length - (this.pagesToShow - 1);
             }
          }
          for (let a = 0; a < numButtons; a++) {
@@ -1048,15 +1048,10 @@ class Roundabout {
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
 			} else {
-				// if (a == this.orderedPages[this.pagesToShow]) {
-				//    document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-has-transition`);
-				// 	document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add(`roundabout-has-no-transition`);
-				//    const flushCssBuffer = document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).offsetWidth;
-				// }
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
             document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
             
-            if (!this.infinite && a == 0 && this.onPage > 0 && !this.showWrappedPage) {
+            if (!this.infinite && a == 0 && this.onPage > 1 && !this.showWrappedPage) {
                document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
             }
             if (!this.infinite && a == this.positions.length - 1 && this.onPage == 0 && !this.showWrappedPage) {
