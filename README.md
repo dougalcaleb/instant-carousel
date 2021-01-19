@@ -1,7 +1,3 @@
-#### This plugin is unfinished but is in active development. Check back for updates.
-
-<br/>
-
 ### Jump to:
 [Setup](#setup)
 
@@ -25,7 +21,7 @@
 
 The focus of this plugin is quick and easy setup, with the freedom to customize extensively.
 
-To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file (or use the one provided) to contain your settings, linked *after* ```roundabout.js```. Using this method, your HTML should look like this:
+To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another JS file (or use the one provided) to contain your settings, linked *after* ```roundabout.js```. Using this method, your HTML should look like this:
 ```html
 <!-- your webpage code up here... -->
 <!-- ... -->
@@ -170,9 +166,8 @@ offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-navigation | Partially implemented | In progress
-html | Not implemented | Upcoming
-css | Not implemented | Upcoming
+pages > html | Not implemented | Upcoming
+pages > css | Not implemented | Upcoming
 autoGenCSS | Partially implemented | In progress
 visualPreset | Not implemented | Upcoming
 type: "fade" | Not implemented | Upcoming
@@ -191,56 +186,14 @@ Reference files for creating custom visuals can be found in the "references" fol
 ### Patch Notes:
 
 ### Jump to:
-[v0.2.0](https://github.com/dougalcaleb/instant-carousel#v020)
-[v0.1.0](https://github.com/dougalcaleb/instant-carousel#v010)
+[v1.0.0](#v100)
 
-
-##### v0.2.0:
+#### v1.0.0:
 * Features:
-    * Implemented infinite drag scroll - it is no longer limited to the center slide and the two adjacent to it
-    * New extensions for type "static": multiple pages can now be visible at once
-    * Swiping can now be throttled
-    * Different types of user interactions can be individually throttled or not throttled
-    * Swiping now supports moving multiple pages at once
-    * Type settings is no longer defined by arbitrary integers, now uses names (strings) instead
-    * Improved documentation
-    * Swiping has been optimized for large page counts
-    * Support for multiple carousels on one page
-    * New settings (refer to documentation above for descriptions):
-      * pagesToShow
-      * pageSpacing
-      * pageSpacingUnits
-      * spacingMode
-      * transition_timingFunction
-      * throttle_swipe
-      * throttle_keys
-      * throttle_buttons
-      * throttle_navigation
-      * visualPreset
-    * Added comprehensive list of settings to README
-* Bugfixes:
-    * Scrolling quickly with fewer pages caused a pop-in effect
-    * Some transitions were not being reset correctly in certain conditions. Switched to a css-class based method instead
-    * A single frame of the wrong page could show up when swiping between pages
-    * The first page wouldn't accept dragging when not an infinite carousel
-    * 4 jitter issues related to edge resistance and non-infinite scrolling
-    * Dragging through multiple pages caused transitions to not reset correctly
-    * Some global event listeners were not being reset correctly
-    * Dragging and then step-scrolling back to the initial page would cause some pages to disappear
-    * Dragging and step-scrolling was possible, and could break page order
-    * Page order could break when non-infinite and spamming nav buttons
-    * Static non-infinite scroll with multiple pages could show pages beyond the end
-    * Positions were being incorrectly set and read, causing "ghost pages"
-    * When using spacing, pages would follow mouse movement incorrectly
-    * Ending a swipe with multiple pages visible would set incorrect positions
-    * Pop-in would occur during swiping when more than half of the pages were visible
-    * Swiping past the right end of a non-infinite carousel when showing multiple pages caused jumping
-    * When using multiple pages with spacing, swiping would ignore the spacing and jump between pages
-
-##### v0.1.0:
-* Features:
-    * New type: static. All pages are directly next to each other and fill the entire wrapper.
-    * Fully implemented swipe/drag scrolling on "static" type
-    * Autoscroll
-    * Auto-generating HTML and CSS structure
-    * User interaction throttling
+   * Carousel type "normal"
+      * All pages are next to each other and move in sync
+      * Swipe/draggable, support for a nav bar and scroll buttons
+   * Autoscroll
+   * User interaction throttling
+   * Automatic HTML and CSS structure
+   * Full documentation
