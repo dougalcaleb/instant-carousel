@@ -41,17 +41,17 @@ SWIPE
 ✖ Inertia movement
 
 BUBBLES
-✖ Show current and available pages
+✔ Show current and available pages
 ✖ Entirely customizable
-✖ Can be enabled/disabled
+✔ Can be enabled/disabled
 
 MISC
 ✔ User interactions can be throttled
 ✔ Keys can be used to navigate
 ✖ Scrolling through pages with bubbles is smooth
-⚠ Responsive
+✔ Responsive
 ✔ Can have multiple carousels in a single page with object constructors
-⚠ Any relevant setting has a default, but can be overridden
+✔ Any relevant setting has a default, but can be overridden
 ✔ Unique class names
 ✔ Adding a new carousel appends without using innerHTML
 ✖ Errors are thrown when using incorrect settings for the type
@@ -102,13 +102,6 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 -  Size falloff
 -  Minimal pages support
 -  Page size setting
-*/
-
-//? FOR v1.0:
-/*
-✖ Finish "Normal" type
-✖ Bubbles
-✖ Enough error checkers
 */
 
 let roundabout = {

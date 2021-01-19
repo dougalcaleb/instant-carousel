@@ -1,11 +1,13 @@
 let c1 = new Roundabout({
-	pagesToShow: 3,
+	pagesToShow: 1,
 	pageSpacing: 20,
 	spacingMode: "fill",
    transition: 600,
    // infinite: false,
    scrollBy: 1,
-   navigation: true,
+   navigation: false,
+   navigation_behavior: "nearest",
+   showWrappedPage: true,
    pages: [
       {
          background_image: "../images/numbers/0.png",
@@ -16,27 +18,27 @@ let c1 = new Roundabout({
 		{
 			background_image: "../images/numbers/2.png",
 		},
-		{
-			background_image: "../images/numbers/3.png",
-		},
-		{
-			background_image: "../images/numbers/4.png",
-		},
-		{
-			background_image: "../images/numbers/5.png",
-		},
-		{
-			background_image: "../images/numbers/6.png",
-      },
-      {
-			background_image: "../images/numbers/7.png",
-      },
-      {
-			background_image: "../images/numbers/8.png",
-      },
-      {
-			background_image: "../images/numbers/9.png",
-		},
+		// {
+		// 	background_image: "../images/numbers/3.png",
+		// },
+		// {
+		// 	background_image: "../images/numbers/4.png",
+		// },
+		// {
+		// 	background_image: "../images/numbers/5.png",
+		// },
+		// {
+		// 	background_image: "../images/numbers/6.png",
+      // },
+      // {
+		// 	background_image: "../images/numbers/7.png",
+      // },
+      // {
+		// 	background_image: "../images/numbers/8.png",
+      // },
+      // {
+      //    background_image: "../images/numbers/9.png",
+		// },
 
 
 		// {
