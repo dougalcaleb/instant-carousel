@@ -1012,7 +1012,7 @@ class Roundabout {
 	checkForErrors() {
 		if (this.pages.length - this.pagesToShow <= 1) {
 			this.displayError(
-				"For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages."
+				"For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages. Minimum required pages is 3."
 			);
 			return false;
 		}
