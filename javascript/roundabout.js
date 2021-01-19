@@ -93,9 +93,7 @@ Try to find a way to add "expansions": additional featuresets included in sepera
 
 //! KNOWN ISSUES:
 /*
-   -  page 0 can hide
-   -  cannot swipe to second page infinite:False
-   -  pages not bening positioned correctly on bubble movement
+   -  page 0 hides when infinite: false and scrolling it into view
 */
 
 // To do:
@@ -328,7 +326,7 @@ class Roundabout {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-            console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
+            // console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
          }
 
 			// transition wrapper
@@ -421,7 +419,14 @@ class Roundabout {
 	}
 
 	previousHandler(parent, from, distance) {
-		let sd = from == "snap" ? -1 : -1 * parent.scrollBy;
+      let sd;
+      if (from == "snap") {
+         sd = -1;
+      } else if (from == "scrollto") {
+         sd = distance;
+      } else {
+         sd = -parent.scrollBy;
+      }
 		let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
@@ -585,10 +590,10 @@ class Roundabout {
 				(dist >= parent.swipe_threshold && parent.infinite) ||
 				(dist >= parent.swipe_threshold &&
 					!parent.infinite &&
-					parent.onPage > 0 &&
+					parent.onPage >= 0 &&
 					parent.onPage < parent.pages.length - parent.pagesToShow)
 			) {
-				parent.canSnap = true;
+            parent.canSnap = true;
 			} else {
 				parent.canSnap = false;
 			}
@@ -673,7 +678,6 @@ class Roundabout {
 
 	// snap to a new slide once touch or drag ends
    snap(al, dir, parent) {
-      console.log("snap",al);
 		if (al) {
 			if (dir > 0) {
 				parent.previousHandler(parent, "snap");
