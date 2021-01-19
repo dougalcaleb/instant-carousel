@@ -27,6 +27,7 @@ The focus of this plugin is quick and easy setup, with the freedom to customize 
 
 To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another script file (or use the one provided) to contain your settings, linked *after* ```roundabout.js```. Using this method, your HTML should look like this:
 ```html
+<!-- your webpage code up here... -->
 <!-- ... -->
 
    <script src="path/to/roundabout.js"></script>
@@ -137,7 +138,7 @@ swipe_threshold | Integer | Defines the distance in px that the user must swipe 
 swipe_multiplier | Number | Defines the multiplier for swipe interactions. | 1
 swipe_resistance | Number | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1, where 0 is no resistance and 1 is full resistance. | 0.95
 showWrappedPage | Boolean | Determines if the end page on the opposite end will show when dragging past the end of a non-infinite carousel. | false
-navigation_behavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the new page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
+navigation_behavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the focused page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
 
 <br/>
 
