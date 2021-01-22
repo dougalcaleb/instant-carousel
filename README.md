@@ -1,4 +1,6 @@
 ### Jump to:
+[Repository Structure](#repository-structure)
+
 [Setup](#setup)
 
 [General Settings](#general-settings)
@@ -17,7 +19,17 @@
 
 <br/>
 
-### Setup
+### Repository Structure:
+
+Releases: Complete, stable versions. May not have fixes for recently discovered issues or the most recent features, but are free of issues that break general usability. Recommended download for most cases.
+
+Master branch: Most up-to-date but stable version. May not have all of the features intended for the next release but potentially addresses bugs that the releases do not. Download if you need these features and/or bugfixes now.
+
+1.x.x branch: Active development. No guaranteed stability. Download and use is not recommended.
+
+<br/>
+
+### Setup:
 
 The focus of this plugin is quick and easy setup, with the freedom to customize extensively.
 
