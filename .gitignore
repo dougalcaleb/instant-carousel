@@ -11,7 +11,7 @@ index.html
 /css/
 /scss/
 # roundabout.js
-dev-settings.js
+# dev-settings.js
 # Misc
 ideas.txt
 *.backup.*
