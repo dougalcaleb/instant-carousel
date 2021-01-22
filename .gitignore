@@ -1,6 +1,18 @@
+# Concept / preproduction
 /prepro/*
 /concept/*
 /concepts/*
+# Auto-generated files
 /.vscode/*
 debug.log
+# Development
+carousel.html
+index.html
+/css/
+/scss/
+# roundabout.js
+dev-settings.js
+# Misc
 ideas.txt
+# Production
+roundabout.min.js
