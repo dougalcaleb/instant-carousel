@@ -14,5 +14,6 @@ index.html
 dev-settings.js
 # Misc
 ideas.txt
+*.backup.*
 # Production
 roundabout.min.js
