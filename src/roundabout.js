@@ -824,8 +824,8 @@ class Roundabout {
 			}
          newPage.style.height = "100%";
 			// Give a background image (if supplied)
-			if (this.pages[a].background_image) {
-				newPage.style.background = "url(" + this.pages[a].background_image + ")";
+			if (this.pages[a].backgroundImage) {
+				newPage.style.background = "url(" + this.pages[a].backgroundImage + ")";
 				//! make changeable
 				newPage.style.backgroundSize = "cover";
 				newPage.style.backgroundPosition = "center center";
