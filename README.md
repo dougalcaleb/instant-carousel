@@ -131,7 +131,7 @@ autoScroll_pauseOnHover | Boolean | Determines if autoscroll will be paused when
 autoScroll_startAfter | Integer | Time in miliseconds for the first automatic scroll to happen after the page loads. | 5000
 autoScroll_direction | String | Defines the direction for the autoscroll to scroll. Either "right" or "left". | "right"
 transition | Integer | Time in miliseconds to transition between pages when scrolling. | 300
-transition_timingFunction | String | Defines the timing function for transitions between pages. Can be any valid CSS3 timing value. | "ease"
+transitionFunction | String | Defines the timing function for transitions between pages. Can be any valid CSS3 timing value. | "ease"
 throttle | Boolean | Determines if user interactions will be throttled. | true
 throttle_timeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300
 throttle_matchTransition | Boolean | Determines if the "throttle_timeout" setting will match the "transition" setting. Overrides "throttle_timeout". | true
