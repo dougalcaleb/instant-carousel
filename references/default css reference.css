@@ -91,5 +91,5 @@ Nothing is dependant on the styles contained in this file. Edit or delete as you
 }
 
 .roundabout-page { /* One indivdual page */
-   /* Cannot change: position */
+   /* Cannot change: position, height, width */
 }

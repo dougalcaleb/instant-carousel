@@ -71,6 +71,9 @@ Methods
 ✖ scrollTo
 ✖ Scroll next/prev
 ✖ Pause/play autoscroll
+✖ Add page
+✖ Remove page
+✖ Update page
 
 Properties
 ✖ Classlist
@@ -84,8 +87,7 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-   -  Elements are underneath swipe overlay
-      -  Try to remove overlay and use the cascading-to-children default event thing
+
 */
 
 // To do:
@@ -102,6 +104,7 @@ Custom settings?
    -  Give necessary elements inline style instead of stylesheet props
 -  Size falloff
 -  Minimal pages support
+-  Settings for background images
 */
 
 let roundabout = {
@@ -119,7 +122,7 @@ class Roundabout {
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
       this.navigation = settings.navigation === false ? settings.navigation : true;
-      this.navigationBehavior = (settings.navigationBehavior && this.infinite) ? settings.navigationBehavior : "direction";
+      this.navigationBehavior = (settings.navigationBehavior && this.infinite) ? settings.navigationBehavior : "nearest";
 		this.autoscroll = settings.autoscroll ? settings.autoscroll : false;
 		this.autoscrollSpeed = settings.autoscrollSpeed >= 0 ? settings.autoscrollSpeed : 5000;
 		this.autoscrollTimeout = settings.autoscrollTimeout >= 0 ? settings.autoscrollTimeout : 15000;
@@ -177,7 +180,7 @@ class Roundabout {
 		this.uniqueId = roundabout.on + 1;
 		// internal
 		this.allowInternalStyles = true;
-		this.allowInternalHTML = true;
+      this.allowInternalHTML = true;
 		// swipe
 		this.sx = 0;
 		this.sy = 0;
@@ -741,16 +744,22 @@ class Roundabout {
 			newClass = newClass.join("");
 			newCarousel.classList.add(newClass);
 		}
-		document.querySelector(this.parent).appendChild(newCarousel);
+      document.querySelector(this.parent).appendChild(newCarousel);
+      document.querySelector(this.id).style.position = "relative";
+      document.querySelector(this.id).style.overflow = "hidden";
+      document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.height = "100%";
+      document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.width = "100%";
+      document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.position = "absolute";
+      document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.left = "0";
 	}
 
 	// Generates the default CSS styling
 	defaultCSS() {
 		let css;
-		let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
+		// let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
 		switch (this.visualPreset) {
          case 0:
-            css = `.roundabout-wrapper{height:80vh;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #fff;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
+            css = `.roundabout-wrapper{height:80vh;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2;}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #fff;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
 				break;
 		}
 		let newStyle = document.createElement("STYLE");
@@ -758,10 +767,10 @@ class Roundabout {
 		newStyle.innerHTML = css;
 		document.getElementsByTagName("head")[0].appendChild(newStyle);
 
-		let newReqStyle = document.createElement("STYLE");
-		newReqStyle.setAttribute("type", "text/css");
-		newReqStyle.innerHTML = requiredCss;
-		document.getElementsByTagName("head")[0].appendChild(newReqStyle);
+		// let newReqStyle = document.createElement("STYLE");
+		// newReqStyle.setAttribute("type", "text/css");
+		// newReqStyle.innerHTML = requiredCss;
+		// document.getElementsByTagName("head")[0].appendChild(newReqStyle);
 	}
 
 	// Generates the required CSS. Seperate from default styling
@@ -839,10 +848,10 @@ class Roundabout {
 				newPage.style.width = "100%";
 			}
          newPage.style.height = "100%";
+         newPage.style.position = "absolute";
 			// Give a background image (if supplied)
 			if (this.pages[a].backgroundImage) {
 				newPage.style.background = "url(" + this.pages[a].backgroundImage + ")";
-				//! make changeable
 				newPage.style.backgroundSize = "cover";
 				newPage.style.backgroundPosition = "center center";
          }
@@ -1001,7 +1010,7 @@ class Roundabout {
 					this.setTouch(event, this);
 				},
 				false
-			);
+         );
 		}
 	}
 
