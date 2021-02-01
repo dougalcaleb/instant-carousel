@@ -177,8 +177,6 @@ offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-pages > html | Not implemented | Upcoming
-pages > css | Not implemented | Upcoming
 autoGenCSS | Partially implemented | In progress
 visualPreset | Not implemented | Upcoming
 type: "fade" | Not implemented | Upcoming
