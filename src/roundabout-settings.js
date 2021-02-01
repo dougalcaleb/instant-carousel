@@ -1,8 +1,5 @@
 new Roundabout({
    id: "#carouselOne",
-   scrollBy: 2,
-   pagesToShow: 2,
-   infinite: false,
    pages: [
       {
          backgroundImage: "../images/numbers/0.png",
