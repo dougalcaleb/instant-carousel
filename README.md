@@ -33,12 +33,12 @@ Master branch: Most up-to-date but stable version. May not have all of the featu
 
 The focus of this plugin is quick and easy setup, with the freedom to customize extensively.
 
-To add Roundabout to your project, download and link the ```roundabout.js``` file to your HTML. Create another JS file (or use the one provided) to contain your settings, linked *after* ```roundabout.js```. Using this method, your HTML should look like this:
+To add Roundabout to your project, download and link the ```roundabout.min.js``` file to your HTML. Create another JS file (or use the one provided) to contain your settings, linked *after* ```roundabout.min.js```. Using this method, your HTML should look like this:
 ```html
 <!-- your webpage code up here... -->
 <!-- ... -->
 
-   <script src="path/to/roundabout.js"></script>
+   <script src="path/to/roundabout.min.js"></script>
    <script src="path/to/roundabout-settings.js"></script>
 </body>
 </html>
@@ -46,7 +46,7 @@ To add Roundabout to your project, download and link the ```roundabout.js``` fil
 
 Creating a new carousel is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified by extensions.
 ```javascript
-new Roundabout =({
+new Roundabout = ({
    // include your settings here...
 });
 ```
@@ -69,7 +69,6 @@ Here's an example of a simple carousel you can get up and running quickly:
 new Roundabout = ({
    parent: "#myCarouselWrap",
    autoScroll: true,
-   type: "stack",
    pages: [
       {
          backgroundImage: "../images/myFirstPage.png",
@@ -112,8 +111,8 @@ visualPreset | Integer | Selects one of the preset visual styles to display. Cur
 
 Setting | Type | Description
 --------|------|------------
-backgroundImage | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to the ```roundabout.js``` file.
-css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead.
+backgroundImage | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to the ```roundabout.min.js``` file.
+css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead. <ul><li>By default, elements are protected from user interaction by the swipe overlay. To make them accessible to the user (for cases like buttons), give them a ```position``` of ```relative``` or ```absolute``` and a ```z-index``` of ```3``` or higher. </li><li>Styles included are not applied exclusively to the HTML in the corresponding page. This setting is mostly an organizational helper. Make sure to utilize classes and IDs accordingly.</li></ul> 
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
 
 Note: there is a minimum requirement of 3 pages as of version 0.2.0. Support for as few as 2 pages will arrive in a future update.
@@ -198,14 +197,26 @@ Reference files for creating custom visuals can be found in the "references" fol
 ### Patch Notes:
 
 ### Jump to:
-[v1.0.0](#v100)
+[v1.1.0](#v110) | [v1.0.0](#v100)
+
+#### v1.1.0:
+Features:
+*  HTML for pages
+   *  HTML elements can be added to pages via the "html" setting in the "pages" array
+   *  CSS can also be added via the "css" property
+*  Better settings validation
+*  HTML elements in pages can now be protected or interactible
+Bugfixes:
+*  Setting names have been standardized to normal camel case
+*  Added scrollBy setting to documentation
+*  Fixed inconsistencies in documentation and template files
 
 #### v1.0.0:
-* Features:
-   * Carousel type "normal"
-      * All pages are next to each other and move in sync
-      * Swipe/draggable, support for a nav bar and scroll buttons
-   * Autoscroll
-   * User interaction throttling
-   * Automatic HTML and CSS structure
-   * Full documentation
+Features:
+* Carousel type "normal"
+   * All pages are next to each other and move in sync
+   * Swipe/draggable, support for a nav bar and scroll buttons
+* Autoscroll
+* User interaction throttling
+* Automatic HTML and CSS structure
+* Full documentation
