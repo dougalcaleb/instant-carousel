@@ -56,6 +56,7 @@ EXTRA
 ✖ Presets for bubble visuals
 ✖ Which keys to include in navigation can be specified
 SCRIPTING (after v1.0)
+On Functions
 ✖ onScroll(callback, includeAutoscroll)
 ✖ onScrollEnd(callback, includeAutoscroll)
 ✖ onDragStart(callback)
@@ -65,25 +66,40 @@ SCRIPTING (after v1.0)
 ✖ onScrollRightEnd(callback, includeAutoscroll)
 ✖ onScrollLeftEnd(callback, includeAutoscroll)
 -  Change page stuff?
-RELEASES
--  Each release has a .min file
--  Replace variables names with extremely short versions and letters where possible
--  Create a gitignored key file to easily replace variable names
--  Update checker with Github API (https://docs.github.com/en/free-pro-team@latest/rest/reference/repos#list-releases)
-Try to find a way to add "expansions": additional featuresets included in seperate files to reduce the total load size
--  scripting
--  presets pack
+Methods
+✖ Change page elements
+✖ scrollTo
+✖ Scroll next/prev
+✖ Pause/play autoscroll
+
+Properties
+✖ Classlist
+✖ Drag position
+✖ onPage
+✖ Active breakpoint
+
+Custom settings?
 */
 
 
 //! KNOWN ISSUES:
 /*
-   
+   -  Elements are underneath swipe overlay
+      -  Try to remove overlay and use the cascading-to-children default event thing
 */
 
 // To do:
 /*
+-  Better erroring
+   -  Error on pages issues
+   -  More try/catch
+-  Trimmed vs. All nav buttons
+-  Lazy Loading: all, hidden or none
+-  Mouse/touch swipe
+
+-  Pages OR HTML element
 -  Overhaul CSS system
+   -  Give necessary elements inline style instead of stylesheet props
 -  Size falloff
 -  Minimal pages support
 */
