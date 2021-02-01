@@ -198,14 +198,23 @@ Reference files for creating custom visuals can be found in the "references" fol
 ### Patch Notes:
 
 ### Jump to:
-[v1.0.0](#v100)
+[v1.1.0](#v110) | [v1.0.0](#v100)
 
+#### v1.1.0:
+Features:
+*  HTML for pages
+   *  HTML elements can be added to pages via the "html" setting in the "pages" array
+   *  CSS can also be added via the "css" property
+*  Better settings validation
+Bugfixes:
+*  Setting names have been standardized to normal camel case
+*  Added scrollBy setting to documentation
 #### v1.0.0:
-* Features:
-   * Carousel type "normal"
-      * All pages are next to each other and move in sync
-      * Swipe/draggable, support for a nav bar and scroll buttons
-   * Autoscroll
-   * User interaction throttling
-   * Automatic HTML and CSS structure
-   * Full documentation
+Features:
+* Carousel type "normal"
+   * All pages are next to each other and move in sync
+   * Swipe/draggable, support for a nav bar and scroll buttons
+* Autoscroll
+* User interaction throttling
+* Automatic HTML and CSS structure
+* Full documentation
