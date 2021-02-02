@@ -110,7 +110,7 @@ visualPreset | Integer | Selects one of the preset visual styles to display. Cur
 
 Setting | Type | Description
 --------|------|------------
-backgroundImage | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is relative to the ```roundabout.min.js``` file.
+backgroundImage | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is either absolute or relative to the HTML file that Roundabout is linked to.
 css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead. <ul><li>By default, elements are protected from user interaction by the swipe overlay. To make them accessible to the user (for cases like buttons), give them a ```position``` of ```relative``` or ```absolute``` and a ```z-index``` of ```3``` or higher. </li><li>Styles included are not applied exclusively to the HTML in the corresponding page. This setting is mostly an organizational helper. Make sure to utilize classes and IDs accordingly.</li></ul> 
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
 
