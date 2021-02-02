@@ -21,9 +21,9 @@
 
 ### Repository Structure:
 
-Releases: Complete, stable versions. May not have fixes for recently discovered issues or the most recent features, but are free of issues that break general usability. Recommended for highest stability.
-
 Master branch: Most up-to-date but stable version. May not have all of the features intended for the next release but potentially addresses bugs that the releases do not, as well as containing the most recent features. Recommended for most cases.
+
+Releases: Complete, stable versions. May not have fixes for recently discovered issues or the most recent features, but are free of issues that break general usability. Recommended for highest stability.
 
 1.x.x branch: Active development. No guaranteed stability. Download and use is not recommended.
 
@@ -35,7 +35,6 @@ The focus of this plugin is quick and easy setup, with the freedom to customize 
 
 To add Roundabout to your project, download and link the ```roundabout.min.js``` file to your HTML. Create another JS file (or use the one provided) to contain your settings, linked *after* ```roundabout.min.js```. Using this method, your HTML should look like this:
 ```html
-<!-- your webpage code up here... -->
 <!-- ... -->
 
    <script src="path/to/roundabout.min.js"></script>
@@ -68,7 +67,7 @@ Here's an example of a simple carousel you can get up and running quickly:
 ```javascript
 new Roundabout = ({
    parent: "#myCarouselWrap",
-   autoScroll: true,
+   autoscroll: true,
    pages: [
       {
          backgroundImage: "../images/myFirstPage.png",
@@ -123,12 +122,12 @@ Note: there is a minimum requirement of 3 pages as of version 0.2.0. Support for
 
 Setting | Type | Description | Default
 --------|------|-------------|--------
-autoScroll | Boolean | Determines whether the autoscroll will be active or not. | false
-autoScrollDirection | String | Defines the direction for the autoscroll to scroll. Either "right" or "left". | "right"
-autoScrollPauseOnHover | Boolean | Determines if autoscroll will be paused when user mouses over the carousel. | false
-autoScrollSpeed | Integer | Time in miliseconds between automatically scrolling between pages. | 5000
-autoScrollStartAfter | Integer | Time in miliseconds for the first automatic scroll to happen after the page loads. | 5000
-autoScrollTimeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000
+autoscroll | Boolean | Determines whether the autoscroll will be active or not. | false
+autoscrollDirection | String | Defines the direction for the autoscroll to scroll. Either "right" or "left". | "right"
+autoscrollPauseOnHover | Boolean | Determines if autoscroll will be paused when user mouses over the carousel. | false
+autoscrollSpeed | Integer | Time in miliseconds between automatically scrolling between pages. | 5000
+autoscrollStartAfter | Integer | Time in miliseconds for the first automatic scroll to happen after the page loads. | 5000
+autoscrollTimeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000
 infinite | Boolean | Determines if the carousel can scroll infinitely. | true
 keys | Boolean | Determines if the arrow keys can be used for navigation. All carousels on the page will be affected by the keypress. | true
 navigationBehavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the focused page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
@@ -177,8 +176,6 @@ offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-pages > html | Not implemented | Upcoming
-pages > css | Not implemented | Upcoming
 autoGenCSS | Partially implemented | In progress
 visualPreset | Not implemented | Upcoming
 type: "fade" | Not implemented | Upcoming
@@ -206,9 +203,9 @@ Features:
    *  CSS can also be added via the "css" property
 *  Better settings validation
 *  HTML elements in pages can now be protected or interactible
+
 Bugfixes:
 *  Setting names have been standardized to normal camel case
-*  Added scrollBy setting to documentation
 *  Fixed inconsistencies in documentation and template files
 
 #### v1.0.0:
