@@ -74,6 +74,7 @@ Methods
 ✖ Add page
 ✖ Remove page
 ✖ Update page
+✖ Load page image
 
 Properties
 ✖ Classlist
@@ -101,6 +102,7 @@ Custom settings?
 
 -  Pages OR HTML element
 -  Overhaul CSS system
+   -  Give necessary elements inline style instead of stylesheet props
 -  Size falloff
 -  Minimal pages support
 -  Settings for background images
@@ -136,6 +138,7 @@ class Roundabout {
 		this.throttleSwipe = settings.throttleSwipe === false ? settings.throttleSwipe : true;
 		this.throttleButtons = settings.throttleButtons === false ? settings.throttleButtons : true;
       this.throttleNavigation = settings.throttleNavigation === false ? settings.throttleNavigation : true;
+      this.lazyLoad = settings.lazyLoad ? settings.lazyLoad : "none";
       
 		this.keys = settings.keys === false ? settings.keys : true;
 		this.swipe = settings.swipe === false ? settings.swipe : true;
@@ -174,6 +177,7 @@ class Roundabout {
 		this.orderedPagesMainIndex = 0;
 		this.scrollIsAllowed = true;
 		this.onPage = 0;
+      this.handledLoad = false;
 		this.uniqueId = roundabout.on + 1;
 		// internal
 		this.allowInternalStyles = true;
@@ -303,6 +307,7 @@ class Roundabout {
          for (let a = 0; a < Math.abs(distance); a++) {
             pos.push(pos.shift());
          }
+         // console.log(pos);
 			// position all pages to correct place before move and remove hidden pages
          for (let a = 0; a < this.positions.length; a++) {
 				let beforeMove = this.calcPagePos(pos[a]);
@@ -771,26 +776,7 @@ class Roundabout {
 
 	// Generates the required CSS. Seperate from default styling
 	internalCSS() {
-		let css = `.roundabout-${this.uniqueId}-has-transition {
-         transition:${this.transition / 1000}s; 
-         transition-timing-function:${this.transitionFunction}} 
-         .roundabout-has-no-transition{
-            transition:none;} 
-         .roundabout-hidden-page {
-            visibility: hidden}
-         .roundabout-error-message {
-            position:relative;
-            margin:auto;
-            left:0;
-            right:0;
-            top:0;
-            bottom:0;
-            border-radius:5px;
-            border:3px solid black;
-            background: white;
-            text-align:center;
-            font-family:sans-serif;
-            width:30%;}`;
+		let css = `.roundabout-${this.uniqueId}-has-transition {transition:${this.transition / 1000}s;transition-timing-function:${this.transitionFunction}}.roundabout-has-no-transition{transition:none;}.roundabout-hidden-page {visibility: hidden}.roundabout-error-message {position:relative;margin:auto;left:0;right:0;top:0;bottom:0;border-radius:5px;border:3px solid black;background: white;text-align:center;font-family:sans-serif;width:30%;}`;
 		let newStyle = document.createElement("STYLE");
 		newStyle.setAttribute("type", "text/css");
 		newStyle.innerHTML = css;
@@ -845,11 +831,19 @@ class Roundabout {
 			}
          newPage.style.height = "100%";
          newPage.style.position = "absolute";
-			// Give a background image and inner elements (if supplied)
-			if (this.pages[a].backgroundImage) {
+			// Give a background image (if supplied)
+         if (
+            (this.pages[a].backgroundImage && this.lazyLoad == "none") ||
+            ((this.pages[a].backgroundImage && this.lazyLoad == "hidden") && (a < this.pagesToShow + this.scrollBy || a >= this.pages.length - this.scrollBy))
+         ) {
 				newPage.style.background = "url(" + this.pages[a].backgroundImage + ")";
 				newPage.style.backgroundSize = "cover";
 				newPage.style.backgroundPosition = "center center";
+         } else if (this.lazyLoad == "all" && !this.handledLoad) {
+            this.handledLoad = true;
+            window.addEventListener("load", () => {
+               this.lazyLoad(0, true);
+            });
          }
          if (this.pages[a].html) {
             newPage.innerHTML = this.pages[a].html;
@@ -1045,6 +1039,21 @@ class Roundabout {
    
    ==================================================================================================================
    */
+   
+   // lazy load a page image
+   lazyLoad(pageId, loadNext, loadAll) {
+      console.log(`Lazy loading page ${pageId} at ${Date.now()}`);
+      document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).style.background = "url(" + this.pages[a].backgroundImage + ")";
+		document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).style.backgroundSize = "cover";
+      document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).style.backgroundPosition = "center center";
+      if (loadNext) {
+         console.log(`Continuing on page ${pageId} at ${Date.now()}`);
+         document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).addEventListener("load", () => {
+            console.log(`Moving on to ${pageId + 1} at ${Date.now()}`);
+            this.lazyLoad(pageId + 1, loadAll, loadAll);
+         });
+      }
+   }
 
 	// after a transition, places each page where they should be for the next transiton
 	positionPages() {
@@ -1154,7 +1163,8 @@ class Roundabout {
 		console.error(message);
 	}
 
-   debug_output() {
-      
+	debug_output() {
+		// console.log(this.orderedPages);
+		// console.log(this.positions);
 	}
 }
