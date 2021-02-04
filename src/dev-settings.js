@@ -1,8 +1,9 @@
 const c = new Roundabout({
    lazyLoad: "hidden",
-   pagesToShow: 2,
+   pagesToShow: 3,
    scrollBy: 2,
    transition: 800,
+   swipeMultiplier: 2,
    pages: [
       {
          backgroundImage: "../images/numbers/0.png",

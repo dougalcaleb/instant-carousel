@@ -97,6 +97,9 @@ Custom settings?
 // To do:
 /*
 
+-  Fix scrollTo hidden loading
+-  Overhaul CSS system
+
 -  Better erroring
    -  Error on pages issues
    -  More try/catch
@@ -104,12 +107,12 @@ Custom settings?
 -  Mouse/touch swipe
 
 -  Pages OR HTML element
--  Overhaul CSS system
    -  Give necessary elements inline style instead of stylesheet props
 -  Size falloff
 -  Minimal pages support
 -  Settings for background images
 -  Navigation wrapping
+-  Disable buttons
 */
 
 //? Ideas:
@@ -125,7 +128,7 @@ let roundabout = {
 };
 
 class Roundabout {
-	constructor(settings) {
+   constructor(settings) {
 		this.pages = settings.pages ? settings.pages : {};
 		this.id = settings.id ? settings.id : ".myCarousel";
       this.type = settings.type ? settings.type : "normal";
@@ -301,8 +304,7 @@ class Roundabout {
          }
 
          if (this.lazyLoad == "hidden") {
-            // console.log(`loading pages (from next) ${this.orderedPages.slice(this.pagesToShow, this.pagesToShow+distance)}`);
-            this.load(this.orderedPages.slice(this.pagesToShow, this.pagesToShow+distance));
+            this.load(this.orderedPages.slice(this.pagesToShow, this.pagesToShow+this.scrollBy));
          }
 		}
    }
@@ -325,7 +327,6 @@ class Roundabout {
          for (let a = 0; a < Math.abs(distance); a++) {
             pos.push(pos.shift());
          }
-         // console.log(pos);
 			// position all pages to correct place before move and remove hidden pages
          for (let a = 0; a < this.positions.length; a++) {
 				let beforeMove = this.calcPagePos(pos[a]);
@@ -333,7 +334,6 @@ class Roundabout {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-            // console.log(`beforeMove for page ${this.orderedPages[a]} is ${beforeMove}. Derived from ${pos[a]}`);
          }
 
 			// transition wrapper
@@ -369,8 +369,7 @@ class Roundabout {
             document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
          }
          if (this.lazyLoad == "hidden") {
-            // console.log(`loading pages (from prev) ${this.orderedPages.slice(this.orderedPages.length + distance, this.orderedPages.length)}`);
-            this.load(this.orderedPages.slice(this.orderedPages.length + distance, this.orderedPages.length));
+            this.load(this.orderedPages.slice(this.orderedPages.length - this.scrollBy, this.orderedPages.length));
          }
 		}
    }
@@ -378,11 +377,9 @@ class Roundabout {
    scrollTo(page) {
       if (this.lazyLoad == "hidden") {
          let toLoad = [];
-         for (let a = 0; a < Math.abs(page - this.onPage); a++) {
-            toLoad.push((page - this.onPage + page) % this.pages.length);
+         for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
+            toLoad.push(this.orderedPages[(a + page) % this.orderedPages.length]);
          }
-         console.log(`need to load ${this.scrollBy*2 + this.pagesToShow + Math.abs(page - this.onPage)} pages`);
-         console.log(`(scrollto) loading pages ${toLoad}`);
          this.load(toLoad);
       }
       if (!this.infinite || this.navigationBehavior == "direction") {
@@ -867,16 +864,14 @@ class Roundabout {
             (this.pages[a].backgroundImage && this.lazyLoad == "none") ||
             ((this.pages[a].backgroundImage && this.lazyLoad == "hidden") && (a < this.pagesToShow + this.scrollBy || a >= this.pages.length - this.scrollBy))
          ) {
-            console.log(`Instant loading page ${a}`);
 				newPage.style.background = "url(" + this.pages[a].backgroundImage + ")";
 				newPage.style.backgroundSize = "cover";
             newPage.style.backgroundPosition = "center center";
             this.pages[a].isLoaded = true;
          } else if (this.lazyLoad == "all" && !this.handledLoad) {
-            //! FIX THIS
             this.handledLoad = true;
             window.addEventListener("load", () => {
-               this.load(0, true, true);
+               this.load(this.orderedPages);
             });
          }
          if (this.pages[a].html) {
@@ -927,7 +922,6 @@ class Roundabout {
             newNavBtn.addEventListener("click", () => {
                this.scrollTo(a);
             });
-            newNavBtn.innerText = a;
          }
       }
 
@@ -1076,45 +1070,39 @@ class Roundabout {
    */
    
    // lazy load a page image
-   load(pageIds, allowed = false) {
+   load(pageIds = [], _a = false) {
       pageIds.forEach((id) => {
          if (!this.loadQueue.includes(id)) {
             this.loadQueue.push(id);
          }
       });
       if (this.loadQueue.length == 0) {
-         console.log("Complete.");
+         // console.log("Load Queue complete.");
          this.loadingPages = false;
          return;
       }
       if (!this.loadingPages) {
-         allowed = true;
+         _a = true;
       }
-      if (!allowed) {
-         console.warn("Not allowed to continue");
+      if (!_a) {
          return;
       }
-      console.log(`Loading pageIds: ${this.loadQueue}`);
       if (!this.pages[this.loadQueue[0]].isLoaded) {
          this.loadingPages = true;
-         console.log(`Page ${this.loadQueue[0]} was not loaded.`);
          let bgImg = new Image();
          bgImg.onload = () => {
-            console.log(`giving bgimg to ${this.loadQueue[0]}`);
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.loadQueue[0]}`).style.backgroundImage = 'url(' + bgImg.src + ')';
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.loadQueue[0]}`).style.backgroundSize = "cover";
             document.querySelector(`.roundabout-${this.uniqueId}-page-${this.loadQueue[0]}`).style.backgroundPosition = "center center";
 
-            console.log(`${this.loadQueue[0]} has loaded`);
             this.pages[this.loadQueue[0]].isLoaded = true;
 
             this.loadQueue = this.loadQueue.splice(1, this.loadQueue.length - 1);
             this.load(this.loadQueue, true);
          };
          bgImg.src = this.pages[this.loadQueue[0]].backgroundImage;
-         console.warn(`Set onload for page ${this.loadQueue[0]}`);
+         // console.warn(`Set onload for page ${this.loadQueue[0]}`);
       } else {
-         console.log(`Page ${this.loadQueue[0]} was loaded. Moving on.`);
          this.loadQueue = this.loadQueue.splice(1, this.loadQueue.length - 1);
          this.load(this.loadQueue, true);
       }
