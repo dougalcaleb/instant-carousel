@@ -153,7 +153,6 @@ throttleTimeout | Integer | Time in miliseconds to disallow user interaction for
 
 Setting | Type | Description | Default | Applies to Type(s)
 --------|------|-------------|---------|-------------------
-direction | String | Defines the movement of pages onto and off of the stack. <ul><li>"both": scrolling brings in the next page from the appropriate side that sits on top</li><li>"left": scrolling left brings in a new page from the left that sits on top. Scrolling right moves the topmost page to the left to uncover the page below</li><li>"right": scrolling right brings in a new page from the right that sits on top. Scrolling left moves the topmost page to the right to uncover the page below </li></ul> | "both" | "stack"
 enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | "normal"
 offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
 offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
@@ -172,7 +171,6 @@ Setting | Status | Time Frame
 --------|--------|-----------
 enlargeCenter | Not implemented | Upcoming
 sizeFalloff | Not implemented | Upcoming
-direction | Not implemented | Upcoming
 offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
