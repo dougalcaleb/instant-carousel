@@ -43,7 +43,7 @@ To add Roundabout to your project, download and link the ```roundabout.min.js```
 </html>
 ```
 
-Creating a new carousel is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified by extensions.
+Creating a new carousel is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified.
 ```javascript
 new Roundabout = ({
    // include your settings here...
@@ -101,7 +101,7 @@ mobileBreakpoint | Integer | Maximum size in pixels for the screen to be to appl
 navigation | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
 pages | Array | Contains unnamed objects containing elements for each corresponding page. See [Pages Settings](#pages-settings) for all available options. | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
-type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"stack": pages slide in from the sides to overlap the current page and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
+type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
 visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
 
 <br/>
@@ -130,6 +130,7 @@ autoscrollStartAfter | Integer | Time in miliseconds for the first automatic scr
 autoscrollTimeout | Integer | Time in miliseconds after user interaction to resume autoscroll. | 15000
 infinite | Boolean | Determines if the carousel can scroll infinitely. | true
 keys | Boolean | Determines if the arrow keys can be used for navigation. All carousels on the page will be affected by the keypress. | true
+lazyLoad | String | Selects the type of lazy loading to use <ul><li>"all": After the webpage has finished loading, all supplied images will load one-by-one.</li><li>"hidden": Each image that is initially shown will be loaded with the webpage, as well as images within one scroll in either direction. Once the user scrolls, the new images within one scroll will be loaded in.</li><li>"none": All images are loaded with the webpage.</li></ul> | "none"
 navigationBehavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the focused page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
 swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true
 swipeMultiplier | Number | Defines the multiplier for swipe interactions. | 1
@@ -179,7 +180,6 @@ type | Partially implemented | In progress
 autoGenCSS | Partially implemented | In progress
 visualPreset | Not implemented | Upcoming
 type: "fade" | Not implemented | Upcoming
-type: "stack" | Not implemented | Upcoming
 
 <br/>
 
@@ -195,6 +195,14 @@ Reference files for creating custom visuals can be found in the "references" fol
 
 ### Jump to:
 [v1.1.0](#v110) | [v1.0.0](#v100)
+
+#### v1.2.0: (Incomplete)
+Features:
+*  New setting: lazyLoad
+   *  "all", "hidden", "none"
+   *  Selects the type of backgroundImage loading to use.
+   *  Plans for custom loading
+Bugfixes:
 
 #### v1.1.0:
 Features:
