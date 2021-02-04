@@ -99,7 +99,7 @@ id | String | Sets the CSS selector for the carousel's parent element to allow f
 mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobileBreakpoint". | { <br/>swipeThreshold: 50 <br/>}
 mobileBreakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700
 navigation | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
-pages | Array | Contains unnamed objects containing elements for each corresponding page. See [Pages Settings](#pages-settings) for all available options. | []
+pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings](#pages-settings) for all available options. | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
 visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
@@ -113,8 +113,6 @@ Setting | Type | Description
 backgroundImage | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is either absolute or relative to the HTML file that Roundabout is linked to.
 css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead. <ul><li>By default, elements are protected from user interaction by the swipe overlay. To make them accessible to the user (for cases like buttons), give them a ```position``` of ```relative``` or ```absolute``` and a ```z-index``` of ```3``` or higher. </li><li>Styles included are not applied exclusively to the HTML in the corresponding page. This setting is mostly an organizational helper. Make sure to utilize classes and IDs accordingly.</li></ul> 
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
-
-Note: there is a minimum requirement of 3 pages as of version 0.2.0. Support for as few as 2 pages will arrive in a future update.
 
 <br/>
 
@@ -132,7 +130,7 @@ infinite | Boolean | Determines if the carousel can scroll infinitely. | true
 keys | Boolean | Determines if the arrow keys can be used for navigation. All carousels on the page will be affected by the keypress. | true
 lazyLoad | String | Selects the type of lazy loading to use <ul><li>"all": After the webpage has finished loading, all supplied images will load one-by-one.</li><li>"hidden": Each image that is initially shown will be loaded with the webpage, as well as images within one scroll in either direction. Once the user scrolls, the new images within one scroll will be loaded in.</li><li>"none": All images are loaded with the webpage.</li></ul> | "none"
 navigationBehavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the focused page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
-swipe | Boolean | Determines if the carousel can be click-dragged or swiped. | true
+swipe | Boolean | Determines if the carousel can be swiped. Supports both mouse and touch. v1.2.0: Swipe is not available when fewer than 3 pages are supplied. | true
 swipeMultiplier | Number | Defines the multiplier for swipe interactions. | 1
 swipeResistance | Number | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1, where 0 is no resistance and 1 is full resistance. | 0.95
 swipeThreshold | Integer | Defines the distance in px that the user must swipe or drag to advance to the next page instead of snapping back to the current one. | 300
@@ -192,9 +190,9 @@ Reference files for creating custom visuals can be found in the "references" fol
 ### Patch Notes:
 
 ### Jump to:
-[v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.2.0](#v120%20(Alpha)) | [v1.1.0](#v110) | [v1.0.0](#v100)
 
-#### v1.2.0: (Incomplete)
+#### v1.2.0: (Alpha)
 Features:
 *  New setting: lazyLoad
    *  "all", "hidden", "none"
