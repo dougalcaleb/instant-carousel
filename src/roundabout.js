@@ -55,7 +55,9 @@ EXTRA
 ✖ Presets for carousel visuals
 ✖ Presets for bubble visuals
 ✖ Which keys to include in navigation can be specified
-SCRIPTING (after v1.0)
+
+
+SCRIPTING
 On Functions
 ✖ onScroll(callback, includeAutoscroll)
 ✖ onScrollEnd(callback, includeAutoscroll)
@@ -75,12 +77,13 @@ Methods
 ✖ Remove page
 ✖ Update page
 ✖ Load page image
-
 Properties
 ✖ Classlist
 ✖ Drag position
 ✖ onPage
 ✖ Active breakpoint
+Misc
+✖ Async lazy load promises
 
 Custom settings?
 */
@@ -93,11 +96,11 @@ Custom settings?
 
 // To do:
 /*
+
 -  Better erroring
    -  Error on pages issues
    -  More try/catch
 -  Trimmed vs. All nav buttons
--  Lazy Loading: all, hidden or none
 -  Mouse/touch swipe
 
 -  Pages OR HTML element
@@ -106,6 +109,14 @@ Custom settings?
 -  Size falloff
 -  Minimal pages support
 -  Settings for background images
+-  Navigation wrapping
+*/
+
+//? Ideas:
+/*
+-  Insert properties into pages array
+   -  isLoaded
+   -  position
 */
 
 let roundabout = {
@@ -178,6 +189,8 @@ class Roundabout {
 		this.scrollIsAllowed = true;
 		this.onPage = 0;
       this.handledLoad = false;
+      this.loadQueue = [];
+      this.loadingPages = false;
 		this.uniqueId = roundabout.on + 1;
 		// internal
 		this.allowInternalStyles = true;
@@ -286,6 +299,11 @@ class Roundabout {
             document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
             document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
          }
+
+         if (this.lazyLoad == "hidden") {
+            // console.log(`loading pages (from next) ${this.orderedPages.slice(this.pagesToShow, this.pagesToShow+distance)}`);
+            this.load(this.orderedPages.slice(this.pagesToShow, this.pagesToShow+distance));
+         }
 		}
    }
    
@@ -350,10 +368,23 @@ class Roundabout {
             document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
             document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
          }
+         if (this.lazyLoad == "hidden") {
+            // console.log(`loading pages (from prev) ${this.orderedPages.slice(this.orderedPages.length + distance, this.orderedPages.length)}`);
+            this.load(this.orderedPages.slice(this.orderedPages.length + distance, this.orderedPages.length));
+         }
 		}
    }
 
    scrollTo(page) {
+      if (this.lazyLoad == "hidden") {
+         let toLoad = [];
+         for (let a = 0; a < Math.abs(page - this.onPage); a++) {
+            toLoad.push((page - this.onPage + page) % this.pages.length);
+         }
+         console.log(`need to load ${this.scrollBy*2 + this.pagesToShow + Math.abs(page - this.onPage)} pages`);
+         console.log(`(scrollto) loading pages ${toLoad}`);
+         this.load(toLoad);
+      }
       if (!this.infinite || this.navigationBehavior == "direction") {
          if (page < this.onPage) {
             if (this.throttleNavigation) {
@@ -836,13 +867,16 @@ class Roundabout {
             (this.pages[a].backgroundImage && this.lazyLoad == "none") ||
             ((this.pages[a].backgroundImage && this.lazyLoad == "hidden") && (a < this.pagesToShow + this.scrollBy || a >= this.pages.length - this.scrollBy))
          ) {
+            console.log(`Instant loading page ${a}`);
 				newPage.style.background = "url(" + this.pages[a].backgroundImage + ")";
 				newPage.style.backgroundSize = "cover";
-				newPage.style.backgroundPosition = "center center";
+            newPage.style.backgroundPosition = "center center";
+            this.pages[a].isLoaded = true;
          } else if (this.lazyLoad == "all" && !this.handledLoad) {
+            //! FIX THIS
             this.handledLoad = true;
             window.addEventListener("load", () => {
-               this.lazyLoad(0, true);
+               this.load(0, true, true);
             });
          }
          if (this.pages[a].html) {
@@ -893,6 +927,7 @@ class Roundabout {
             newNavBtn.addEventListener("click", () => {
                this.scrollTo(a);
             });
+            newNavBtn.innerText = a;
          }
       }
 
@@ -1041,17 +1076,47 @@ class Roundabout {
    */
    
    // lazy load a page image
-   lazyLoad(pageId, loadNext, loadAll) {
-      console.log(`Lazy loading page ${pageId} at ${Date.now()}`);
-      document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).style.background = "url(" + this.pages[a].backgroundImage + ")";
-		document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).style.backgroundSize = "cover";
-      document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).style.backgroundPosition = "center center";
-      if (loadNext) {
-         console.log(`Continuing on page ${pageId} at ${Date.now()}`);
-         document.querySelector(`.roundabout-${this.uniqueId}-page-${pageId}`).addEventListener("load", () => {
-            console.log(`Moving on to ${pageId + 1} at ${Date.now()}`);
-            this.lazyLoad(pageId + 1, loadAll, loadAll);
-         });
+   load(pageIds, allowed = false) {
+      pageIds.forEach((id) => {
+         if (!this.loadQueue.includes(id)) {
+            this.loadQueue.push(id);
+         }
+      });
+      if (this.loadQueue.length == 0) {
+         console.log("Complete.");
+         this.loadingPages = false;
+         return;
+      }
+      if (!this.loadingPages) {
+         allowed = true;
+      }
+      if (!allowed) {
+         console.warn("Not allowed to continue");
+         return;
+      }
+      console.log(`Loading pageIds: ${this.loadQueue}`);
+      if (!this.pages[this.loadQueue[0]].isLoaded) {
+         this.loadingPages = true;
+         console.log(`Page ${this.loadQueue[0]} was not loaded.`);
+         let bgImg = new Image();
+         bgImg.onload = () => {
+            console.log(`giving bgimg to ${this.loadQueue[0]}`);
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${this.loadQueue[0]}`).style.backgroundImage = 'url(' + bgImg.src + ')';
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${this.loadQueue[0]}`).style.backgroundSize = "cover";
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${this.loadQueue[0]}`).style.backgroundPosition = "center center";
+
+            console.log(`${this.loadQueue[0]} has loaded`);
+            this.pages[this.loadQueue[0]].isLoaded = true;
+
+            this.loadQueue = this.loadQueue.splice(1, this.loadQueue.length - 1);
+            this.load(this.loadQueue, true);
+         };
+         bgImg.src = this.pages[this.loadQueue[0]].backgroundImage;
+         console.warn(`Set onload for page ${this.loadQueue[0]}`);
+      } else {
+         console.log(`Page ${this.loadQueue[0]} was loaded. Moving on.`);
+         this.loadQueue = this.loadQueue.splice(1, this.loadQueue.length - 1);
+         this.load(this.loadQueue, true);
       }
    }
 
@@ -1163,8 +1228,7 @@ class Roundabout {
 		console.error(message);
 	}
 
-	debug_output() {
-		// console.log(this.orderedPages);
-		// console.log(this.positions);
+   debug_output() {
+      
 	}
 }
