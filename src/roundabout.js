@@ -11,9 +11,6 @@ SPECS (NORMAL)
 ✖ Can be all equal size or have an emphasized center slide
 ✖ Size falloff: center is biggest, and all side slides
     continually get smaller by set percentage
-SPECS (STACK)
-✖ Can determine direction
-✖ Can have a parallax effect
 SPECS (FADE)
 ✖  Can move and fade simultaneously
 HAS AUTOSCROLL
@@ -98,19 +95,15 @@ Custom settings?
 /*
 -  Overhaul CSS system
 
--  Better erroring
-   -  Error on pages issues
-   -  More try/catch
 -  Trimmed vs. All nav buttons
 -  Mouse/touch swipe
 
 -  Pages OR HTML element
-   -  Give necessary elements inline style instead of stylesheet props
 -  Size falloff
--  Minimal pages support
--  Settings for background images
+-  < 3 pages
+-  Settings for background images (position/size)
 -  Navigation wrapping
--  Disable buttons
+-  Disable buttons options
 */
 
 //? Ideas:
@@ -219,9 +212,19 @@ class Roundabout {
 		this.boundCancel = null;
 
 		// Function calls
-		this.initialActions();
-		this.replaceWithMobile();
-		this.setListeners();
+      this.initialActions();
+      try {
+         this.replaceWithMobile();
+      } catch (e) {
+         console.error(`Error while attempting to set mobile breakpoint values in Roundabout with id ${this.id}:`);
+         console.error(e);
+      }
+      try {
+         this.setListeners();
+      } catch (e) {
+         console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
+         console.error(e);
+      }
 		this.debug_output();
 	}
 
@@ -973,8 +976,13 @@ class Roundabout {
 			}
 			if (this.autoscroll) {
 				this.setAutoScroll(this, true);
-			}
-			this.generatePages();
+         }
+         try {
+            this.generatePages();
+         } catch (e) {
+            console.error(`Error while attempting to generate Roundabout with id ${this.id}:`);
+            console.error(e);
+         }
 			this.boundFollow = this.execMM.bind(this);
 			this.boundEnd = this.execMU.bind(this);
 			this.boundCancel = this.execTC.bind(this);
@@ -1032,12 +1040,20 @@ class Roundabout {
 	}
 
 	// prevents breakage by providing constraints and displaying an error message
-	checkForErrors() {
-		if (this.pages.length - this.pagesToShow <= 1) {
+   checkForErrors() {
+      if (this.pages.length < 2) {
+         this.displayError("The minimum number of pages supported is 2.");
+         return false;
+      }
+		if (this.pages.length - this.pagesToShow <= 0) {
 			this.displayError(
-				"For the number of pages supplied, there are too many being shown. There must be at least 2 fewer pages shown than the number of pages. Minimum required pages is 3."
+				"Too many of the given pages are being displayed. There must be at least 2 fewer pages shown than the number of pages supplied."
 			);
 			return false;
+      }
+      if (this.pages.length <= 2 && this.swipe) {
+         this.displayError("Swipe is not supported with fewer than 3 pages");
+         return false;
       }
       if (this.pages.length == 0 || !this.pages.length) {
          this.displayError("No pages have been supplied. Please create a 'pages' array containing your pages. See the documentation for details.");

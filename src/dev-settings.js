@@ -1,9 +1,10 @@
 const c = new Roundabout({
    lazyLoad: "hidden",
-   pagesToShow: 3,
-   scrollBy: 2,
+   pagesToShow: 1,
+   scrollBy: 1,
    transition: 800,
    swipeMultiplier: 2,
+   swipe: false,
    pages: [
       {
          backgroundImage: "../images/numbers/0.png",
@@ -13,47 +14,47 @@ const c = new Roundabout({
       {
          backgroundImage: "../images/numbers/1.png"
       },
-      {
-         backgroundImage: "../images/numbers/2.png"
-      },
-      {
-         backgroundImage: "../images/numbers/3.png"
-      },
-      {
-         backgroundImage: "../images/numbers/4.png"
-      },
-      {
-         backgroundImage: "../images/numbers/5.png"
-      },
-      {
-         backgroundImage: "../images/numbers/6.png"
-      },
-      {
-         backgroundImage: "../images/numbers/7.png"
-      },
-      {
-         backgroundImage: "../images/numbers/8.png"
-      },
-      {
-         backgroundImage: "../images/numbers/9.png"
-      },
-      {
-         backgroundImage: "../images/numbers/10.png"
-      },
-      {
-         backgroundImage: "../images/numbers/11.png"
-      },
-      {
-         backgroundImage: "../images/numbers/12.png"
-      },
-      {
-         backgroundImage: "../images/numbers/13.png"
-      },
-      {
-         backgroundImage: "../images/numbers/14.png"
-      },
-      {
-         backgroundImage: "../images/numbers/15.png"
-      }
+      // {
+         // backgroundImage: "../images/numbers/2.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/3.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/4.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/5.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/6.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/7.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/8.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/9.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/10.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/11.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/12.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/13.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/14.png"
+      // },
+      // {
+      //    backgroundImage: "../images/numbers/15.png"
+      // }
    ]
 });
