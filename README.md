@@ -192,14 +192,13 @@ Reference files for creating custom visuals can be found in the "references" fol
 ### Patch Notes:
 
 ### Jump to:
-[v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.2.0](#v120%20(Alpha)) | [v1.1.0](#v110) | [v1.0.0](#v100)
 
-#### v1.2.0: (Incomplete)
+#### v1.2.0: (Alpha)
 Features:
 *  New setting: lazyLoad
    *  "all", "hidden", "none"
    *  Selects the type of backgroundImage loading to use.
-   *  Plans for custom loading
 Bugfixes:
 
 #### v1.1.0:

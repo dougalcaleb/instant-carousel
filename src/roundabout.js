@@ -96,8 +96,6 @@ Custom settings?
 
 // To do:
 /*
-
--  Fix scrollTo hidden loading
 -  Overhaul CSS system
 
 -  Better erroring
