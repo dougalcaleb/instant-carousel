@@ -88,7 +88,8 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-
+   - Incorrect nav bubble classes could still exist but probably fixed
+   - Error on nav scroll - cannot load or something (only to 0th page?)
 */
 
 // To do:
@@ -168,7 +169,7 @@ class Roundabout {
 
 		this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
 		this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
-		this.visualPreset = settings.visualPreset ? settings.visualPreset : 0;
+		// this.visualPreset = settings.visualPreset ? settings.visualPreset : 0;
 
 		// this.val = settings.val ? settings.val : default;
 		// this.val = (settings.val === false) ? settings.val : true;
@@ -283,10 +284,10 @@ class Roundabout {
             this.onPage -= this.pages.length;
          }
          
-         if (this.navigation) {
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
-         }
+         // if (this.navigation) {
+         //    document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+         //    document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+         // }
 
 			// finished positioning
 			if (!valuesOnly) {
@@ -300,8 +301,10 @@ class Roundabout {
          }
          
          if (this.navigation) {
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
          }
 
          if (this.lazyLoad == "hidden") {
@@ -365,10 +368,18 @@ class Roundabout {
 				this.positionPages();
          }
          
+         // if (this.navigation) {
+         //    document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
+         //    document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+         // }
+
          if (this.navigation) {
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
          }
+
          if (this.lazyLoad == "hidden") {
             this.load(this.orderedPages.slice(this.orderedPages.length - this.scrollBy, this.orderedPages.length));
          }
@@ -747,20 +758,7 @@ class Roundabout {
 	// Generates the default HTML structure
 	defaultHTML() {
 		let newCarousel = document.createElement("DIV");
-		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>
-                  <div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div>
-                  <div class="roundabout-${this.uniqueId}-nav roundabout-nav">
-                     <div class="roundabout-${this.uniqueId}-btn-r roundabout-btn-r roundabout-scroll-btn">
-                        <svg viewBox="0 0 24 24">
-                           <path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
-                        </svg>
-                     </div>
-                     <div class="roundabout-${this.uniqueId}-btn-l roundabout-btn-l roundabout-scroll-btn">
-                        <svg viewBox="0 0 24 24">
-                           <path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
-                        </svg>
-                     </div>
-                  </div>`;
+		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div><div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div><div class="roundabout-${this.uniqueId}-ui roundabout-ui"><div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div></div>`;
 		newCarousel.innerHTML = html;
 		newCarousel.classList.add("roundabout-wrapper");
 		if (this.id.split("")[0] == "#") {
@@ -784,24 +782,23 @@ class Roundabout {
 	}
 
 	// Generates the default CSS styling
-	defaultCSS() {
-		let css;
-		// let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
-		switch (this.visualPreset) {
-         case 0:
-            css = `.roundabout-wrapper{height:80vh;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-l{left:0}.roundabout-btn-r{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2;}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #fff;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
-				break;
-		}
-		let newStyle = document.createElement("STYLE");
-		newStyle.setAttribute("type", "text/css");
-		newStyle.innerHTML = css;
-		document.getElementsByTagName("head")[0].appendChild(newStyle);
-
-		// let newReqStyle = document.createElement("STYLE");
-		// newReqStyle.setAttribute("type", "text/css");
-		// newReqStyle.innerHTML = requiredCss;
-		// document.getElementsByTagName("head")[0].appendChild(newReqStyle);
-	}
+	// defaultCSS() {
+	// 	let css;
+	// 	// let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
+   //    // https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/styleSheets
+	// 	switch (this.visualPreset) {
+   //       case 0:
+   //          css = `.roundabout-wrapper{height:80vh;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-prev{left:0}.roundabout-btn-next{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2;}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #fff;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
+   //          break;
+   //       case "none":
+   //          css = "";
+   //          break;
+   //    }
+	// 	let newStyle = document.createElement("STYLE");
+	// 	newStyle.setAttribute("type", "text/css");
+	// 	newStyle.innerHTML = css;
+	// 	document.getElementsByTagName("head")[0].appendChild(newStyle);
+	// }
 
 	// Generates the required CSS. Seperate from default styling
 	internalCSS() {
@@ -901,7 +898,7 @@ class Roundabout {
       if (this.navigation) {
          let navbar = document.createElement("div");
          navbar.classList.add(`roundabout-${this.uniqueId}-nav-wrap`, "roundabout-nav-wrap");
-         document.querySelector(`.roundabout-${this.uniqueId}-nav`).appendChild(navbar);
+         document.querySelector(`.roundabout-${this.uniqueId}-ui`).appendChild(navbar);
 
          let numButtons;
          if (this.type == "normal") {
@@ -914,11 +911,11 @@ class Roundabout {
          for (let a = 0; a < numButtons; a++) {
             let newNavBtn = document.createElement("div");
             if (a == 0) {
-               newNavBtn.classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
+               newNavBtn.classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
             } else {
-               newNavBtn.classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`);
+               newNavBtn.classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
             }
-            newNavBtn.classList.add(`roundabout-${this.uniqueId}-nav-btn`, `roundabout-${this.uniqueId}-nav-btn-${a}`);
+            newNavBtn.classList.add(`roundabout-${this.uniqueId}-nav-btn`, `roundabout-${this.uniqueId}-nav-btn-${a}`, `roundabout-nav-btn`);
             navbar.appendChild(newNavBtn);
             newNavBtn.addEventListener("click", () => {
                this.scrollTo(a);
@@ -968,9 +965,9 @@ class Roundabout {
 			if (this.allowInternalHTML) {
 				this.defaultHTML();
 			}
-			if (this.autoGenCSS && this.allowInternalStyles) {
-				this.defaultCSS();
-			}
+			// if (this.autoGenCSS && this.allowInternalStyles) {
+			// 	this.defaultCSS();
+			// }
 			if (this.throttleMatchTransition) {
 				this.throttleTimeout = this.transition;
 			}
@@ -994,10 +991,10 @@ class Roundabout {
 
 	// Sets all required eventListeners for the carousel
 	setListeners() {
-		document.querySelector(`.roundabout-${this.uniqueId}-btn-r`).addEventListener("click", () => {
+		document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
 			this.nextHandler(this);
 		});
-		document.querySelector(`.roundabout-${this.uniqueId}-btn-l`).addEventListener("click", () => {
+		document.querySelector(`.roundabout-${this.uniqueId}-btn-prev`).addEventListener("click", () => {
 			this.previousHandler(this);
 		});
 		if (this.keys) {

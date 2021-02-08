@@ -1,0 +1,159 @@
+/*
+Contained is the default styling for Roundabout.
+These are all the available elements to customize.
+This file is set up to apply to all Roundabout carousels in a page, but can easily be applied to specific carousels. 
+
+To specify which carousel in a page to apply styling to, insert "-[UNIQUE ID]" after ".roundabout", where [UNIQUE ID] is the nth Roundabout carousel (0 based) in the page.
+   - i.e. to specify a unique UI wrapper for the 3rd carousel on a page, ".roundabout-ui" would become ".roundabout-2-ui".
+   - This applies to all elements EXCEPT for the main wrapper, where its unique selector is specified by the "id" setting.
+*/
+
+/*
+==================================
+Main wrapper
+==================================
+*/
+
+.roundabout-wrapper {
+	height: 80vh;
+   /* Cannot change: "position" and "overflow" */
+}
+
+/* This same element also gains the selector specified by the "id" setting */
+
+/*
+==================================
+Swipe detector
+==================================
+*/
+
+.roundabout-swipe-overlay {
+	width: calc(100% - 140px);
+	height: calc(100% - 40px);
+	top: 0;
+	left: 0;
+	right: 0;
+	position: absolute;
+	margin: auto;
+	z-index: 2;
+}
+
+/*
+==================================
+UI wrapper
+==================================
+*/
+
+.roundabout-ui {
+	height: 100%;
+	width: 100%;
+}
+
+/*
+==================================
+Next and Previous buttons
+==================================
+*/
+
+.roundabout-btn-next, .roundabout-btn-prev {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	height: 80px;
+	width: 80px;
+	cursor: pointer;
+	color: #fff;
+}
+
+.roundabout-btn-next svg, .roundabout-btn-prev svg {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	margin: auto;
+	height: 70px;
+}
+
+.roundabout-active-nav-btn {
+	left: 0;
+}
+
+.roundabout-btn-next {
+	right: 0;
+}
+
+/* Both buttons also gain the class ".roundabout-scroll-btn" */
+
+/*
+==================================
+Navigation
+==================================
+*/
+
+.roundabout-nav-wrap {
+	position: absolute;
+	left: 0;
+	right: 0;
+	margin: auto;
+	display: flex;
+	justify-content: space-evenly;
+	bottom: 0;
+	height: 40px;
+	width: 25%;
+}
+
+.roundabout-nav-btn {
+	margin: auto;
+	height: 10px;
+	width: 10px;
+	border-radius: 100%;
+	border: 2px solid #fff;
+	transition: 0.2s;
+	cursor: pointer;
+}
+
+.roundabout-inactive-nav-btn {
+   background: transparent;
+}
+
+.roundabout-active-nav-btn {
+   background: #fff;
+}
+
+/* All nav buttons gain 5 classes: 
+
+".roundabout-nav-btn", 
+".roundabout-[UNIQUE ID]-nav-btn", 
+".roundabout-[UNIQUE ID]-nav-btn-[NTH BUTTON]", 
+
+and one of the following pairs: 
+
+".roundabout-active-nav-btn", 
+".roundabout-[UNIQUE ID]-active-nav-btn" 
+
+if button is active, -OR-
+
+".roundabout-inactive-nav-btn", 
+".roundabout-[UNIQUE ID]-inactive-nav-btn" 
+
+if button is inactive */
+
+/*
+==================================
+Pages
+==================================
+*/
+
+.roundabout-page-wrap {
+   /* Cannot change: "position", "height", "width", and "left" */
+}
+
+/* Page wrap also gains the class ".roundabout-[UNIQUE ID]-page-wrap" */
+
+.roundabout-page {
+   /* Cannot change: "width", "height", "position", "background", and "left" */
+}
+
+/* Each page also gains the class ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" */

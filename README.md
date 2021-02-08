@@ -13,7 +13,7 @@
 
 [Inactive, Unfinished or Deprecated Settings](#inactive-unfinished-or-deprecated-settings)
 
-[Page Flow](#page-flow)
+[Styling and Page Flow](#styling-and-page-flow)
 
 [Patch Notes](#patch-notes)
 
@@ -33,15 +33,27 @@ Releases: Complete, stable versions. May not have fixes for recently discovered 
 
 The focus of this plugin is quick and easy setup, with the freedom to customize extensively.
 
-To add Roundabout to your project, download and link the ```roundabout.min.js``` file to your HTML. Create another JS file (or use the one provided) to contain your settings, linked *after* ```roundabout.min.js```. Using this method, your HTML should look like this:
+To add Roundabout to your project, first download and link the ```roundabout.min.js``` file to your HTML. Create another JS file (or use the one provided) to contain your settings, linked *after* ```roundabout.min.js```.
+
+Next, link ```roundabout-style.css``` to your HTML in the ```head``` tag. Using this method, your HTML should look like this:
+
 ```html
-<!-- ... -->
+<!DOCTYPE html>
+<html>
+<head>
+   <!-- ... -->
+
+   <link href="path/to/roundabout-style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+   <!-- ... -->
 
    <script src="path/to/roundabout.min.js"></script>
    <script src="path/to/roundabout-settings.js"></script>
 </body>
 </html>
 ```
+
 
 Creating a new carousel is done with a simple object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except where specified.
 ```javascript
@@ -102,7 +114,6 @@ navigation | Boolean | Determines whether the navigational radio bubbles will be
 pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings](#pages-settings) for all available options. | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
-visualPreset | Integer | Selects one of the preset visual styles to display. Currently the default is the only preset, but more are on the way. | 0
 
 <br/>
 
@@ -174,16 +185,17 @@ offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
 autoGenCSS | Partially implemented | In progress
-visualPreset | Not implemented | Upcoming
 type: "fade" | Not implemented | Upcoming
 
 <br/>
 
-### Page Flow:
+### Styling and Page Flow:
 
-Each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is positioned as ```relative```, which cannot be changed.
+Changing Roundabout's visual style is simple. Included with the source code is the default styling file, ```roundabout-style.css```. Everything in this file can be edited to suit your needs. Classes are provided to easily group elements of multiple carousels, as well as extensive and specific selectors that can be used to fine-tune anything down to a single element of a single carousel.
 
-Reference files for creating custom visuals can be found in the "references" folder in the main directory of the project.
+Be aware that there are a few properties on some elements that cannot be changed for layout reasons. These properties are detailed in the provided stylesheet.
+
+Note that each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is positioned as ```relative```, which cannot be changed.
 
 <br/>
 
@@ -197,6 +209,9 @@ Features:
 *  New setting: lazyLoad
    *  "all", "hidden", "none"
    *  Selects the type of backgroundImage loading to use.
+*  Complete overhaul of the CSS system
+      *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
+      *  Helps cut down on file size
 Bugfixes:
 
 #### v1.1.0:
