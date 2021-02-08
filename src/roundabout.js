@@ -93,7 +93,6 @@ Custom settings?
 
 // To do:
 /*
--  Trimmed vs. all nav buttons
 -  Mouse/touch swipe
 -  Size falloff
 -  Settings for background images (position/size)
@@ -428,7 +427,6 @@ class Roundabout {
       } else {
          sd = parent.scrollBy;
       }
-		// let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
 			parent.scrollNext(sd, false);
@@ -450,7 +448,6 @@ class Roundabout {
       } else {
          sd = -parent.scrollBy;
       }
-		// let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
 			parent.scrollPrevious(sd, false);
@@ -782,25 +779,6 @@ class Roundabout {
       document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.position = "absolute";
       document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.left = "0";
 	}
-
-	// Generates the default CSS styling
-	// defaultCSS() {
-	// 	let css;
-	// 	// let requiredCss = `.roundabout-page{position:absolute}.roundabout-page-wrap{width:100%;height:100%;position:absolute;left:0}.roundabout-wrapper{position:relative}`;
-   //    // https://developer.mozilla.org/en-US/docs/Web/API/DocumentOrShadowRoot/styleSheets
-	// 	switch (this.visualPreset) {
-   //       case 0:
-   //          css = `.roundabout-wrapper{height:80vh;overflow:hidden}.roundabout-scroll-btn svg{position:absolute;left:0;right:0;top:0;bottom:0;margin:auto;height:70px}.roundabout-nav-wrap{position:absolute;left:0;right:0;margin:auto;display:flex;justify-content:space-evenly;bottom:0;height:40px;width:25%}.roundabout-scroll-btn{position:absolute;top:0;bottom:0;margin:auto;height:80px;width:80px;cursor:pointer;color:#fff}.roundabout-nav{height:100%;width:100%}.roundabout-btn-prev{left:0}.roundabout-btn-next{right:0}.roundabout-swipe-overlay{width:calc(100% - 140px);height:calc(100% - 40px);top:0;left:0;right:0;position:absolute;margin:auto;z-index:2;}.roundabout-${this.uniqueId}-nav-btn{margin:auto;height:10px;width:10px;border-radius:100%;border:2px solid #fff;transition:.2s;cursor:pointer}.roundabout-${this.uniqueId}-inactive-nav-btn{background:0 0}.roundabout-${this.uniqueId}-active-nav-btn{background:#fff}`;
-   //          break;
-   //       case "none":
-   //          css = "";
-   //          break;
-   //    }
-	// 	let newStyle = document.createElement("STYLE");
-	// 	newStyle.setAttribute("type", "text/css");
-	// 	newStyle.innerHTML = css;
-	// 	document.getElementsByTagName("head")[0].appendChild(newStyle);
-	// }
 
 	// Generates the required CSS. Seperate from default styling
 	internalCSS() {
@@ -1228,9 +1206,5 @@ class Roundabout {
 		em.appendChild(m);
 		document.querySelector(this.parent).appendChild(em);
 		console.error(message);
-	}
-
-   debug_output() {
-      
 	}
 }
