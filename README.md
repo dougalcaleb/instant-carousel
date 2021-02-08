@@ -208,10 +208,11 @@ Note that each carousel is wrapped in a div that is given two classes: ```.round
 Features:
 *  New setting: lazyLoad
    *  "all", "hidden", "none"
-   *  Selects the type of backgroundImage loading to use.
+   *  Selects the type of backgroundImage loading to use
 *  Complete overhaul of the CSS system
       *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
       *  Helps cut down on file size
+
 Bugfixes:
 
 #### v1.1.0:
