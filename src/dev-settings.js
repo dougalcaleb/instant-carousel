@@ -14,9 +14,9 @@ const c = new Roundabout({
       {
          backgroundImage: "../images/numbers/1.png"
       },
-      {
-         backgroundImage: "../images/numbers/2.png"
-      },
+      // {
+      //    backgroundImage: "../images/numbers/2.png"
+      // },
       // {
       //    backgroundImage: "../images/numbers/3.png"
       // },

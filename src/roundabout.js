@@ -89,12 +89,11 @@ Custom settings?
 //! KNOWN ISSUES:
 /*
    - Incorrect nav bubble classes could still exist but probably fixed
-   - Error on nav scroll - cannot load or something (only to 0th page?)
 */
 
 // To do:
 /*
--  Overhaul CSS system
+-  Custom button HTML
 
 -  Trimmed vs. All nav buttons
 -  Mouse/touch swipe
@@ -145,6 +144,9 @@ class Roundabout {
 		this.throttleButtons = settings.throttleButtons === false ? settings.throttleButtons : true;
       this.throttleNavigation = settings.throttleNavigation === false ? settings.throttleNavigation : true;
       this.lazyLoad = settings.lazyLoad ? settings.lazyLoad : "none";
+
+      this.nextHTML = settings.nextHTML ? settings.nextHTML : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`;
+      this.prevHTML = settings.prevHTML ? settings.prevHTML : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`;
       
 		this.keys = settings.keys === false ? settings.keys : true;
 		this.swipe = settings.swipe === false ? settings.swipe : true;
@@ -390,7 +392,11 @@ class Roundabout {
       if (this.lazyLoad == "hidden") {
          let toLoad = [];
          for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
-            toLoad.push(this.orderedPages[(a + page) % this.orderedPages.length]);
+            let idx = (a + page) % this.orderedPages.length;
+            if (idx < 0) {
+               idx += this.orderedPages.length;
+            }
+            toLoad.push(this.orderedPages[idx]);
          }
          this.load(toLoad);
       }
@@ -758,7 +764,7 @@ class Roundabout {
 	// Generates the default HTML structure
 	defaultHTML() {
 		let newCarousel = document.createElement("DIV");
-		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div><div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div><div class="roundabout-${this.uniqueId}-ui roundabout-ui"><div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg></div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg></div></div>`;
+		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div><div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div><div class="roundabout-${this.uniqueId}-ui roundabout-ui"><div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn">${this.nextHTML}</div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn">${this.prevHTML}</div></div>`;
 		newCarousel.innerHTML = html;
 		newCarousel.classList.add("roundabout-wrapper");
 		if (this.id.split("")[0] == "#") {

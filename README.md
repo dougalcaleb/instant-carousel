@@ -114,6 +114,8 @@ navigation | Boolean | Determines whether the navigational radio bubbles will be
 pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings](#pages-settings) for all available options. | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
+nextHTML | String | Contains the HTML to place inside the "next" button | SVG Right Arrow
+prevHTML | String | Contains the HTML to place inside the "previous" button | SVG Left Arrow
 
 <br/>
 
@@ -195,7 +197,7 @@ Changing Roundabout's visual style is simple. Included with the source code is t
 
 Be aware that there are a few properties on some elements that cannot be changed for layout reasons. These properties are detailed in the provided stylesheet.
 
-Note that each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is positioned as ```relative```, which cannot be changed.
+Note that each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is given a ```position``` of ```relative```, which cannot be changed.
 
 <br/>
 
@@ -212,6 +214,9 @@ Features:
 *  Complete overhaul of the CSS system
       *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
       *  Helps cut down on file size
+*  Customizable next/previous arrows
+   *  nextHTML and prevHTML replace the default arrows with your own HTML for their respective buttons
+   *  Supports both elements and plain text
 
 Bugfixes:
 
