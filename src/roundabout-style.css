@@ -1,9 +1,8 @@
 /*
 Contained is the default styling for Roundabout.
-These are all the available elements to customize.
 This file is set up to apply to all Roundabout carousels in a page, but can easily be applied to specific carousels. 
 
-To specify which carousel in a page to apply styling to, insert "-[UNIQUE ID]" after ".roundabout", where [UNIQUE ID] is the nth Roundabout carousel (0 based) in the page.
+To specify which carousel in a page to apply styling to, insert "-[UNIQUE ID]" after ".roundabout", where [UNIQUE ID] is the nth Roundabout carousel (starts at 0) in the page.
    - i.e. to specify a unique UI wrapper for the 3rd carousel on a page, ".roundabout-ui" would become ".roundabout-2-ui".
    - This applies to all elements EXCEPT for the main wrapper, where its unique selector is specified by the "id" setting.
 */
@@ -15,6 +14,7 @@ Main wrapper
 */
 
 .roundabout-wrapper {
+   width: 100%;
 	height: 80vh;
    /* Cannot change: "position" and "overflow" */
 }
