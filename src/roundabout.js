@@ -88,22 +88,15 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-   - Incorrect nav bubble classes could still exist but probably fixed
+   
 */
 
 // To do:
 /*
--  Custom button HTML
-
--  Trimmed vs. All nav buttons
+-  Trimmed vs. all nav buttons
 -  Mouse/touch swipe
-
--  Pages OR HTML element
 -  Size falloff
--  < 3 pages
 -  Settings for background images (position/size)
--  Navigation wrapping
--  Disable buttons options
 */
 
 //? Ideas:
@@ -127,6 +120,7 @@ class Roundabout {
 		this.parent = settings.parent ? settings.parent : "body";
 		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
       this.navigation = settings.navigation === false ? settings.navigation : true;
+      this.navigationTrim = settings.navigationTrim === false ? settings.navigationTrim : true;
       this.navigationBehavior = (settings.navigationBehavior && this.infinite) ? settings.navigationBehavior : "nearest";
 		this.autoscroll = settings.autoscroll ? settings.autoscroll : false;
 		this.autoscrollSpeed = settings.autoscrollSpeed >= 0 ? settings.autoscrollSpeed : 5000;
@@ -144,6 +138,7 @@ class Roundabout {
 		this.throttleButtons = settings.throttleButtons === false ? settings.throttleButtons : true;
       this.throttleNavigation = settings.throttleNavigation === false ? settings.throttleNavigation : true;
       this.lazyLoad = settings.lazyLoad ? settings.lazyLoad : "none";
+      this.uiEnabled = settings.uiEnabled === false ? settings.uiEnabled : true;
 
       this.nextHTML = settings.nextHTML ? settings.nextHTML : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`;
       this.prevHTML = settings.prevHTML ? settings.prevHTML : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`;
@@ -163,15 +158,12 @@ class Roundabout {
       this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
       this.showWrappedPage = settings.showWrappedPage ? settings.showWrappedPage : false;
 
-		// this.direction = (settings.direction) ? settings.direction : 0;
-
 		// this.offsetIn = (settings.offsetIn) ? settings.offsetIn : 20;
 		// this.offsetOut = (settings.offsetOut) ? settings.offsetOut : -20;
 		// this.offsetUnits = (settings.offsetUnits) ? settings.offsetUnits : "px";
 
 		this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
 		this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
-		// this.visualPreset = settings.visualPreset ? settings.visualPreset : 0;
 
 		// this.val = settings.val ? settings.val : default;
 		// this.val = (settings.val === false) ? settings.val : true;
@@ -251,12 +243,12 @@ class Roundabout {
    */
 
    // Scrolls to the next page. Does not handle clicks/taps
-	scrollNext(distance, valuesOnly = false) {
-		if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
+   scrollNext(distance, valuesOnly = false, overflow = 0) {
+      if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
 			return;
 		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
 			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
-			this.scrollNext(remainingDistance, valuesOnly);
+			this.scrollNext(remainingDistance, valuesOnly, this.pages.length - remainingDistance - this.pagesToShow);
 		} else {
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
@@ -285,11 +277,6 @@ class Roundabout {
          if (this.onPage >= this.pages.length) {
             this.onPage -= this.pages.length;
          }
-         
-         // if (this.navigation) {
-         //    document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
-         //    document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
-         // }
 
 			// finished positioning
 			if (!valuesOnly) {
@@ -303,10 +290,7 @@ class Roundabout {
          }
          
          if (this.navigation) {
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
+            this.setActiveBtn(this.onPage);
          }
 
          if (this.lazyLoad == "hidden") {
@@ -370,16 +354,8 @@ class Roundabout {
 				this.positionPages();
          }
          
-         // if (this.navigation) {
-         //    document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`);
-         //    document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`);
-         // }
-
          if (this.navigation) {
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
-            document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${this.onPage}`).classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
+            this.setActiveBtn(this.onPage);
          }
 
          if (this.lazyLoad == "hidden") {
@@ -389,6 +365,11 @@ class Roundabout {
    }
 
    scrollTo(page) {
+      if (this.scrollIsAllowed && this.throttleNavigation) {
+         this.setActiveBtn(page);
+      } else if (!this.throttleNavigation) {
+         this.setActiveBtn(page);
+      }
       if (this.lazyLoad == "hidden") {
          let toLoad = [];
          for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
@@ -431,6 +412,13 @@ class Roundabout {
       }
    }
 
+   setActiveBtn(id) {
+      document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.add(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
+      document.querySelector(`.roundabout-${this.uniqueId}-active-nav-btn`).classList.remove(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+      document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${id}`).classList.add(`roundabout-${this.uniqueId}-active-nav-btn`, `roundabout-active-nav-btn`);
+      document.querySelector(`.roundabout-${this.uniqueId}-nav-btn-${id}`).classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
+   }
+
    nextHandler(parent, from, distance) {
       let sd;
       if (from == "snap") {
@@ -440,10 +428,10 @@ class Roundabout {
       } else {
          sd = parent.scrollBy;
       }
-		let sb = from == "snap" ? false : true;
+		// let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scrollNext(sd, false, sb);
+			parent.scrollNext(sd, false);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent.scrollIsAllowed = false;
 				setTimeout(() => {
@@ -462,10 +450,10 @@ class Roundabout {
       } else {
          sd = -parent.scrollBy;
       }
-		let sb = from == "snap" ? false : true;
+		// let sb = from == "snap" ? false : true;
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scrollPrevious(sd, false, sb);
+			parent.scrollPrevious(sd, false);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent.scrollIsAllowed = false;
 				setTimeout(() => {
@@ -763,8 +751,16 @@ class Roundabout {
 
 	// Generates the default HTML structure
 	defaultHTML() {
-		let newCarousel = document.createElement("DIV");
-		let html = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div><div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div><div class="roundabout-${this.uniqueId}-ui roundabout-ui"><div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn">${this.nextHTML}</div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn">${this.prevHTML}</div></div>`;
+      let newCarousel = document.createElement("DIV");
+      let ui = ``;
+      let swipe = ``;
+      if (this.uiEnabled) {
+         ui = `<div class="roundabout-${this.uniqueId}-ui roundabout-ui"><div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn">${this.nextHTML}</div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn">${this.prevHTML}</div></div>`;
+      }
+      if (this.swipe) {
+         swipe = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>`;
+      }
+      let html = `${swipe}<div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div>${ui}`;
 		newCarousel.innerHTML = html;
 		newCarousel.classList.add("roundabout-wrapper");
 		if (this.id.split("")[0] == "#") {
@@ -825,7 +821,6 @@ class Roundabout {
 
 	// Create each new page from the pages array and append to the parent element
 	generatePages() {
-      let baseHeight = 100;
       let pagesCss = "";
 		for (let a = 0; a < this.pages.length; a++) {
 			let newPage = document.createElement("DIV");
@@ -901,14 +896,14 @@ class Roundabout {
       
       // create navigation
 
-      if (this.navigation) {
+      if (this.navigation && this.uiEnabled) {
          let navbar = document.createElement("div");
          navbar.classList.add(`roundabout-${this.uniqueId}-nav-wrap`, "roundabout-nav-wrap");
          document.querySelector(`.roundabout-${this.uniqueId}-ui`).appendChild(navbar);
 
          let numButtons;
          if (this.type == "normal") {
-            if (this.infinite) {
+            if (this.infinite || !this.navigationTrim) {
                numButtons = this.pages.length;
             } else {
                numButtons = this.pages.length - (this.pagesToShow - 1);
@@ -996,13 +991,15 @@ class Roundabout {
 	}
 
 	// Sets all required eventListeners for the carousel
-	setListeners() {
-		document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
-			this.nextHandler(this);
-		});
-		document.querySelector(`.roundabout-${this.uniqueId}-btn-prev`).addEventListener("click", () => {
-			this.previousHandler(this);
-		});
+   setListeners() {
+      if (this.uiEnabled) {
+         document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
+            this.nextHandler(this);
+         });
+         document.querySelector(`.roundabout-${this.uniqueId}-btn-prev`).addEventListener("click", () => {
+            this.previousHandler(this);
+         });
+      }
 		if (this.keys) {
 			document.addEventListener("keydown", (event) => {
 				switch (event.key) {

@@ -111,11 +111,12 @@ id | String | Sets the CSS selector for the carousel's parent element to allow f
 mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobileBreakpoint". | { <br/>swipeThreshold: 50 <br/>}
 mobileBreakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700
 navigation | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
-pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings](#pages-settings) for all available options. | []
+pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings]
+nextHTML | String | Contains the HTML to place inside the "next" button | SVG Right Arrow
+prevHTML | String | Contains the HTML to place inside the "previous" button | SVG Left Arrow(#pages-settings) for all available options. | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
 type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
-nextHTML | String | Contains the HTML to place inside the "next" button | SVG Right Arrow
-prevHTML | String | Contains the HTML to place inside the "previous" button | SVG Left Arrow
+uiEnabled | Boolean | Determines if the UI will be created. | true
 
 <br/>
 
@@ -124,7 +125,7 @@ prevHTML | String | Contains the HTML to place inside the "previous" button | SV
 Setting | Type | Description
 --------|------|------------
 backgroundImage | String | Defines the path to an image to use as the background image for the corresponding page. Make sure that the path is either absolute or relative to the HTML file that Roundabout is linked to.
-css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead. <ul><li>By default, elements are protected from user interaction by the swipe overlay. To make them accessible to the user (for cases like buttons), give them a ```position``` of ```relative``` or ```absolute``` and a ```z-index``` of ```3``` or higher. </li><li>Styles included are not applied exclusively to the HTML in the corresponding page. This setting is mostly an organizational helper. Make sure to utilize classes and IDs accordingly.</li></ul> 
+css | String | Contains the CSS to apply to the HTML of the corresponding page. Not required - can use an external style sheet making use of selectors instead. <ul><li>By default, elements are protected from user interaction by the swipe overlay to prevent image dragging or text highlighting. To make them accessible to the user (for cases like buttons), give them a ```position``` of ```relative``` or ```absolute``` and a ```z-index``` of ```3``` or higher. This is not necessary if ```swipe``` is set to ```false```.</li><li>Styles included are not applied exclusively to the HTML in the corresponding page. This setting is mostly an organizational helper. Make sure to utilize classes and IDs accordingly.</li></ul> 
 html | String | Contains the HTML structure to include in the corresponding page. Used for interactivity.
 
 <br/>
@@ -143,6 +144,7 @@ infinite | Boolean | Determines if the carousel can scroll infinitely. | true
 keys | Boolean | Determines if the arrow keys can be used for navigation. All carousels on the page will be affected by the keypress. | true
 lazyLoad | String | Selects the type of lazy loading to use <ul><li>"all": After the webpage has finished loading, all supplied images will load one-by-one.</li><li>"hidden": Each image that is initially shown will be loaded with the webpage, as well as images within one scroll in either direction. Once the user scrolls, the new images within one scroll will be loaded in.</li><li>"none": All images are loaded with the webpage.</li></ul> | "none"
 navigationBehavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the focused page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
+navigationTrim | Boolean | Determines if the navigation bubbles will be trimmed to only the necessary ones on non-infinite carousels when ```pagesToShow``` is greater than 1. Turning this off is recommended for thumbnail-style navigation. | true
 swipe | Boolean | Determines if the carousel can be swiped. Supports both mouse and touch. v1.2.0: Swipe is not available when fewer than 3 pages are supplied. | true
 swipeMultiplier | Number | Defines the multiplier for swipe interactions. | 1
 swipeResistance | Number | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1, where 0 is no resistance and 1 is full resistance. | 0.95
@@ -204,19 +206,22 @@ Note that each carousel is wrapped in a div that is given two classes: ```.round
 ### Patch Notes:
 
 ### Jump to:
-[v1.2.0](#v120%20(Alpha)) | [v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
 
-#### v1.2.0: (Alpha)
+#### v1.2.0:
 Features:
 *  New setting: lazyLoad
-   *  "all", "hidden", "none"
+   *  values: "all", "hidden", "none"
    *  Selects the type of backgroundImage loading to use
+*  New setting: uiEnabled
+   *  values: true, false
+   *  Determines if the UI will be enabled and usable. Disabled UIs are not generated at all
+*  New settings: nextHTML and prevHTML
+   *  values: valid HTML string
+   *  Replaces the default next and previous arrows with custom HTML. Supports both elements and plain text
 *  Complete overhaul of the CSS system
       *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
-      *  Helps cut down on file size
-*  Customizable next/previous arrows
-   *  nextHTML and prevHTML replace the default arrows with your own HTML for their respective buttons
-   *  Supports both elements and plain text
+      *  Removed visualPreset option
 
 Bugfixes:
 
