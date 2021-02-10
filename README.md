@@ -224,6 +224,10 @@ Features:
       *  Removed visualPreset option
 
 Bugfixes:
+   *  Fixed non-infinite carousels being able to scroll 1 page past the left side.
+   *  Fixed snapping back to initial position when scrolling very far past the end of non-infinite carousels
+
+Bugfixes:
 
 #### v1.1.0:
 Features:

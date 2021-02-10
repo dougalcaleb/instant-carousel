@@ -88,7 +88,7 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-   
+   -  Snapping not happening correctly (left swipe only?). canSnap is set to true, but the wrap is being moved incorrectly
 */
 
 // To do:
@@ -219,7 +219,7 @@ class Roundabout {
          console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
          console.error(e);
       }
-		this.debug_output();
+		// this.debug_output();
 	}
 
 	/*
@@ -248,7 +248,8 @@ class Roundabout {
 		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
 			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 			this.scrollNext(remainingDistance, valuesOnly, this.pages.length - remainingDistance - this.pagesToShow);
-		} else {
+      } else {
+         // console.log("scrollnext");
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
 			// position all pages to correct place before move and remove hidden pages
@@ -261,7 +262,8 @@ class Roundabout {
 			}
 
 			// transition wrapper
-			if (!valuesOnly) {
+         if (!valuesOnly) {
+            // console.log("wrapper pos next");
 				wrapper.style.left = this.calcPagePos(distance * -1);
 			}
 
@@ -300,12 +302,13 @@ class Roundabout {
    
 	// Scrolls to the previous page. Does not handle clicks/taps
    scrollPrevious(distance, valuesOnly = false) {
-		if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
+      if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
 			return;
 		} else if (Math.abs(distance) > this.onPage && !this.infinite) {
 			let remainingDistance = -1 * this.onPage;
 			this.scrollPrevious(remainingDistance, valuesOnly);
       } else {
+         // console.log("scrollprev");
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
          // set up a position modifier array to mutate the normal right-based positioning
@@ -326,7 +329,8 @@ class Roundabout {
          }
 
 			// transition wrapper
-			if (!valuesOnly) {
+         if (!valuesOnly) {
+            // console.log("wrapper pos prev");
 				wrapper.style.left = this.calcPagePos(distance * -1);
 			}
 
@@ -601,7 +605,7 @@ class Roundabout {
 						parent.dx -= parent.dx * parent.swipeResistance;
 					}
 				}
-			}
+         }
 
 			// get distance values
 			let dist = Math.abs(parent.dx);
@@ -612,7 +616,19 @@ class Roundabout {
 					!parent.infinite &&
 					parent.onPage >= 0 &&
 					parent.onPage < parent.pages.length - parent.pagesToShow)
-			) {
+         ) {
+            // (dist >= parent.swipeThreshold &&
+            //    !parent.infinite &&
+            //    ( // parent.onPage <= parent.pages.length - parent.pagesToShow
+            //       (parent.onPage < parent.pages.length - parent.pagesToShow) ||
+            //       (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)
+            //    ) &&
+            //    ( // parent.onPage >= 0
+            //       (parent.onPage > 0) ||
+            //       (parent.onPage == 0 && parent.dx < 0)
+            //    )
+            // )) {
+            console.log(parent.canSnap);
             parent.canSnap = true;
 			} else {
 				parent.canSnap = false;
@@ -624,14 +640,25 @@ class Roundabout {
 
          if (
             (dist >= totalSize && parent.infinite) ||
-            (dist >= totalSize && !parent.infinite && parent.onPage <= parent.pages.length - parent.pagesToShow && parent.onPage >= 0)) {
-				if (parent.dx > 0) {
+            (dist >= totalSize &&
+               !parent.infinite &&
+               ( // parent.onPage <= parent.pages.length - parent.pagesToShow
+                  (parent.onPage < parent.pages.length - parent.pagesToShow) ||
+                  (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)
+               ) &&
+               ( // parent.onPage >= 0
+                  (parent.onPage > 0) ||
+                  (parent.onPage == 0 && parent.dx < 0)
+               )
+            )) {
+            if (parent.dx > 0) {
                parent.scrollPrevious(-1, true);
-				} else if (parent.dx < 0) {
+            } else if (parent.dx < 0) {
 					parent.scrollNext(1, true);
 				}
 				parent.sx = parent.x / 1;
-				parent.dx = 0;
+            parent.dx = 0;
+            // console.log("reset to 0");
 			} else {
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).style.left = parent.dx + "px";
 			}
@@ -698,11 +725,13 @@ class Roundabout {
 
 	// snap to a new slide once touch or drag ends
    snap(al, dir, parent) {
+      // console.log(`snap. al is ${al}`);
 		if (al) {
-			if (dir > 0) {
-				parent.previousHandler(parent, "snap");
-				parent.positionWrap(false, 1); //? probably
-			} else if (dir < 0) {
+         if (dir > 0) {
+            parent.previousHandler(parent, "snap");
+				parent.positionWrap(false, parent.infinite ? 1 : 0);
+         } else if (dir < 0) {
+            // console.log("move next");
 				parent.nextHandler(parent, "snap");
 				parent.positionWrap(false, -1);
 			}
@@ -1069,7 +1098,7 @@ class Roundabout {
          }
       });
       if (this.loadQueue.length == 0) {
-         // console.log("Load Queue complete.");
+         // // console.log("Load Queue complete.");
          this.loadingPages = false;
          return;
       }
