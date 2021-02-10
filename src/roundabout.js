@@ -117,7 +117,6 @@ class Roundabout {
       this.type = settings.type ? settings.type : "normal";
       this.infinite = settings.infinite === false ? settings.infinite : true;
 		this.parent = settings.parent ? settings.parent : "body";
-		this.autoGenCSS = settings.autoGenCSS === false ? settings.autoGenCSS : true;
       this.navigation = settings.navigation === false ? settings.navigation : true;
       this.navigationTrim = settings.navigationTrim === false ? settings.navigationTrim : true;
       this.navigationBehavior = (settings.navigationBehavior && this.infinite) ? settings.navigationBehavior : "nearest";

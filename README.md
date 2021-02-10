@@ -1,5 +1,5 @@
 ### Jump to:
-[Repository Structure](#repository-structure)
+[Downloads](#downloads)
 
 [Setup](#setup)
 
@@ -11,7 +11,7 @@
 
 [Type-Specific Settings](#type-specific-settings)
 
-[Inactive, Unfinished or Deprecated Settings](#inactive-unfinished-or-deprecated-settings)
+[Unfinished Settings](#unfinished-settings)
 
 [Styling and Page Flow](#styling-and-page-flow)
 
@@ -19,7 +19,7 @@
 
 <br/>
 
-### Repository Structure:
+### Downloads:
 
 Master branch: Most up-to-date but stable version. May not have all of the features intended for the next release but potentially addresses bugs that the releases do not, as well as containing the most recent features. Recommended for most cases.
 
@@ -106,7 +106,6 @@ Settings do not need to be declared in any specific order.
 
 Setting | Type | Description | Default
 --------|------|-------------|--------
-autoGenCSS | Boolean | Determines whether the required CSS styling will be automatically generated and applied to the carousel, or if it will be created by the user. A reference for custom CSS is given in the "references" folder. | true
 id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel. Accepts both IDs and classes. | ".myCarousel"
 mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobileBreakpoint". | { <br/>swipeThreshold: 50 <br/>}
 mobileBreakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700
@@ -178,7 +177,7 @@ pagesToShow | Integer | Defines the number of pages to show. | 1 | "normal", "fa
 
 <br/>
 
-### Inactive, Unfinished or Deprecated Settings:
+### Unfinished Settings:
 
 Setting | Status | Time Frame
 --------|--------|-----------
@@ -188,7 +187,6 @@ offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
 type | Partially implemented | In progress
-autoGenCSS | Partially implemented | In progress
 type: "fade" | Not implemented | Upcoming
 
 <br/>
@@ -222,6 +220,7 @@ Features:
 *  Complete overhaul of the CSS system
       *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
       *  Removed visualPreset option
+      *  Removed autoGenCSS option
 *  On non-infinite carousels, dragging infinitely past an end is now possible instead of hitting a resetting limit
 
 Bugfixes:
