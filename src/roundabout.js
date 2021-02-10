@@ -88,7 +88,7 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-   -  Snapping not happening correctly (left swipe only?). canSnap is set to true, but the wrap is being moved incorrectly
+   -  Snapping not happening correctly (left movement only?). canSnap is set to true, but the wrap is being moved incorrectly
 */
 
 // To do:
@@ -729,7 +729,7 @@ class Roundabout {
 		if (al) {
          if (dir > 0) {
             parent.previousHandler(parent, "snap");
-				parent.positionWrap(false, parent.infinite ? 1 : 0);
+				parent.positionWrap(false, (!parent.infinite && this.onPage == 0) ? 0 : 1);
          } else if (dir < 0) {
             // console.log("move next");
 				parent.nextHandler(parent, "snap");
@@ -1150,7 +1150,8 @@ class Roundabout {
 	}
 
 	// sets page wrap back to left: 0. true = instant movment, false = current transition
-	positionWrap(setTransitions = true, position = 0) {
+   positionWrap(setTransitions = true, position = 0) {
+      console.log(`setting wrap to position ${position}. settings transitions: ${setTransitions}`);
 		let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 		if (setTransitions) {
 			wrapper.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
