@@ -88,7 +88,7 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-   -  when scrolling from right to 0 and getting there by snapping, snap does not happen but wrap positions correctly.
+   
 */
 
 // To do:
@@ -608,18 +608,13 @@ class Roundabout {
 
 			if (
 				(dist >= parent.swipeThreshold && parent.infinite) ||
-			// 	(dist >= parent.swipeThreshold &&
-			// 		!parent.infinite &&
-			// 		parent.onPage >= 0 &&
-			// 		parent.onPage < parent.pages.length - parent.pagesToShow)
-         // ) {
             (dist >= parent.swipeThreshold &&
                !parent.infinite &&
-               ( // parent.onPage <= parent.pages.length - parent.pagesToShow
+               (
                   (parent.onPage < parent.pages.length - parent.pagesToShow) ||
                   (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)
                ) &&
-               ( // parent.onPage >= 0
+               (
                   (parent.onPage > 0) ||
                   (parent.onPage == 0 && parent.dx < 0)
                )
@@ -633,15 +628,16 @@ class Roundabout {
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth +
 				parent.pageSpacing;
 
+         // determine if snapping to the next page is allowed
          if (
             (dist >= totalSize && parent.infinite) ||
             (dist >= totalSize &&
                !parent.infinite &&
-               ( // parent.onPage <= parent.pages.length - parent.pagesToShow
+               (
                   (parent.onPage < parent.pages.length - parent.pagesToShow) ||
                   (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)
                ) &&
-               ( // parent.onPage >= 0
+               (
                   (parent.onPage > 0) ||
                   (parent.onPage == 0 && parent.dx < 0)
                )
@@ -719,13 +715,10 @@ class Roundabout {
 
 	// snap to a new slide once touch or drag ends
    snap(al, dir, parent) {
-      console.log(`allowed: ${al}`);
 		if (al) {
          if (dir > 0) {
             parent.previousHandler(parent, "snap");
-				// parent.positionWrap(false, ((!parent.infinite && parent.onPage == 0) ? 0 : 1));
 				parent.positionWrap(false, 1);
-				// parent.positionWrap(false, parent.infinite ? 1 : 0);
          } else if (dir < 0) {
 				parent.nextHandler(parent, "snap");
 				parent.positionWrap(false, -1);
@@ -858,6 +851,7 @@ class Roundabout {
 			}
          newPage.style.height = "100%";
          newPage.style.position = "absolute";
+
 			// Give a background image (if supplied)
          if (
             (this.pages[a].backgroundImage && this.lazyLoad == "none") ||
@@ -966,9 +960,6 @@ class Roundabout {
 			if (this.allowInternalHTML) {
 				this.defaultHTML();
 			}
-			// if (this.autoGenCSS && this.allowInternalStyles) {
-			// 	this.defaultCSS();
-			// }
 			if (this.throttleMatchTransition) {
 				this.throttleTimeout = this.transition;
 			}
@@ -1114,7 +1105,6 @@ class Roundabout {
             this.load(this.loadQueue, true);
          };
          bgImg.src = this.pages[this.loadQueue[0]].backgroundImage;
-         // console.warn(`Set onload for page ${this.loadQueue[0]}`);
       } else {
          this.loadQueue = this.loadQueue.splice(1, this.loadQueue.length - 1);
          this.load(this.loadQueue, true);
