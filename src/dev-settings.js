@@ -4,9 +4,9 @@ const c = new Roundabout({
    scrollBy: 1,
    transition: 400,
    swipeMultiplier: 2,
-   swipeResistance: 0,
+   swipeResistance: 0.95,
    // navigationTrim: false,
-   infinite: false,
+   // infinite: false,
    // swipe: false,
    // uiEnabled: false,
    pages: [

@@ -222,6 +222,7 @@ Features:
 *  Complete overhaul of the CSS system
       *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
       *  Removed visualPreset option
+*  On non-infinite carousels, dragging infinitely past an end is now possible instead of hitting a resetting limit
 
 Bugfixes:
    *  Fixed non-infinite carousels being able to scroll 1 page past the left side.

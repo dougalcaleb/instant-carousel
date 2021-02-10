@@ -88,7 +88,7 @@ Custom settings?
 
 //! KNOWN ISSUES:
 /*
-   -  Snapping not happening correctly (left movement only?). canSnap is set to true, but the wrap is being moved incorrectly
+   -  when scrolling from right to 0 and getting there by snapping, snap does not happen but wrap positions correctly.
 */
 
 // To do:
@@ -249,7 +249,6 @@ class Roundabout {
 			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 			this.scrollNext(remainingDistance, valuesOnly, this.pages.length - remainingDistance - this.pagesToShow);
       } else {
-         // console.log("scrollnext");
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
 			// position all pages to correct place before move and remove hidden pages
@@ -263,7 +262,6 @@ class Roundabout {
 
 			// transition wrapper
          if (!valuesOnly) {
-            // console.log("wrapper pos next");
 				wrapper.style.left = this.calcPagePos(distance * -1);
 			}
 
@@ -308,7 +306,6 @@ class Roundabout {
 			let remainingDistance = -1 * this.onPage;
 			this.scrollPrevious(remainingDistance, valuesOnly);
       } else {
-         // console.log("scrollprev");
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
          // set up a position modifier array to mutate the normal right-based positioning
@@ -330,7 +327,6 @@ class Roundabout {
 
 			// transition wrapper
          if (!valuesOnly) {
-            // console.log("wrapper pos prev");
 				wrapper.style.left = this.calcPagePos(distance * -1);
 			}
 
@@ -612,23 +608,22 @@ class Roundabout {
 
 			if (
 				(dist >= parent.swipeThreshold && parent.infinite) ||
-				(dist >= parent.swipeThreshold &&
-					!parent.infinite &&
-					parent.onPage >= 0 &&
-					parent.onPage < parent.pages.length - parent.pagesToShow)
-         ) {
-            // (dist >= parent.swipeThreshold &&
-            //    !parent.infinite &&
-            //    ( // parent.onPage <= parent.pages.length - parent.pagesToShow
-            //       (parent.onPage < parent.pages.length - parent.pagesToShow) ||
-            //       (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)
-            //    ) &&
-            //    ( // parent.onPage >= 0
-            //       (parent.onPage > 0) ||
-            //       (parent.onPage == 0 && parent.dx < 0)
-            //    )
-            // )) {
-            console.log(parent.canSnap);
+			// 	(dist >= parent.swipeThreshold &&
+			// 		!parent.infinite &&
+			// 		parent.onPage >= 0 &&
+			// 		parent.onPage < parent.pages.length - parent.pagesToShow)
+         // ) {
+            (dist >= parent.swipeThreshold &&
+               !parent.infinite &&
+               ( // parent.onPage <= parent.pages.length - parent.pagesToShow
+                  (parent.onPage < parent.pages.length - parent.pagesToShow) ||
+                  (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)
+               ) &&
+               ( // parent.onPage >= 0
+                  (parent.onPage > 0) ||
+                  (parent.onPage == 0 && parent.dx < 0)
+               )
+            )) {
             parent.canSnap = true;
 			} else {
 				parent.canSnap = false;
@@ -658,7 +653,6 @@ class Roundabout {
 				}
 				parent.sx = parent.x / 1;
             parent.dx = 0;
-            // console.log("reset to 0");
 			} else {
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).style.left = parent.dx + "px";
 			}
@@ -725,21 +719,20 @@ class Roundabout {
 
 	// snap to a new slide once touch or drag ends
    snap(al, dir, parent) {
-      // console.log(`snap. al is ${al}`);
+      console.log(`allowed: ${al}`);
 		if (al) {
          if (dir > 0) {
             parent.previousHandler(parent, "snap");
-				parent.positionWrap(false, (!parent.infinite && this.onPage == 0) ? 0 : 1);
+				// parent.positionWrap(false, ((!parent.infinite && parent.onPage == 0) ? 0 : 1));
+				parent.positionWrap(false, 1);
+				// parent.positionWrap(false, parent.infinite ? 1 : 0);
          } else if (dir < 0) {
-            // console.log("move next");
 				parent.nextHandler(parent, "snap");
 				parent.positionWrap(false, -1);
 			}
 		} else {
 			parent.positionWrap(false, 0);
 		}
-
-		// parent.positionPages();
 	}
 
 	// reset all variables to defaults to avoid strange movements when a new touch starts
@@ -1098,7 +1091,6 @@ class Roundabout {
          }
       });
       if (this.loadQueue.length == 0) {
-         // // console.log("Load Queue complete.");
          this.loadingPages = false;
          return;
       }
@@ -1151,7 +1143,6 @@ class Roundabout {
 
 	// sets page wrap back to left: 0. true = instant movment, false = current transition
    positionWrap(setTransitions = true, position = 0) {
-      console.log(`setting wrap to position ${position}. settings transitions: ${setTransitions}`);
 		let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 		if (setTransitions) {
 			wrapper.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
