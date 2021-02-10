@@ -19,10 +19,10 @@ HAS AUTOSCROLL
 ✔ Can go either direction
 PAGES
 ✔ Can be as simple as an image URL
-✖ Support for interactive pages
-✖ Can define HTML and CSS per page for interactivity
+✔ Support for interactive pages
+✔ Can define HTML and CSS per page for interactivity
 ✔ Transition timings can be custom
-✖ Supports as few as 2 pages
+✔ Supports as few as 2 pages
 ✔ Can scroll by a determined number of pages
 SWIPE
 ✔ User can swipe to advance pages
@@ -31,27 +31,21 @@ SWIPE
 ✖ Inertia movement
 BUBBLES
 ✔ Show current and available pages
-✖ Entirely customizable
+✔ Entirely customizable
 ✔ Can be enabled/disabled
 MISC
 ✔ User interactions can be throttled
 ✔ Keys can be used to navigate
-✖ Scrolling through pages with bubbles is smooth
+✔ Scrolling through pages with bubbles is smooth
 ✔ Responsive
 ✔ Can have multiple carousels in a single page with object constructors
 ✔ Any relevant setting has a default, but can be overridden
 ✔ Unique class names
 ✔ Adding a new carousel appends without using innerHTML
 ✖ Errors are thrown when using incorrect settings for the type
-INTERACTIVITY
-✖ Selectors for different elements can be specified
 RESPONSIVENESS
 ✖ Can be vertical
 ✖ Multiple breakpoints and value sets can be specified
-EXTRA
-✖ Presets for carousel visuals
-✖ Presets for bubble visuals
-✖ Which keys to include in navigation can be specified
 
 
 SCRIPTING
