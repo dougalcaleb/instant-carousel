@@ -17,9 +17,9 @@ index.html
 ideas.txt
 *.backup.*
 
-# Allow during dev, ignore for deploy
+# Comment during dev, uncomment for deploy
 # roundabout.js
 # dev-settings.js
 
-# Delete during dev
-# roundabout.min.js
+# Delete file and uncomment during dev
+roundabout.min.js
