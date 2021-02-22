@@ -83,6 +83,8 @@ Misc
    
 */
 
+//! DON'T FORGET TO UPDATE VERSION#
+
 // To do:
 /*
 -  Mouse/touch swipe
@@ -104,7 +106,7 @@ let roundabout = {
 
 class Roundabout {
    constructor(settings) {
-      this.VERSION = "1.2.0";
+      this.VERSION = "1.2.1";
 		this.pages = settings.pages ? settings.pages : {};
 		this.id = settings.id ? settings.id : ".myCarousel";
       this.type = settings.type ? settings.type : "normal";
