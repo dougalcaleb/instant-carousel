@@ -204,7 +204,14 @@ Be sure to read and follow all rules and guidelines contained in the stylesheet.
 ### Patch Notes:
 
 ### Jump to:
-[v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+
+#### v1.2.1:
+Features:
+   *  Pages that are visible now gain a unique class
+      *  Can be used to stylize pages in certain positions
+      *  Removed enlargeCenter option
+      *  Removed sizeFalloff option
 
 #### v1.2.0:
 Features:
