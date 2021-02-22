@@ -7,17 +7,19 @@
 /.vscode/*
 debug.log
 
-# Development
+# Dev helpers
 carousel.html
 index.html
 /css/
 /scss/
-roundabout.js
-dev-settings.js
 
 # Misc
 ideas.txt
 *.backup.*
 
-# Production
+# Allow during dev, ignore for deploy
+# roundabout.js
+# dev-settings.js
+
+# Delete during dev
 # roundabout.min.js

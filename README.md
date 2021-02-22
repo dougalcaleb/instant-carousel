@@ -165,11 +165,9 @@ throttleTimeout | Integer | Time in miliseconds to disallow user interaction for
 
 Setting | Type | Description | Default | Applies to Type(s)
 --------|------|-------------|---------|-------------------
-enlargeCenter | Integer | Defines the percentage of the size of a normal slide to set the center slide to. | 100 | "normal"
 offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
 offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
 offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade"
-sizeFalloff | Integer | Defines the percentage that each successive page will get smaller by. | 0 | "normal"
 spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal", "fade"
 pageSpacing | Integer | Defines the space between pages. | 0 | "normal", "fade"
 pageSpacingUnits | String | Defines the units used for "pageSpacing". | "px" | "normal", "fade"
@@ -181,8 +179,6 @@ pagesToShow | Integer | Defines the number of pages to show. | 1 | "normal", "fa
 
 Setting | Status | Time Frame
 --------|--------|-----------
-enlargeCenter | Not implemented | Upcoming
-sizeFalloff | Not implemented | Upcoming
 offsetIn | Not implemented | Upcoming
 offsetOut | Not implemented | Upcoming
 offsetUnits | Not implemented | Upcoming
@@ -193,18 +189,29 @@ type: "fade" | Not implemented | Upcoming
 
 ### Styling and Page Flow:
 
-Changing Roundabout's visual style is simple. Included with the source code is the default styling file, ```roundabout-style.css```. Everything in this file can be edited to suit your needs. Classes are provided to easily group elements of multiple carousels, as well as extensive and specific selectors that can be used to fine-tune anything down to a single element of a single carousel.
+Included is a stylesheet,  ```roundabout-style.css```. Inside, all available class selectors are laid out and described to facilitate easy style changes.
+
+Many different classes are provided for group styling as well as individual element styling. Check your browser inspector to see all of the classes that a given element has at any one time.
 
 Be aware that there are a few properties on some elements that cannot be changed for layout reasons. These properties are detailed in the provided stylesheet.
 
-Note that each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is given a ```position``` of ```relative```, which cannot be changed.
+Note that each carousel is wrapped in a div that is given two classes: ```.roundabout-wrapper```, and the one given in your settings (defaults to ```.myCarousel```). Note that the wrapper is given a ```position``` of ```relative```, which cannot be changed. This may affect the layout of your website.
+
+Be sure to read and follow all rules and guidelines contained in the stylesheet. There are a few properties per element that cannot be changed, and a few that must follow specific rules.
 
 <br/>
 
 ### Patch Notes:
 
 ### Jump to:
-[v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+
+#### v1.2.1:
+Features:
+   *  Pages that are visible now gain a unique class
+      *  Can be used to stylize pages in certain positions
+      *  Removed enlargeCenter option
+      *  Removed sizeFalloff option
 
 #### v1.2.0:
 Features:
