@@ -104,6 +104,7 @@ let roundabout = {
 
 class Roundabout {
    constructor(settings) {
+      this.VERSION = "1.2.0";
 		this.pages = settings.pages ? settings.pages : {};
 		this.id = settings.id ? settings.id : ".myCarousel";
       this.type = settings.type ? settings.type : "normal";
@@ -260,6 +261,11 @@ class Roundabout {
 			for (let a = 0; a < distance; a++) {
 				this.positions.unshift(this.positions.pop());
 				this.orderedPages.push(this.orderedPages.shift());
+         }
+
+         for (let a = 0; a < this.pagesToShow; a++) {
+            document.querySelector(`.roundabout-${this.uniqueId}-visible-page-${a}`).classList.remove(`roundabout-${this.uniqueId}-visible-page-${a}`);
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.add(`roundabout-${this.uniqueId}-visible-page-${a}`);
          }
 
          this.onPage += distance;
@@ -840,7 +846,7 @@ class Roundabout {
 			} else {
 				newPage.style.width = "100%";
 			}
-         newPage.style.height = "100%";
+         // newPage.style.height = "100%";
          newPage.style.position = "absolute";
 
 			// Give a background image (if supplied)
@@ -872,6 +878,10 @@ class Roundabout {
 			} else {
 				this.positions.push("0px");
 			}
+
+         if (a < this.pagesToShow) {
+            document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.add(`roundabout-${this.uniqueId}-visible-page-${a}`);
+         }
       }
 
       let newPagesStyle = document.createElement("STYLE");

@@ -1,10 +1,12 @@
 const c = new Roundabout({
    // lazyLoad: "all",
-   pagesToShow: 2,
+   pagesToShow: 3,
    scrollBy: 1,
    transition: 400,
    swipeMultiplier: 2,
    swipeResistance: 0.95,
+   pageSpacing: 10,
+   // pageSpacingUnity: "px"
    // navigationTrim: false,
    // infinite: false,
    // swipe: false,

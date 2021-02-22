@@ -154,7 +154,15 @@ Pages
 /* Page wrap also gains the class ".roundabout-[UNIQUE ID]-page-wrap" */
 
 .roundabout-page {
-   /* Cannot change: "width", "height", "position", "background", and "left" */
+   height: 100%;
+
+   /* Cannot change: "width", "position", "background", and "left" */
+
+   /* NOTE: when giving any Roundabout page element a transition, be sure to give transition ONLY to the properties that need it.
+      Roundabout uses transitions of 0 to accomplish seamless position adjustments. See the Mozilla documentation for examples:
+      https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions#multiple_animated_properties_example
+   */
 }
 
-/* Each page also gains the class ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" */
+/* Each page also gains the class ".roundabout-[UNIQUE ID]-page-[NTH PAGE]", 
+and all visible pages gain the class ".roundabout-[UNIQUE ID]-visible-page-[NTH VISIBLE PAGE] */
