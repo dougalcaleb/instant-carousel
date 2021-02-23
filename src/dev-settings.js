@@ -9,15 +9,20 @@ const c = new Roundabout({
    pageSpacingUnits: "px",
    // navigationTrim: false,
    // infinite: false,
-   swipe: false,
+   // swipe: false,
    // uiEnabled: false,
    breakpoints: [
       {
          width: 1000,
-         height: 0,
          pagesToShow: 1,
          scrollBy: 1
-      }
+      },
+      {
+         width: 800,
+         pagesToShow: 2,
+         scrollBy: 1,
+         navigation: false
+      },
    ],
    pages: [
       {

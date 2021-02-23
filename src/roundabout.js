@@ -74,7 +74,7 @@ Misc
 
 //! KNOWN ISSUES:
 /*
-   
+   -  Freezes the page when breakpoint returns to the no-breakpoint level (initial settings)
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -199,7 +199,8 @@ class Roundabout {
 		this.loadQueue = [];
 		this.loadingPages = false;
 		this.uniqueId = roundabout.on + 1;
-		this.overriddenValues = [];
+      this.overriddenValues = [];
+      this.currentBp = -2;
 		// internal
 		this.allowInternalStyles = true;
 		this.allowInternalHTML = true;
@@ -226,13 +227,13 @@ class Roundabout {
 		this.boundCancel = null;
 
 		// Function calls
+      this.initialActions();
 		try {
 			this.setBreakpoints();
 		} catch (e) {
 			console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
 			console.error(e);
 		}
-		this.initialActions();
 		try {
 			this.setListeners();
 		} catch (e) {
@@ -966,6 +967,8 @@ class Roundabout {
 		this.positionPages();
 	}
 
+   // Destroys the HTML of the carousel
+   //! Needs to be able to keep the same unique number
    destroy(regen = true, complete = false) {
       roundabout.on--;
       roundabout.usedIds.splice(roundabout.usedIds.indexOf(this.id), 1);
@@ -988,26 +991,29 @@ class Roundabout {
 		}
 	}
 
-	// If mobile replacement values are provided, the defaults are overridden when the screen is assumed to be that of a mobile
-	// can probably shave down by removing the two counters and making it c.length, cm.length
+	// Check for an applicable breakpoint
 	setBreakpoints() {
 		let lbp = {width: -1};
-		this.breakpoints.forEach((bp) => {
+      this.breakpoints.forEach((bp) => {
+         console.log("checking");
 			if (!bp.hasOwnProperty("width")) {
 				console.error("Breakpoint is missing a 'width' property, which defines the screen or window size to apply at.");
 			}
-			if (window.innerWidth <= bp.height || screen.width <= bp.width) {
-				// console.log("breakpoint reached");
-				if (bp.width <= lbp.width || lbp.width == -1) {
-					lbp = bp;
-				}
-			}
+			if ((window.innerWidth <= bp.width || screen.width <= bp.width) && (bp.width <= lbp.width || lbp.width == -1)) {
+				console.log("breakpoint reached");
+				lbp = bp;
+         }
 		});
-		console.log(`applied breakpoint with break width of ${lbp.width}`);
-		this.applyBreakpoint(lbp);
+      
+      if (this.currentBp != lbp.width) {
+         console.log(`applied breakpoint with break width of ${lbp.width}`);
+         this.currentBp = lbp.width;
+         this.applyBreakpoint(lbp);
+      }
 	}
 
-	applyBreakpoint(breakpoint) {
+   // Regenerate the carousel and apply the breakpoint
+   applyBreakpoint(breakpoint) {
 		for (let a = 0; a < this.overriddenValues.length; a++) {
 			this[this.overriddenValues[a][0]] = this[this.overriddenValues[a][1]];
 		}
@@ -1017,12 +1023,12 @@ class Roundabout {
 		for (let a = 0; a < p.length; a++) {
 			for (let b = 0; b < t.length; b++) {
 				if (p[a][0].toString() == t[b][0].toString()) {
-					console.log(`found value to replace: ${p[a][0]}`);
 					this[p[a][0].toString()] = p[a][1];
 					this.overriddenValues.push([p[a][0].toString(), p[a][1]]);
 				}
 			}
-		}
+      }
+      this.destroy();
 	}
 
 	// Runs through applicable settings and takes actions based on them. Mostly to reduce constructor clutter
@@ -1078,8 +1084,12 @@ class Roundabout {
 				}
 			});
 		}
-		if (this.listenForResize) {
-			window.addEventListener("resize", this.setBreakpoints());
+      if (this.listenForResize) {
+         setTimeout(() => {
+            window.addEventListener("resize", () => {
+               this.setBreakpoints();
+            });
+         }, 0);
 		}
 		if (this.autoscrollPauseOnHover) {
 			document.querySelector(this.parent).addEventListener("mouseover", () => {
