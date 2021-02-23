@@ -98,50 +98,64 @@ let roundabout = {
 };
 
 let defaults = {
-	pages: [],
+   pages: [],
+   breakpoints: [
+      {
+         width: 300,
+         height: 0,
+         swipeThreshold: 50
+      }
+   ],
+
 	id: ".myCarousel",
-	type: "normal",
-	infinite: true,
-	parent: "body",
-	navigation: true,
-	navigationTrim: true,
-	navigationBehavior: "nearest",
-	autoscroll: false,
-	autoscrollSpeed: 5000,
-	autoscrollTimeout: 15000,
-	autoscrollPauseOnHover: false,
-	autoscrollStartAfter: 5000,
-	autoscrollDirection: "right",
-	transition: 300,
-	transitionFunction: "ease",
-	throttle: true,
-	throttleTimeout: 300,
-	throttleMatchTransition: true,
-	throttleKeys: true,
-	throttleSwipe: true,
-	throttleButtons: true,
-	throttleNavigation: true,
-	lazyLoad: "none",
-	uiEnabled: true,
+   parent: "body",
+   lazyLoad: "none",
+   uiEnabled: true,
+   
+   type: "normal",
+   infinite: true,
+   keys: true,
 
-	nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
-	prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
-
-	keys: true,
 	swipe: true,
-	swipeThreshold: 300,
+   swipeThreshold: 300,
 	swipeMultiplier: 1,
-	swipeResistance: 0.95,
-	pagesToShow: 1,
-	enlargeCenter: 100,
-	sizeFalloff: 0,
+   swipeResistance: 0.95,
+
+   pagesToShow: 1,
 	pageSpacing: 0,
 	pageSpacingUnits: "px",
 	spacingMode: "fill",
 	scrollBy: 1,
    showWrappedPage: false,
    
-   breakpoints: []
+   transition: 300,
+   transitionFunction: "ease",
+   
+	navigation: true,
+	navigationTrim: true,
+   navigationBehavior: "nearest",
+   
+	autoscroll: false,
+   autoscrollSpeed: 5000,
+	autoscrollTimeout: 15000,
+	autoscrollPauseOnHover: false,
+	autoscrollStartAfter: 5000,
+   autoscrollDirection: "right",
+	
+	throttle: true,
+	throttleTimeout: 300,
+	throttleMatchTransition: true,
+   throttleKeys: true,
+	throttleSwipe: true,
+	throttleButtons: true,
+   throttleNavigation: true,
+
+	nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
+	prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
+
+   // offsetIn: 20,
+	// offsetOut: -20,
+	// offsetUnits: "px",
 };
 
 class Roundabout {
@@ -168,61 +182,8 @@ class Roundabout {
 			}
       }
 
-		// this.VERSION = "1.2.1";
-		// this.pages = settings.pages ? settings.pages : [];
-		// this.id = settings.id ? settings.id : ".myCarousel";
-		// this.type = settings.type ? settings.type : "normal";
-		// this.infinite = settings.infinite === false ? settings.infinite : true;
-		// this.parent = settings.parent ? settings.parent : "body";
-		// this.navigation = settings.navigation === false ? settings.navigation : true;
-		// this.navigationTrim = settings.navigationTrim === false ? settings.navigationTrim : true;
-		// this.navigationBehavior = (settings.navigationBehavior && this.infinite) ? settings.navigationBehavior : "nearest";
-		// this.autoscroll = settings.autoscroll ? settings.autoscroll : false;
-		// this.autoscrollSpeed = settings.autoscrollSpeed >= 0 ? settings.autoscrollSpeed : 5000;
-		// this.autoscrollTimeout = settings.autoscrollTimeout >= 0 ? settings.autoscrollTimeout : 15000;
-		// this.autoscrollPauseOnHover = settings.autoscrollPauseOnHover ? settings.autoscrollPauseOnHover : false;
-		// this.autoscrollStartAfter = settings.autoscrollStartAfter >= 0 ? settings.autoscrollStartAfter : 5000;
-		// this.autoscrollDirection = settings.autoscrollDirection ? settings.autoscrollDirection : "right";
-		// this.transition = settings.transition >= 0 ? settings.transition : 300;
-		// this.transitionFunction = settings.transitionFunction ? settings.transitionFunction : "ease";
-		// this.throttle = settings.throttle === false ? settings.throttle : true;
-		// this.throttleTimeout = settings.throttleTimeout >= 0 ? settings.throttleTimeout : 300;
-		// this.throttleMatchTransition = settings.throttleMatchTransition ? settings.throttleMatchTransition : true;
-		// this.throttleKeys = settings.throttleKeys === false ? settings.throttleKeys : true;
-		// this.throttleSwipe = settings.throttleSwipe === false ? settings.throttleSwipe : true;
-		// this.throttleButtons = settings.throttleButtons === false ? settings.throttleButtons : true;
-		// this.throttleNavigation = settings.throttleNavigation === false ? settings.throttleNavigation : true;
-		// this.lazyLoad = settings.lazyLoad ? settings.lazyLoad : "none";
-		// this.uiEnabled = settings.uiEnabled === false ? settings.uiEnabled : true;
-
-		// this.nextHTML = settings.nextHTML ? settings.nextHTML : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`;
-		// this.prevHTML = settings.prevHTML ? settings.prevHTML : `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`;
-
-		// this.keys = settings.keys === false ? settings.keys : true;
-		// this.swipe = settings.swipe === false ? settings.swipe : true;
-		// this.swipeThreshold = settings.swipeThreshold >= 0 ? settings.swipeThreshold : 300;
-		// this.swipeMultiplier = settings.swipeMultiplier ? settings.swipeMultiplier : 1;
-		// this.swipeResistance = settings.swipeResistance >= 0 ? settings.swipeResistance : 0.95;
-
-		// this.pagesToShow = settings.pagesToShow ? settings.pagesToShow : 1;
-		// this.enlargeCenter = settings.enlargeCenter ? settings.enlargeCenter : 100;
-		// this.sizeFalloff = settings.sizeFalloff ? settings.sizeFalloff : 0;
-		// this.pageSpacing = settings.pageSpacing ? settings.pageSpacing : 0;
-		// this.pageSpacingUnits = settings.pageSpacingUnits ? settings.pageSpacingUnits : "px";
-		// this.spacingMode = settings.spacingMode ? settings.spacingMode : "fill";
-		// this.scrollBy = settings.scrollBy ? settings.scrollBy : 1;
-		// this.showWrappedPage = settings.showWrappedPage ? settings.showWrappedPage : false;
-
-		// this.offsetIn = (settings.offsetIn) ? settings.offsetIn : 20;
-		// this.offsetOut = (settings.offsetOut) ? settings.offsetOut : -20;
-		// this.offsetUnits = (settings.offsetUnits) ? settings.offsetUnits : "px";
-
-		this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
-		this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
-
-		// this.val = settings.val ? settings.val : default;
-		// this.val = (settings.val === false) ? settings.val : true;
-		// this.val = settings.val ? settings.val : false;
+		// this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
+		// this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
 
 		// Private
 
