@@ -81,6 +81,7 @@ Misc
 
 // To do:
 /*
+-  multiple breakpoints priority
 -  Mouse/touch swipe
 -  Settings for background images (position/size)
 */
@@ -223,13 +224,13 @@ class Roundabout {
 		this.boundCancel = null;
 
 		// Function calls
-		this.initialActions();
-		try {
-			this.replaceWithMobile();
+      try {
+			this.setBreakpoints();
 		} catch (e) {
-			console.error(`Error while attempting to set mobile breakpoint values in Roundabout with id ${this.id}:`);
+			console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
 			console.error(e);
 		}
+		this.initialActions();
 		try {
 			this.setListeners();
 		} catch (e) {
@@ -959,30 +960,57 @@ class Roundabout {
 
 	// If mobile replacement values are provided, the defaults are overridden when the screen is assumed to be that of a mobile
 	// can probably shave down by removing the two counters and making it c.length, cm.length
-	replaceWithMobile() {
-		let mobileL = 0;
-		for (let key in this.mobile) {
-			if (this.mobile.hasOwnProperty(key)) {
-				mobileL++;
-			}
-		}
-		let settingsL = 0;
-		for (let key in this) {
-			if (this.hasOwnProperty(key)) {
-				settingsL++;
-			}
-		}
-		if (screen.width <= this.mobileBreakpoint) {
-			let c = Object.entries(this);
-			let cm = Object.entries(this.mobile);
-			for (let a = 0; a < mobileL; a++) {
-				for (let b = 0; b < settingsL; b++) {
-					if (c[b][0] == cm[a][0]) {
-						this[c[b][0].toString()] = cm[a][1];
-					}
-				}
-			}
-		}
+   setBreakpoints() {
+      
+      this.breakpoints.forEach((bp) => {
+         if (!bp.hasOwnProperty("height") || !bp.hasOwnProperty("width")) {
+            console.warn("Breakpoint is missing either a height or width property, which may cause unexpected behaviour. To ignore the size of a direction, set its value to 0.");
+         }
+         if ((bp.height != 0 || bp.width != 0) && (window.innerHeight <= bp.height || window.innerWidth <= bp.width)) {
+            console.log("breakpoint reached");
+            let t = Object.entries(this);
+            // console.log(t);
+            let p = Object.entries(bp);
+            for (let a = 0; a < p.length; a++) {
+               // console.log(a);
+               for (let b = 0; b < t.length; b++) {
+                  // console.log(`checking ${p[a][0]} against ${t[b][0]}`);
+                  if (p[a][0].toString() == t[b][0].toString()) {
+                     console.log(`found value to replace: ${p[a][0]}`);
+                     this[p[a][0].toString()] = p[a][1];
+                     // console.
+                  }
+               }
+            }
+         }
+      });
+
+
+
+
+		// let mobileL = 0;
+		// for (let key in this.mobile) {
+		// 	if (this.mobile.hasOwnProperty(key)) {
+		// 		mobileL++;
+		// 	}
+		// }
+		// let settingsL = 0;
+		// for (let key in this) {
+		// 	if (this.hasOwnProperty(key)) {
+		// 		settingsL++;
+		// 	}
+		// }
+		// if (screen.width <= this.mobileBreakpoint) {
+		// 	let c = Object.entries(this);
+		// 	let cm = Object.entries(this.mobile);
+		// 	for (let a = 0; a < mobileL; a++) {
+		// 		for (let b = 0; b < settingsL; b++) {
+		// 			if (c[b][0] == cm[a][0]) {
+		// 				this[c[b][0].toString()] = cm[a][1];
+		// 			}
+		// 		}
+		// 	}
+		// }
 	}
 
 	// Runs through applicable settings and takes actions based on them. Mostly to reduce constructor clutter

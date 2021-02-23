@@ -11,10 +11,14 @@ const c = new Roundabout({
    // infinite: false,
    swipe: false,
    // uiEnabled: false,
-   // breakpoints: [
-
-   // ],
-   // breakpoints: ["A", "B"],
+   breakpoints: [
+      {
+         width: 1000,
+         height: 0,
+         pagesToShow: 1,
+         scrollBy: 1
+      }
+   ],
    pages: [
       {
          backgroundImage: "../images/numbers/0.png",
