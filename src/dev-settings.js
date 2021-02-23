@@ -1,16 +1,20 @@
 const c = new Roundabout({
    // lazyLoad: "all",
    pagesToShow: 3,
-   scrollBy: 1,
+   scrollBy: 3,
    transition: 400,
    swipeMultiplier: 2,
-   swipeResistance: 0.95,
+   // swipeResistance: 0.95,
    pageSpacing: 10,
-   // pageSpacingUnity: "px"
+   pageSpacingUnits: "px",
    // navigationTrim: false,
    // infinite: false,
-   // swipe: false,
+   swipe: false,
    // uiEnabled: false,
+   // breakpoints: [
+
+   // ],
+   // breakpoints: ["A", "B"],
    pages: [
       {
          backgroundImage: "../images/numbers/0.png",
