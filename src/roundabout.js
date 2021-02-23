@@ -99,62 +99,63 @@ let roundabout = {
 };
 
 let defaults = {
-   pages: [],
-   breakpoints: [
-      {
-         width: 300,
-         height: 0,
-         swipeThreshold: 50
-      }
-   ],
+	pages: [],
+	/*new*/ breakpoints: [
+		{
+			width: 300,
+			height: 0,
+			swipeThreshold: 50,
+		},
+	],
+	/*new*/ listenForResize: true,
 
 	id: ".myCarousel",
-   parent: "body",
-   lazyLoad: "none",
-   uiEnabled: true,
-   
-   type: "normal",
-   infinite: true,
-   keys: true,
+	parent: "body",
+	lazyLoad: "none",
+	uiEnabled: true,
+
+	type: "normal",
+	infinite: true,
+	keys: true,
 
 	swipe: true,
-   swipeThreshold: 300,
+	swipeThreshold: 300,
 	swipeMultiplier: 1,
-   swipeResistance: 0.95,
+	swipeResistance: 0.95,
 
-   pagesToShow: 1,
+	pagesToShow: 1,
 	pageSpacing: 0,
 	pageSpacingUnits: "px",
 	spacingMode: "fill",
 	scrollBy: 1,
-   showWrappedPage: false,
-   
-   transition: 300,
-   transitionFunction: "ease",
-   
+	showWrappedPage: false,
+
+	transition: 300,
+	transitionFunction: "ease",
+
 	navigation: true,
 	navigationTrim: true,
-   navigationBehavior: "nearest",
-   
+	navigationBehavior: "nearest",
+
 	autoscroll: false,
-   autoscrollSpeed: 5000,
+	autoscrollSpeed: 5000,
 	autoscrollTimeout: 15000,
 	autoscrollPauseOnHover: false,
 	autoscrollStartAfter: 5000,
-   autoscrollDirection: "right",
-	
+	autoscrollDirection: "right",
+
 	throttle: true,
 	throttleTimeout: 300,
 	throttleMatchTransition: true,
-   throttleKeys: true,
+	throttleKeys: true,
 	throttleSwipe: true,
 	throttleButtons: true,
-   throttleNavigation: true,
+	throttleNavigation: true,
 
 	nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
 	prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
 
-   // offsetIn: 20,
+	// offsetIn: 20,
 	// offsetOut: -20,
 	// offsetUnits: "px",
 };
@@ -163,8 +164,8 @@ class Roundabout {
 	constructor(settings = defaults) {
 		let s = Object.entries(settings);
 		let d = Object.entries(defaults);
-      this.VERSION = "1.3.0.U-DEV";
-      console.log(`Using version ${this.VERSION}`);
+		this.VERSION = "1.3.0.U-DEV";
+		console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
 			let f = false;
@@ -181,7 +182,7 @@ class Roundabout {
 			if (!f && defaults.hasOwnProperty(d[a][0])) {
 				this[d[a][0].toString()] = d[a][1];
 			}
-      }
+		}
 
 		// this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
 		// this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
@@ -198,6 +199,7 @@ class Roundabout {
 		this.loadQueue = [];
 		this.loadingPages = false;
 		this.uniqueId = roundabout.on + 1;
+		this.overriddenValues = [];
 		// internal
 		this.allowInternalStyles = true;
 		this.allowInternalHTML = true;
@@ -224,7 +226,7 @@ class Roundabout {
 		this.boundCancel = null;
 
 		// Function calls
-      try {
+		try {
 			this.setBreakpoints();
 		} catch (e) {
 			console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
@@ -787,7 +789,8 @@ class Roundabout {
    */
 
 	// Generates the default HTML structure
-	defaultHTML() {
+   defaultHTML(r) {
+      console.log(r);
 		let newCarousel = document.createElement("DIV");
 		let ui = ``;
 		let swipe = ``;
@@ -797,23 +800,28 @@ class Roundabout {
 		if (this.swipe) {
 			swipe = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>`;
 		}
-		let html = `${swipe}<div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div>${ui}`;
-		newCarousel.innerHTML = html;
-		newCarousel.classList.add("roundabout-wrapper");
-		if (this.id.split("")[0] == "#") {
-			let newId = this.id.split("");
-			newId.shift();
-			newId = newId.join("");
-			newCarousel.setAttribute("id", newId);
-		} else {
-			let newClass = this.id.split("");
-			newClass.shift();
-			newClass = newClass.join("");
-			newCarousel.classList.add(newClass);
-		}
-		document.querySelector(this.parent).appendChild(newCarousel);
-		document.querySelector(this.id).style.position = "relative";
-		document.querySelector(this.id).style.overflow = "hidden";
+      let html = `${swipe}<div class="roundabout-${this.uniqueId}-page-wrap roundabout-page-wrap roundabout-${this.uniqueId}-has-transition"></div>${ui}`;
+      if (r) {
+         newCarousel = document.querySelector(this.id);
+         newCarousel.innerHTML = html;
+      } else {
+         newCarousel.innerHTML = html;
+         newCarousel.classList.add("roundabout-wrapper");
+         if (this.id.split("")[0] == "#") {
+            let newId = this.id.split("");
+            newId.shift();
+            newId = newId.join("");
+            newCarousel.setAttribute("id", newId);
+         } else {
+            let newClass = this.id.split("");
+            newClass.shift();
+            newClass = newClass.join("");
+            newCarousel.classList.add(newClass);
+         }
+         document.querySelector(this.parent).appendChild(newCarousel);
+		   document.querySelector(this.id).style.position = "relative";
+		   document.querySelector(this.id).style.overflow = "hidden";
+      }
 		document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.height = "100%";
 		document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.width = "100%";
 		document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`).style.position = "absolute";
@@ -958,70 +966,74 @@ class Roundabout {
 		this.positionPages();
 	}
 
+   destroy(regen = true, complete = false) {
+      roundabout.on--;
+      roundabout.usedIds.splice(roundabout.usedIds.indexOf(this.id), 1);
+		if (complete) {
+         document.querySelector(this.id).remove();
+		} else {
+			document.querySelector(this.id).innerHTML = "";
+         if (regen) {
+            this.positions = [];
+            this.orderedPages = [];
+            this.overriddenValues = [];
+            try {
+               this.initialActions(true);
+					this.setListeners();
+				} catch (e) {
+					console.error(`Error while attempting to regenerate Roundabout with id ${this.id}:`);
+					console.error(e);
+				}
+			}
+		}
+	}
+
 	// If mobile replacement values are provided, the defaults are overridden when the screen is assumed to be that of a mobile
 	// can probably shave down by removing the two counters and making it c.length, cm.length
-   setBreakpoints() {
-      
-      this.breakpoints.forEach((bp) => {
-         if (!bp.hasOwnProperty("height") || !bp.hasOwnProperty("width")) {
-            console.warn("Breakpoint is missing either a height or width property, which may cause unexpected behaviour. To ignore the size of a direction, set its value to 0.");
-         }
-         if ((bp.height != 0 || bp.width != 0) && (window.innerHeight <= bp.height || window.innerWidth <= bp.width)) {
-            console.log("breakpoint reached");
-            let t = Object.entries(this);
-            // console.log(t);
-            let p = Object.entries(bp);
-            for (let a = 0; a < p.length; a++) {
-               // console.log(a);
-               for (let b = 0; b < t.length; b++) {
-                  // console.log(`checking ${p[a][0]} against ${t[b][0]}`);
-                  if (p[a][0].toString() == t[b][0].toString()) {
-                     console.log(`found value to replace: ${p[a][0]}`);
-                     this[p[a][0].toString()] = p[a][1];
-                     // console.
-                  }
-               }
-            }
-         }
-      });
+	setBreakpoints() {
+		let lbp = {width: -1};
+		this.breakpoints.forEach((bp) => {
+			if (!bp.hasOwnProperty("width")) {
+				console.error("Breakpoint is missing a 'width' property, which defines the screen or window size to apply at.");
+			}
+			if (window.innerWidth <= bp.height || screen.width <= bp.width) {
+				// console.log("breakpoint reached");
+				if (bp.width <= lbp.width || lbp.width == -1) {
+					lbp = bp;
+				}
+			}
+		});
+		console.log(`applied breakpoint with break width of ${lbp.width}`);
+		this.applyBreakpoint(lbp);
+	}
 
-
-
-
-		// let mobileL = 0;
-		// for (let key in this.mobile) {
-		// 	if (this.mobile.hasOwnProperty(key)) {
-		// 		mobileL++;
-		// 	}
-		// }
-		// let settingsL = 0;
-		// for (let key in this) {
-		// 	if (this.hasOwnProperty(key)) {
-		// 		settingsL++;
-		// 	}
-		// }
-		// if (screen.width <= this.mobileBreakpoint) {
-		// 	let c = Object.entries(this);
-		// 	let cm = Object.entries(this.mobile);
-		// 	for (let a = 0; a < mobileL; a++) {
-		// 		for (let b = 0; b < settingsL; b++) {
-		// 			if (c[b][0] == cm[a][0]) {
-		// 				this[c[b][0].toString()] = cm[a][1];
-		// 			}
-		// 		}
-		// 	}
-		// }
+	applyBreakpoint(breakpoint) {
+		for (let a = 0; a < this.overriddenValues.length; a++) {
+			this[this.overriddenValues[a][0]] = this[this.overriddenValues[a][1]];
+		}
+		this.overriddenValues = [];
+		let t = Object.entries(this);
+		let p = Object.entries(breakpoint);
+		for (let a = 0; a < p.length; a++) {
+			for (let b = 0; b < t.length; b++) {
+				if (p[a][0].toString() == t[b][0].toString()) {
+					console.log(`found value to replace: ${p[a][0]}`);
+					this[p[a][0].toString()] = p[a][1];
+					this.overriddenValues.push([p[a][0].toString(), p[a][1]]);
+				}
+			}
+		}
 	}
 
 	// Runs through applicable settings and takes actions based on them. Mostly to reduce constructor clutter
-	initialActions() {
+	initialActions(r = false) {
 		if (this.allowInternalStyles) {
 			this.internalCSS();
 		}
 		if (this.checkForErrors()) {
 			roundabout.on++;
 			if (this.allowInternalHTML) {
-				this.defaultHTML();
+				this.defaultHTML(r);
 			}
 			if (this.throttleMatchTransition) {
 				this.throttleTimeout = this.transition;
@@ -1065,6 +1077,9 @@ class Roundabout {
 						break;
 				}
 			});
+		}
+		if (this.listenForResize) {
+			window.addEventListener("resize", this.setBreakpoints());
 		}
 		if (this.autoscrollPauseOnHover) {
 			document.querySelector(this.parent).addEventListener("mouseover", () => {
@@ -1180,7 +1195,7 @@ class Roundabout {
 			if (this.positions[a] == "0px") {
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
-			} else {
+         } else {
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).style.left = this.positions[a];
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
 
