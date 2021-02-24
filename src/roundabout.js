@@ -96,80 +96,80 @@ Misc
 let roundabout = {
 	on: -1,
 	usedIds: [],
-};
 
-let defaults = {
-   pages: [],
-   breakpoints: [
-      {
-         width: 300,
-         height: 0,
-         swipeThreshold: 50
-      }
-   ],
+	defaults: {
+		pages: [],
+		breakpoints: [
+			{
+				width: 300,
+				height: 0,
+				swipeThreshold: 50,
+			},
+		],
 
-	id: ".myCarousel",
-   parent: "body",
-   lazyLoad: "none",
-   uiEnabled: true,
-   
-   type: "normal",
-   infinite: true,
-   keys: true,
+		id: ".myCarousel",
+		parent: "body",
+		lazyLoad: "none",
+		uiEnabled: true,
 
-	swipe: true,
-   swipeThreshold: 300,
-	swipeMultiplier: 1,
-   swipeResistance: 0.95,
+		type: "normal",
+		infinite: true,
+		keys: true,
 
-   pagesToShow: 1,
-	pageSpacing: 0,
-	pageSpacingUnits: "px",
-	spacingMode: "fill",
-	scrollBy: 1,
-   showWrappedPage: false,
-   
-   transition: 300,
-   transitionFunction: "ease",
-   
-	navigation: true,
-	navigationTrim: true,
-   navigationBehavior: "nearest",
-   
-	autoscroll: false,
-   autoscrollSpeed: 5000,
-	autoscrollTimeout: 15000,
-	autoscrollPauseOnHover: false,
-	autoscrollStartAfter: 5000,
-   autoscrollDirection: "right",
-	
-	throttle: true,
-	throttleTimeout: 300,
-	throttleMatchTransition: true,
-   throttleKeys: true,
-	throttleSwipe: true,
-	throttleButtons: true,
-   throttleNavigation: true,
+		swipe: true,
+		swipeThreshold: 300,
+		swipeMultiplier: 1,
+		swipeResistance: 0.95,
 
-	nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
-	prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
+		pagesToShow: 1,
+		pageSpacing: 0,
+		pageSpacingUnits: "px",
+		pageSpacingMode: "fill",
+		scrollBy: 1,
+		showWrappedPage: false,
 
-   // offsetIn: 20,
-	// offsetOut: -20,
-	// offsetUnits: "px",
+		transition: 300,
+		transitionFunction: "ease",
+
+		navigation: true,
+		navigationTrim: true,
+		navigationBehavior: "nearest",
+
+		autoscroll: false,
+		autoscrollSpeed: 5000,
+		autoscrollTimeout: 15000,
+		autoscrollPauseOnHover: false,
+		autoscrollStartAfter: 5000,
+		autoscrollDirection: "right",
+
+		throttle: true,
+		throttleTimeout: 300,
+		throttleMatchTransition: true,
+		throttleKeys: true,
+		throttleSwipe: true,
+		throttleButtons: true,
+		throttleNavigation: true,
+
+		nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
+		prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
+
+		// offsetIn: 20,
+		// offsetOut: -20,
+		// offsetUnits: "px",
+	},
 };
 
 class Roundabout {
-	constructor(settings = defaults) {
+	constructor(settings = roundabout.defaults) {
 		let s = Object.entries(settings);
-		let d = Object.entries(defaults);
-      this.VERSION = "1.3.0.U-DEV";
-      console.log(`Using version ${this.VERSION}`);
+		let d = Object.entries(roundabout.defaults);
+		this.VERSION = "1.3.0.U-DEV";
+		console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
 			let f = false;
 			for (let b = 0; b < s.length; b++) {
-				if (!defaults.hasOwnProperty(s[b][0])) {
+				if (!roundabout.defaults.hasOwnProperty(s[b][0])) {
 					throw `Error: Invalid Roundabout setting: "${s[b][0]}"`;
 				}
 				if (s[b][0].toString() == d[a][0].toString()) {
@@ -178,10 +178,10 @@ class Roundabout {
 					break;
 				}
 			}
-			if (!f && defaults.hasOwnProperty(d[a][0])) {
+			if (!f && roundabout.defaults.hasOwnProperty(d[a][0])) {
 				this[d[a][0].toString()] = d[a][1];
 			}
-      }
+		}
 
 		// this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
 		// this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
@@ -224,7 +224,7 @@ class Roundabout {
 		this.boundCancel = null;
 
 		// Function calls
-      try {
+		try {
 			this.setBreakpoints();
 		} catch (e) {
 			console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
@@ -849,7 +849,7 @@ class Roundabout {
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and number of pages
 				let iteratorMod, iteratorMod2;
-				if (this.spacingMode == "evenly") {
+				if (this.pageSpacingMode == "evenly") {
 					iteratorMod = 1;
 					iteratorMod2 = 0;
 				} else {
@@ -960,33 +960,31 @@ class Roundabout {
 
 	// If mobile replacement values are provided, the defaults are overridden when the screen is assumed to be that of a mobile
 	// can probably shave down by removing the two counters and making it c.length, cm.length
-   setBreakpoints() {
-      
-      this.breakpoints.forEach((bp) => {
-         if (!bp.hasOwnProperty("height") || !bp.hasOwnProperty("width")) {
-            console.warn("Breakpoint is missing either a height or width property, which may cause unexpected behaviour. To ignore the size of a direction, set its value to 0.");
-         }
-         if ((bp.height != 0 || bp.width != 0) && (window.innerHeight <= bp.height || window.innerWidth <= bp.width)) {
-            console.log("breakpoint reached");
-            let t = Object.entries(this);
-            // console.log(t);
-            let p = Object.entries(bp);
-            for (let a = 0; a < p.length; a++) {
-               // console.log(a);
-               for (let b = 0; b < t.length; b++) {
-                  // console.log(`checking ${p[a][0]} against ${t[b][0]}`);
-                  if (p[a][0].toString() == t[b][0].toString()) {
-                     console.log(`found value to replace: ${p[a][0]}`);
-                     this[p[a][0].toString()] = p[a][1];
-                     // console.
-                  }
-               }
-            }
-         }
-      });
-
-
-
+	setBreakpoints() {
+		this.breakpoints.forEach((bp) => {
+			if (!bp.hasOwnProperty("height") || !bp.hasOwnProperty("width")) {
+				console.warn(
+					"Breakpoint is missing either a height or width property, which may cause unexpected behaviour. To ignore the size of a direction, set its value to 0."
+				);
+			}
+			if ((bp.height != 0 || bp.width != 0) && (window.innerHeight <= bp.height || window.innerWidth <= bp.width)) {
+				console.log("breakpoint reached");
+				let t = Object.entries(this);
+				// console.log(t);
+				let p = Object.entries(bp);
+				for (let a = 0; a < p.length; a++) {
+					// console.log(a);
+					for (let b = 0; b < t.length; b++) {
+						// console.log(`checking ${p[a][0]} against ${t[b][0]}`);
+						if (p[a][0].toString() == t[b][0].toString()) {
+							console.log(`found value to replace: ${p[a][0]}`);
+							this[p[a][0].toString()] = p[a][1];
+							// console.
+						}
+					}
+				}
+			}
+		});
 
 		// let mobileL = 0;
 		// for (let key in this.mobile) {
@@ -1232,7 +1230,7 @@ class Roundabout {
 		}
 		pagePos += 1;
 		let iteratorMod, iteratorMod2;
-		if (this.spacingMode == "evenly") {
+		if (this.pageSpacingMode == "evenly") {
 			iteratorMod = 1;
 			iteratorMod2 = 0;
 		} else {
