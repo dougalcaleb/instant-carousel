@@ -117,8 +117,12 @@ pages | Array | Contains unnamed objects containing elements for each correspond
 nextHTML | String | Contains the HTML to place inside the "next" button | SVG Right Arrow
 prevHTML | String | Contains the HTML to place inside the "previous" button | SVG Left Arrow(#pages-settings) for all available options. | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
-type | String | Defines which carousel type to use: <ul><li>"normal": all pages are directly adjacent to each other and can be swiped/dragged</li><li>"fade": pages fade in and out over each other</li></ul> | "normal"
+pageSpacing | Integer | Defines the space between pages. | 0
+pageSpacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill"
+pageSpacingUnits | String | Defines the units used for "pageSpacing". | "px" 
+pagesToShow | Integer | Defines the number of pages to show. | 1 
 uiEnabled | Boolean | Determines if the UI will be created. | true
+
 
 <br/>
 
@@ -147,6 +151,7 @@ keys | Boolean | Determines if the arrow keys can be used for navigation. All ca
 lazyLoad | String | Selects the type of lazy loading to use <ul><li>"all": After the webpage has finished loading, all supplied images will load one-by-one.</li><li>"hidden": Each image that is initially shown will be loaded with the webpage, as well as images within one scroll in either direction. Once the user scrolls, the new images within one scroll will be loaded in.</li><li>"none": All images are loaded with the webpage.</li></ul> | "none"
 navigationBehavior | String | Selects the behavior that scrolling with the navigation will adhere to. <ul><li>"nearest": the carousel will scroll in the direction that passes the fewest number of pages <li>"direction": scrolling will move in the direction of the focused page, according to the order the pages are laid out. On infinite carousels, this means it will never scroll past either end. Default for non-infinite carousels.</li></ul> | "nearest"
 navigationTrim | Boolean | Determines if the navigation bubbles will be trimmed to only the necessary ones on non-infinite carousels when ```pagesToShow``` is greater than 1. Turning this off is recommended for thumbnail-style navigation. | true
+scrollBy | Integer | Defines the number of pages that should be scrolled on a single next or previous button click | 1
 swipe | Boolean | Determines if the carousel can be swiped. Supports both mouse and touch. Swipe is not supported when 2 or fewer pages are supplied. | true
 swipeMultiplier | Number | Defines the multiplier for swipe interactions. | 1
 swipeResistance | Number | Defines the resistance when attempting to drag past the end of a non-infinite carousel. Must be between 0 and 1, where 0 is no resistance and 1 is full resistance. | 0.95
@@ -162,7 +167,7 @@ throttleNavigation | Boolean | Determines if user interaction from navigation is
 throttleSwipe | Boolean | Determines if user interaction from swiping is throttled. | true
 throttleTimeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300
 
-<br/>
+<!-- <br/>
 
 ### Type-Specific Settings:
 
@@ -170,11 +175,7 @@ Setting | Type | Description | Default | Applies to Type(s)
 --------|------|-------------|---------|-------------------
 offsetIn | Integer | Defines the movement of a page when it is coming into focus. | 20 | "fade"
 offsetOut | Integer | Defines the movement of a page when it is going out of focus. | -20 | "fade"
-offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade"
-spacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill" | "normal", "fade"
-pageSpacing | Integer | Defines the space between pages. | 0 | "normal", "fade"
-pageSpacingUnits | String | Defines the units used for "pageSpacing". | "px" | "normal", "fade"
-pagesToShow | Integer | Defines the number of pages to show. | 1 | "normal", "fade"
+offsetUnits | String | Defines the units to use for offsetIn and offsetOut. | "px" | "fade" -->
 
 <br/>
 
@@ -218,15 +219,17 @@ Features:
       *  Remove mobileBreakpoint option
    *  Restructured the way settings are input to allow for autocomplete in your IDE (when supported by editor)
 
+Bugfixes:
+   *  Fixed swipeThreshold changing when more than one page was displayed
+   *  Standardized the name of pageSpacingMode option (previously was named spacingMode)
+   *  Added missing option scrollBy to documentation
+
 #### v1.2.1:
 Features:
    *  Pages that are visible now gain a unique class
       *  Can be used to stylize pages in certain positions
       *  Removed enlargeCenter option
       *  Removed sizeFalloff option
-
-Bugfixes:
-   *  Fixed swipeThreshold changing when more than one page was displayed
 
 #### v1.2.0:
 Features:

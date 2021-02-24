@@ -90,6 +90,7 @@ Misc
 -  Insert properties into pages array
    -  isLoaded
    -  position
+-  For fade, replace in/out with class additions (might even work with system already in place)
 */
 
 let roundabout = {
