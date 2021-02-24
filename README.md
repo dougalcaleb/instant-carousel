@@ -107,8 +107,7 @@ Settings do not need to be declared in any specific order.
 Setting | Type | Description | Default
 --------|------|-------------|--------
 id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel. Accepts both IDs and classes. | ".myCarousel"
-mobile | Object | Defines a list of settings to override when the screen is smaller than the size set by "mobileBreakpoint". | { <br/>swipeThreshold: 50 <br/>}
-mobileBreakpoint | Integer | Maximum size in pixels for the screen to be to apply the values in the "mobile" setting. | 700
+breakpoints | Array | Contains objects that describe the settings to change when the screen is smaller than a "width" property. | [{width: 500, swipeThreshold: 50}]
 navigation | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
 pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings]
 nextHTML | String | Contains the HTML to place inside the "next" button | SVG Right Arrow
@@ -204,7 +203,16 @@ Be sure to read and follow all rules and guidelines contained in the stylesheet.
 ### Patch Notes:
 
 ### Jump to:
-[v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.3.0](#v130) | [v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+
+#### v1.3.0:
+Features:
+   *  New setting: breakpoints
+      *  values: objects (each object must have a "width" property)
+      *  Rework of the breakpoint system to support multiple breakpoints
+      *  Removed mobile option
+      *  Remove mobileBreakpoint option
+   *  Restructured the way settings are input to allow for autocomplete in your IDE (when supported by editor)
 
 #### v1.2.1:
 Features:
@@ -212,6 +220,9 @@ Features:
       *  Can be used to stylize pages in certain positions
       *  Removed enlargeCenter option
       *  Removed sizeFalloff option
+
+Bugfixes:
+   *  Fixed swipeThreshold changing when more than one page was displayed
 
 #### v1.2.0:
 Features:

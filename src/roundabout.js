@@ -74,14 +74,13 @@ Misc
 
 //! KNOWN ISSUES:
 /*
-   -  Freezes the page when breakpoint returns to the no-breakpoint level (initial settings)
+   
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
 
 // To do:
 /*
--  multiple breakpoints priority
 -  Mouse/touch swipe
 -  Settings for background images (position/size)
 */
@@ -102,8 +101,7 @@ let defaults = {
 	pages: [],
 	/*new*/ breakpoints: [
 		{
-			width: 300,
-			height: 0,
+			width: 500,
 			swipeThreshold: 50,
 		},
 	],
@@ -791,7 +789,6 @@ class Roundabout {
 
 	// Generates the default HTML structure
    defaultHTML(r) {
-      console.log(r);
 		let newCarousel = document.createElement("DIV");
 		let ui = ``;
 		let swipe = ``;
@@ -968,10 +965,9 @@ class Roundabout {
 	}
 
    // Destroys the HTML of the carousel
-   //! Needs to be able to keep the same unique number
    destroy(regen = true, complete = false) {
-      roundabout.on--;
-      roundabout.usedIds.splice(roundabout.usedIds.indexOf(this.id), 1);
+      // roundabout.on--;
+      // roundabout.usedIds.splice(roundabout.usedIds.indexOf(this.id), 1);
 		if (complete) {
          document.querySelector(this.id).remove();
 		} else {
@@ -979,7 +975,6 @@ class Roundabout {
          if (regen) {
             this.positions = [];
             this.orderedPages = [];
-            this.overriddenValues = [];
             try {
                this.initialActions(true);
 					this.setListeners();
@@ -995,18 +990,16 @@ class Roundabout {
 	setBreakpoints() {
 		let lbp = {width: -1};
       this.breakpoints.forEach((bp) => {
-         console.log("checking");
 			if (!bp.hasOwnProperty("width")) {
 				console.error("Breakpoint is missing a 'width' property, which defines the screen or window size to apply at.");
 			}
 			if ((window.innerWidth <= bp.width || screen.width <= bp.width) && (bp.width <= lbp.width || lbp.width == -1)) {
-				console.log("breakpoint reached");
 				lbp = bp;
          }
 		});
       
       if (this.currentBp != lbp.width) {
-         console.log(`applied breakpoint with break width of ${lbp.width}`);
+         console.log("applying a new breakpoint");
          this.currentBp = lbp.width;
          this.applyBreakpoint(lbp);
       }
@@ -1015,16 +1008,16 @@ class Roundabout {
    // Regenerate the carousel and apply the breakpoint
    applyBreakpoint(breakpoint) {
 		for (let a = 0; a < this.overriddenValues.length; a++) {
-			this[this.overriddenValues[a][0]] = this[this.overriddenValues[a][1]];
+			this[this.overriddenValues[a][0]] = this.overriddenValues[a][1];
 		}
 		this.overriddenValues = [];
 		let t = Object.entries(this);
 		let p = Object.entries(breakpoint);
 		for (let a = 0; a < p.length; a++) {
 			for (let b = 0; b < t.length; b++) {
-				if (p[a][0].toString() == t[b][0].toString()) {
+            if (p[a][0].toString() == t[b][0].toString()) {
+               this.overriddenValues.push([p[a][0].toString(), this[p[a][0]]]);
 					this[p[a][0].toString()] = p[a][1];
-					this.overriddenValues.push([p[a][0].toString(), p[a][1]]);
 				}
 			}
       }
@@ -1036,8 +1029,8 @@ class Roundabout {
 		if (this.allowInternalStyles) {
 			this.internalCSS();
 		}
-		if (this.checkForErrors()) {
-			roundabout.on++;
+		if (this.checkForErrors(r)) {
+			if (!r) roundabout.on++;
 			if (this.allowInternalHTML) {
 				this.defaultHTML(r);
 			}
@@ -1056,9 +1049,9 @@ class Roundabout {
 			this.boundFollow = this.execMM.bind(this);
 			this.boundEnd = this.execMU.bind(this);
 			this.boundCancel = this.execTC.bind(this);
-			if (this.type == "normal") {
-				this.swipeThreshold /= this.pagesToShow;
-			}
+			// if (this.type == "normal") {
+			// 	this.swipeThreshold /= this.pagesToShow;
+			// }
 		}
 	}
 
@@ -1119,7 +1112,7 @@ class Roundabout {
 	}
 
 	// prevents breakage by providing constraints and displaying an error message
-	checkForErrors() {
+	checkForErrors(r) {
 		if (this.pages.length < 2) {
 			this.displayError("The minimum number of pages supported is 2.");
 			return false;
@@ -1141,7 +1134,7 @@ class Roundabout {
 			this.displayError("An invalid selector prefix was given for the parent. Valid selector prefixes are '#' for IDs or '.' for classes.");
 			return false;
 		}
-		if (roundabout.usedIds.includes(this.id)) {
+		if (roundabout.usedIds.includes(this.id) && !r) {
 			this.displayError(`The selector ${this.id} is already in use by another carousel. Please use a unique selector.`);
 			return false;
 		} else {

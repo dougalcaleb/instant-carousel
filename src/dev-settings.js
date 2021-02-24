@@ -16,13 +16,7 @@ const c = new Roundabout({
          width: 1000,
          pagesToShow: 1,
          scrollBy: 1
-      },
-      {
-         width: 800,
-         pagesToShow: 2,
-         scrollBy: 1,
-         navigation: false
-      },
+      }
    ],
    pages: [
       {
@@ -77,3 +71,21 @@ const c = new Roundabout({
       }
    ]
 });
+
+// const c2 = new Roundabout({
+//    id: ".bruh",
+//    pages: [
+//       {
+//          backgroundImage: "../images/numbers/1.png"
+//       },
+//       {
+//          backgroundImage: "../images/numbers/2.png"
+//       },
+//       {
+//          backgroundImage: "../images/numbers/3.png"
+//       },
+//       {
+//          backgroundImage: "../images/numbers/4.png"
+//       },
+//    ]
+// });
