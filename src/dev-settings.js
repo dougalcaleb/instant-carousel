@@ -9,12 +9,11 @@ const c = new Roundabout({
    pageSpacingUnits: "px",
    // navigationTrim: false,
    // infinite: false,
-   swipe: false,
+   // swipe: false,
    // uiEnabled: false,
    breakpoints: [
       {
          width: 1000,
-         height: 0,
          pagesToShow: 1,
          scrollBy: 1
       }
@@ -72,3 +71,21 @@ const c = new Roundabout({
       }
    ]
 });
+
+// const c2 = new Roundabout({
+//    id: ".bruh",
+//    pages: [
+//       {
+//          backgroundImage: "../images/numbers/1.png"
+//       },
+//       {
+//          backgroundImage: "../images/numbers/2.png"
+//       },
+//       {
+//          backgroundImage: "../images/numbers/3.png"
+//       },
+//       {
+//          backgroundImage: "../images/numbers/4.png"
+//       },
+//    ]
+// });
