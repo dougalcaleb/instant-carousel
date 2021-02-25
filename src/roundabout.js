@@ -105,7 +105,8 @@ let roundabout = {
 				height: 0,
 				swipeThreshold: 50,
 			},
-		],
+      ],
+      listenForResize: false,
 
 		id: ".myCarousel",
 		parent: "body",
