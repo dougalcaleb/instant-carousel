@@ -5,8 +5,7 @@ const c = new Roundabout({
    pageSpacing: 10,
    pageSpacingUnits: "px",
 
-   infinite: false,
-   navigationTrim: false,
+   pageSpacingMode: "evenly",
 
    pages: [
       {

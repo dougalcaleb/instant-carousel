@@ -285,7 +285,8 @@ class Roundabout {
 			}
 
 			// transition wrapper
-			if (!valuesOnly) {
+         if (!valuesOnly) {
+            //! PROBLEM HERE
 				wrapper.style.left = this.calcPagePos(distance * -1);
 			}
 
@@ -1251,7 +1252,7 @@ class Roundabout {
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
 	calcPagePos(pagePos) {
-		if (pagePos == 0) {
+		if (pagePos == 0 && this.pageSpacingMode == "fill") {
 			return "0px";
 		}
 		pagePos += 1;
@@ -1274,7 +1275,8 @@ class Roundabout {
 			(pagePos - 1) +
 			") + " +
 			(this.pageSpacing * (pagePos + iteratorMod2) + this.pageSpacingUnits) +
-			")";
+         ")";
+      
 
 		return newPos;
 	}

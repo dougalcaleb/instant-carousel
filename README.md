@@ -113,9 +113,9 @@ Setting | Type | Description | Default
 id | String | Sets the CSS selector for the carousel's parent element to allow for CSS styling of the entire carousel. Accepts both IDs and classes. | ".myCarousel"
 breakpoints | Array | Contains objects that describe the settings to change when the screen is smaller than a "width" property. | [{width: 500, swipeThreshold: 50}]
 navigation | Boolean | Determines whether the navigational radio bubbles will be shown or not. | true
-pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings]
+pages | Array | Contains unnamed objects containing elements for each corresponding page. The minimum page count supported is 2. See [Pages Settings](#pages-settings) for all available options.
 nextHTML | String | Contains the HTML to place inside the "next" button | SVG Right Arrow
-prevHTML | String | Contains the HTML to place inside the "previous" button | SVG Left Arrow(#pages-settings) for all available options. | []
+prevHTML | String | Contains the HTML to place inside the "previous" button | SVG Left Arrow | []
 parent | String | Selector of an HTML element to be the parent of the carousel. | "body"
 pageSpacing | Integer | Defines the space between pages. | 0
 pageSpacingMode | String | Determines the spacing mode when showing multiple pages. "evenly" puts space between pages and the sides of the wrap, "fill" puts space only between pages. | "fill"
