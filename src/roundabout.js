@@ -90,85 +90,86 @@ Misc
 -  Insert properties into pages array
    -  isLoaded
    -  position
+-  For fade, replace in/out with class additions (might even work with system already in place)
 */
 
 let roundabout = {
 	on: -1,
 	usedIds: [],
-};
 
-let defaults = {
-	pages: [],
-	/*new*/ breakpoints: [
-		{
-			width: 500,
-			swipeThreshold: 50,
-		},
-	],
-	/*new*/ listenForResize: true,
+	defaults: {
+		pages: [],
+		breakpoints: [
+			{
+				width: 300,
+				height: 0,
+				swipeThreshold: 50,
+			},
+		],
 
-	id: ".myCarousel",
-	parent: "body",
-	lazyLoad: "none",
-	uiEnabled: true,
+		id: ".myCarousel",
+		parent: "body",
+		lazyLoad: "none",
+		uiEnabled: true,
 
-	type: "normal",
-	infinite: true,
-	keys: true,
+		type: "normal",
+		infinite: true,
+		keys: true,
 
-	swipe: true,
-	swipeThreshold: 300,
-	swipeMultiplier: 1,
-	swipeResistance: 0.95,
+		swipe: true,
+		swipeThreshold: 300,
+		swipeMultiplier: 1,
+		swipeResistance: 0.95,
 
-	pagesToShow: 1,
-	pageSpacing: 0,
-	pageSpacingUnits: "px",
-	spacingMode: "fill",
-	scrollBy: 1,
-	showWrappedPage: false,
+		pagesToShow: 1,
+		pageSpacing: 0,
+		pageSpacingUnits: "px",
+		pageSpacingMode: "fill",
+		scrollBy: 1,
+		showWrappedPage: false,
 
-	transition: 300,
-	transitionFunction: "ease",
+		transition: 300,
+		transitionFunction: "ease",
 
-	navigation: true,
-	navigationTrim: true,
-	navigationBehavior: "nearest",
+		navigation: true,
+		navigationTrim: true,
+		navigationBehavior: "nearest",
 
-	autoscroll: false,
-	autoscrollSpeed: 5000,
-	autoscrollTimeout: 15000,
-	autoscrollPauseOnHover: false,
-	autoscrollStartAfter: 5000,
-	autoscrollDirection: "right",
+		autoscroll: false,
+		autoscrollSpeed: 5000,
+		autoscrollTimeout: 15000,
+		autoscrollPauseOnHover: false,
+		autoscrollStartAfter: 5000,
+		autoscrollDirection: "right",
 
-	throttle: true,
-	throttleTimeout: 300,
-	throttleMatchTransition: true,
-	throttleKeys: true,
-	throttleSwipe: true,
-	throttleButtons: true,
-	throttleNavigation: true,
+		throttle: true,
+		throttleTimeout: 300,
+		throttleMatchTransition: true,
+		throttleKeys: true,
+		throttleSwipe: true,
+		throttleButtons: true,
+		throttleNavigation: true,
 
-	nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
-	prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
+		nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
+		prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
 
-	// offsetIn: 20,
-	// offsetOut: -20,
-	// offsetUnits: "px",
+		// offsetIn: 20,
+		// offsetOut: -20,
+		// offsetUnits: "px",
+	},
 };
 
 class Roundabout {
-	constructor(settings = defaults) {
+	constructor(settings = roundabout.defaults) {
 		let s = Object.entries(settings);
-		let d = Object.entries(defaults);
+		let d = Object.entries(roundabout.defaults);
 		this.VERSION = "1.3.0.U-DEV";
 		console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
 			let f = false;
 			for (let b = 0; b < s.length; b++) {
-				if (!defaults.hasOwnProperty(s[b][0])) {
+				if (!roundabout.defaults.hasOwnProperty(s[b][0])) {
 					throw `Error: Invalid Roundabout setting: "${s[b][0]}"`;
 				}
 				if (s[b][0].toString() == d[a][0].toString()) {
@@ -177,7 +178,7 @@ class Roundabout {
 					break;
 				}
 			}
-			if (!f && defaults.hasOwnProperty(d[a][0])) {
+			if (!f && roundabout.defaults.hasOwnProperty(d[a][0])) {
 				this[d[a][0].toString()] = d[a][1];
 			}
 		}
@@ -856,7 +857,7 @@ class Roundabout {
 			if (this.type == "normal") {
 				// Set width and positions based on mode: calculated to accomodate spacing and number of pages
 				let iteratorMod, iteratorMod2;
-				if (this.spacingMode == "evenly") {
+				if (this.pageSpacingMode == "evenly") {
 					iteratorMod = 1;
 					iteratorMod2 = 0;
 				} else {
@@ -1251,7 +1252,7 @@ class Roundabout {
 		}
 		pagePos += 1;
 		let iteratorMod, iteratorMod2;
-		if (this.spacingMode == "evenly") {
+		if (this.pageSpacingMode == "evenly") {
 			iteratorMod = 1;
 			iteratorMod2 = 0;
 		} else {
