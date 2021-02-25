@@ -53,10 +53,12 @@ On Functions
 ✖ onScrollLeft(callback, includeAutoscroll)
 ✖ onScrollRightEnd(callback, includeAutoscroll)
 ✖ onScrollLeftEnd(callback, includeAutoscroll)
+✖ setValue(setting, value)
 -  Change page stuff?
 Methods
 ✖ Change page elements
-✖ scrollTo
+✖ scrollTo(page)
+✖ destroy(regen, complete)
 ✖ Scroll next/prev
 ✖ Pause/play autoscroll
 ✖ Add page
