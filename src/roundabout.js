@@ -507,12 +507,15 @@ class Roundabout {
    */
 
 	// On user interaction, this is called to pause scrolling until user is presumably done
-   resetScrollTimeout(r) {
+   resetScrollTimeout(f = false) {
 		clearTimeout(this.scrollTimeoutHolder);
       clearInterval(this.scrollIntervalHolder);
-		this.scrollTimeoutHolder = setTimeout(() => {
-			this.setAutoScroll(this);
-		}, r ? this.autoscrollStartAfter : this.autoscrollTimeout);
+      this.scrollTimeoutHolder = setTimeout(() => {
+         if (f) {
+            this.scrollAuto(this);
+         }
+         this.setAutoScroll(this);
+      }, this.autoscrollTimeout);
 	}
 
 	// Initializes autoscroll if enabled
@@ -1092,7 +1095,7 @@ class Roundabout {
 			});
 			document.querySelector(this.parent).addEventListener("mouseout", () => {
 				this.scrollIsAllowed = true;
-				this.resetScrollTimeout();
+				this.resetScrollTimeout(true);
 			});
 		}
 		if (this.swipe) {
