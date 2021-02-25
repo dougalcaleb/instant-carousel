@@ -223,6 +223,8 @@ Bugfixes:
    *  Fixed swipeThreshold changing when more than one page was displayed
    *  Standardized the name of pageSpacingMode option (previously was named spacingMode)
    *  Added missing option scrollBy to documentation
+   *  Fixed background-size and background-position missing from CSS, removed these properties being automatically set on creation
+   *  Fixed non-trimmed nav bubbles not gaining the correct classes
 
 #### v1.2.1:
 Features:

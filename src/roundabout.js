@@ -266,12 +266,12 @@ class Roundabout {
    */
 
 	// Scrolls to the next page. Does not handle clicks/taps
-   scrollNext(distance, valuesOnly = false) {
+   scrollNext(distance, valuesOnly = false, overflow = 0) {
 		if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
 			return;
 		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
 			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
-			this.scrollNext(remainingDistance, valuesOnly, this.pages.length - remainingDistance - this.pagesToShow);
+			this.scrollNext(remainingDistance, valuesOnly, distance - remainingDistance);
 		} else {
 			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
@@ -322,7 +322,7 @@ class Roundabout {
 			}
 
 			if (this.navigation) {
-				this.setActiveBtn(this.onPage);
+				this.setActiveBtn(this.onPage + overflow);
 			}
 
 			if (this.lazyLoad == "hidden") {
@@ -900,9 +900,7 @@ class Roundabout {
 					this.lazyLoad == "hidden" &&
 					(a < this.pagesToShow + this.scrollBy || a >= this.pages.length - this.scrollBy))
 			) {
-				newPage.style.background = "url(" + this.pages[a].backgroundImage + ")";
-				newPage.style.backgroundSize = "cover";
-				newPage.style.backgroundPosition = "center center";
+				newPage.style.backgroundImage = "url(" + this.pages[a].backgroundImage + ")";
 				this.pages[a].isLoaded = true;
 			} else if (this.lazyLoad == "all" && !this.handledLoad) {
 				this.handledLoad = true;
