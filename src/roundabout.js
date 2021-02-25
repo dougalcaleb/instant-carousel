@@ -218,7 +218,8 @@ class Roundabout {
 		this.swipeIsAllowed = true;
 		// autoscroll
 		this.scrollTimeoutHolder = null;
-		this.scrollIntervalHolder = null;
+      this.scrollIntervalHolder = null;
+      this.scrollAfterTimeoutHolder = null;
 		// bound functions
 		this.boundFollow = null;
 		this.boundEnd = null;
@@ -261,7 +262,7 @@ class Roundabout {
    */
 
 	// Scrolls to the next page. Does not handle clicks/taps
-	scrollNext(distance, valuesOnly = false, overflow = 0) {
+   scrollNext(distance, valuesOnly = false) {
 		if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
 			return;
 		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
@@ -327,7 +328,7 @@ class Roundabout {
 	}
 
 	// Scrolls to the previous page. Does not handle clicks/taps
-	scrollPrevious(distance, valuesOnly = false) {
+   scrollPrevious(distance, valuesOnly = false) {
 		if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
 			return;
 		} else if (Math.abs(distance) > this.onPage && !this.infinite) {
@@ -505,20 +506,20 @@ class Roundabout {
    */
 
 	// On user interaction, this is called to pause scrolling until user is presumably done
-	resetScrollTimeout() {
+   resetScrollTimeout(r) {
 		clearTimeout(this.scrollTimeoutHolder);
-		clearInterval(this.scrollIntervalHolder);
+      clearInterval(this.scrollIntervalHolder);
 		this.scrollTimeoutHolder = setTimeout(() => {
 			this.setAutoScroll(this);
-		}, this.autoscrollTimeout);
+		}, r ? this.autoscrollStartAfter : this.autoscrollTimeout);
 	}
 
 	// Initializes autoscroll if enabled
-	setAutoScroll(parent, firstTime = false) {
+   setAutoScroll(parent, firstTime = false) {
 		if (firstTime && parent.autoscroll) {
-			setTimeout(() => {
-				parent.scrollAuto(parent);
-				parent.scrollIntervalHolder = setInterval(() => {
+			parent.scrollAfterTimeoutHolder = setTimeout(() => {
+            parent.scrollAuto(parent);
+            parent.scrollIntervalHolder = setInterval(() => {
 					parent.scrollAuto(parent);
 				}, parent.autoscrollSpeed);
 			}, parent.autoscrollStartAfter);
@@ -532,7 +533,7 @@ class Roundabout {
 	// Called at each interval, determines how to scroll
 	scrollAuto(parent) {
 		if (parent.autoscrollDirection.toLowerCase() == "left" && parent.scrollIsAllowed) {
-			parent.scrollPrevious(this.scrollBy);
+			parent.scrollPrevious(-this.scrollBy);
 		} else if (parent.autoscrollDirection.toLowerCase() == "right" && parent.scrollIsAllowed) {
 			parent.scrollNext(this.scrollBy);
 		}
@@ -966,8 +967,9 @@ class Roundabout {
 
    // Destroys the HTML of the carousel
    destroy(regen = true, complete = false) {
-      // roundabout.on--;
-      // roundabout.usedIds.splice(roundabout.usedIds.indexOf(this.id), 1);
+      clearTimeout(this.scrollTimeoutHolder);
+      clearInterval(this.scrollIntervalHolder);
+      clearTimeout(this.scrollAfterTimeoutHolder);
 		if (complete) {
          document.querySelector(this.id).remove();
 		} else {
@@ -999,7 +1001,6 @@ class Roundabout {
 		});
       
       if (this.currentBp != lbp.width) {
-         console.log("applying a new breakpoint");
          this.currentBp = lbp.width;
          this.applyBreakpoint(lbp);
       }
