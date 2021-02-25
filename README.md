@@ -1,6 +1,6 @@
 ### The documentation is moving
 
-This documentation will soon be moving to [its own webpage](#https://dougalcaleb.github.io/roundabout/docs).
+This documentation will soon be moving to [its own webpage](https://dougalcaleb.github.io/roundabout/docs).
 
 ### Jump to:
 [Downloads](#downloads)
