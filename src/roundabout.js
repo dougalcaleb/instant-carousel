@@ -286,8 +286,7 @@ class Roundabout {
 
 			// transition wrapper
          if (!valuesOnly) {
-            //! PROBLEM HERE
-				wrapper.style.left = this.calcPagePos(distance * -1);
+            wrapper.style.left = this.calcPagePos(-distance, true);
 			}
 
 			// adjust values
@@ -361,7 +360,7 @@ class Roundabout {
 
 			// transition wrapper
 			if (!valuesOnly) {
-				wrapper.style.left = this.calcPagePos(distance * -1);
+				wrapper.style.left = this.calcPagePos(-distance, true);
 			}
 
 			// adjust values
@@ -1226,7 +1225,7 @@ class Roundabout {
 			wrapper.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
 			wrapper.classList.add(`roundabout-has-no-transition`);
 		}
-		wrapper.style.left = this.calcPagePos(position);
+		wrapper.style.left = this.calcPagePos(position, true);
 		const flushCssBuffer = wrapper.offsetWidth;
 		if (setTransitions) {
 			wrapper.classList.add(`roundabout-${this.uniqueId}-has-transition`);
@@ -1251,19 +1250,22 @@ class Roundabout {
 	}
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
-	calcPagePos(pagePos) {
-		if (pagePos == 0 && this.pageSpacingMode == "fill") {
+   calcPagePos(pagePos, wrap) {
+      if (pagePos == 0 && (this.pageSpacingMode == "fill" || wrap)) {
 			return "0px";
 		}
 		pagePos += 1;
-		let iteratorMod, iteratorMod2;
+		let iteratorMod, iteratorMod2, adjust = 0;
 		if (this.pageSpacingMode == "evenly") {
 			iteratorMod = 1;
-			iteratorMod2 = 0;
+         iteratorMod2 = 0;
+         if (wrap) {
+            adjust = -this.pageSpacing;
+         }
 		} else {
 			iteratorMod = -1;
-			iteratorMod2 = -1;
-		}
+         iteratorMod2 = -1;
+      }
 
 		let newPos =
 			"calc((((100% - " +
@@ -1274,10 +1276,8 @@ class Roundabout {
 			") * " +
 			(pagePos - 1) +
 			") + " +
-			(this.pageSpacing * (pagePos + iteratorMod2) + this.pageSpacingUnits) +
+			(this.pageSpacing * (pagePos + iteratorMod2) + adjust + this.pageSpacingUnits) +
          ")";
-      
-
 		return newPos;
 	}
 

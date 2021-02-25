@@ -1,9 +1,10 @@
 const c = new Roundabout({
    pagesToShow: 3,
    scrollBy: 3,
-   transition: 500,
+   transition: 1000,
    pageSpacing: 10,
    pageSpacingUnits: "px",
+   swipeThreshold: 50,
 
    pageSpacingMode: "evenly",
 
