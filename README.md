@@ -225,6 +225,7 @@ Bugfixes:
    *  Added missing option scrollBy to documentation
    *  Fixed background-size and background-position missing from CSS, removed these properties being automatically set on creation
    *  Fixed non-trimmed nav bubbles not gaining the correct classes
+   *  Fixed hitching when using pageSpacingMode set to "evenly"
 
 #### v1.2.1:
 Features:
