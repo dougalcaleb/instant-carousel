@@ -459,7 +459,7 @@ class Roundabout {
 			.classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
 	}
 
-	nextHandler(parent, from, distance) {
+   nextHandler(parent, from, distance) {
 		let sd;
 		if (from == "snap") {
 			sd = 1;
@@ -753,7 +753,7 @@ class Roundabout {
 			if (dir > 0) {
 				parent.previousHandler(parent, "snap");
 				parent.positionWrap(false, 1);
-			} else if (dir < 0) {
+         } else if (dir < 0) {
 				parent.nextHandler(parent, "snap");
 				parent.positionWrap(false, -1);
 			}
@@ -984,7 +984,7 @@ class Roundabout {
             this.orderedPages = [];
             try {
                this.initialActions(true);
-					this.setListeners();
+					// this.setListeners();
 				} catch (e) {
 					console.error(`Error while attempting to regenerate Roundabout with id ${this.id}:`);
 					console.error(e);
@@ -1064,7 +1064,7 @@ class Roundabout {
 	// Sets all required eventListeners for the carousel
 	setListeners() {
 		if (this.uiEnabled) {
-			document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
+         document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
 				this.nextHandler(this);
 			});
 			document.querySelector(`.roundabout-${this.uniqueId}-btn-prev`).addEventListener("click", () => {
