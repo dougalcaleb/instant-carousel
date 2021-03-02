@@ -162,7 +162,6 @@ transitionFunction | String | Defines the timing function for transitions betwee
 throttle | Boolean | Determines if user interactions will be throttled. | true
 throttleButtons | Boolean | Determines if user interaction from left and right buttons are throttled. | true
 throttleKeys | Boolean | Determines if user interaction from keyboard keys are throttled. | true
-throttleMatchTransition | Boolean | Determines if the "throttleTimeout" setting will match the "transition" setting. Overrides "throttleTimeout". | true
 throttleNavigation | Boolean | Determines if user interaction from navigation is throttled. | true
 throttleSwipe | Boolean | Determines if user interaction from swiping is throttled. | true
 throttleTimeout | Integer | Time in miliseconds to disallow user interaction for after an interaction. | 300
@@ -218,6 +217,7 @@ Features:
       *  Removed mobile option
       *  Remove mobileBreakpoint option
    *  Restructured the way settings are input to allow for autocomplete in your IDE (when supported by editor)
+   *  Added license (applies to all previous versions as well)
 
 Bugfixes:
    *  Fixed swipeThreshold changing when more than one page was displayed
@@ -226,6 +226,8 @@ Bugfixes:
    *  Fixed background-size and background-position missing from CSS, removed these properties being automatically set on creation
    *  Fixed non-trimmed nav bubbles not gaining the correct classes
    *  Fixed hitching when using pageSpacingMode set to "evenly"
+   *  Removed throttleMatchTransition option (leftover development helper)
+   *  Fixed double event listeners
 
 #### v1.2.1:
 Features:
