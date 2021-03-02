@@ -148,7 +148,6 @@ let roundabout = {
 
 		throttle: true,
 		throttleTimeout: 300,
-		throttleMatchTransition: true,
 		throttleKeys: true,
 		throttleSwipe: true,
 		throttleButtons: true,
@@ -1044,9 +1043,6 @@ class Roundabout {
 			if (!r) roundabout.on++;
 			if (this.allowInternalHTML) {
 				this.defaultHTML(r);
-			}
-			if (this.throttleMatchTransition) {
-				this.throttleTimeout = this.transition;
 			}
 			if (this.autoscroll) {
 				this.setAutoScroll(this, true);
