@@ -117,7 +117,8 @@ let roundabout = {
 
 		type: "normal",
 		infinite: true,
-		keys: true,
+      keys: true,
+      buttons: true,
 
 		swipe: true,
 		swipeThreshold: 300,
@@ -397,9 +398,9 @@ class Roundabout {
 	}
 
 	scrollTo(page) {
-		if (this.scrollIsAllowed && this.throttleNavigation) {
+		if (this.scrollIsAllowed && this.throttleNavigation && this.navigation) {
 			this.setActiveBtn(page);
-		} else if (!this.throttleNavigation) {
+		} else if (!this.throttleNavigation && this.navigation) {
 			this.setActiveBtn(page);
 		}
 		if (this.lazyLoad == "hidden") {
@@ -799,10 +800,14 @@ class Roundabout {
    defaultHTML(r) {
 		let newCarousel = document.createElement("DIV");
 		let ui = ``;
-		let swipe = ``;
-		if (this.uiEnabled) {
-			ui = `<div class="roundabout-${this.uniqueId}-ui roundabout-ui"><div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn">${this.nextHTML}</div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn">${this.prevHTML}</div></div>`;
-		}
+      let swipe = ``;
+      let buttons = ``;
+      if (this.buttons) {
+         buttons = `<div class="roundabout-${this.uniqueId}-btn-next roundabout-btn-next roundabout-scroll-btn">${this.nextHTML}</div><div class="roundabout-${this.uniqueId}-btn-prev roundabout-btn-prev roundabout-scroll-btn">${this.prevHTML}</div>`;
+      }
+      if (this.uiEnabled) {
+			ui = `<div class="roundabout-${this.uniqueId}-ui roundabout-ui">${buttons}</div>`;
+      }
 		if (this.swipe) {
 			swipe = `<div class="roundabout-${this.uniqueId}-swipe-overlay roundabout-swipe-overlay"></div>`;
 		}
@@ -1045,7 +1050,11 @@ class Roundabout {
 			}
 			if (this.autoscroll) {
 				this.setAutoScroll(this, true);
-			}
+         }
+         if (!this.uiEnabled) {
+            this.navigation = false;
+            this.swipe = false;
+         }
 			try {
 				this.generatePages();
 			} catch (e) {
