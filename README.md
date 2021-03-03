@@ -1,4 +1,4 @@
-### Documentation
+### Documentation:
 
 [See the documentation](https://dougalcaleb.github.io/roundabout/docs).
 
@@ -70,6 +70,7 @@ Features:
       *  Enables or disables the previous and next navigation buttons
    *  Restructured the way settings are input to allow for editor autocomplete
    *  Added license (applies to all previous versions as well)
+   *  Protection against overwriting "roundabout" variable
 
 Bugfixes:
    *  Fixed swipeThreshold changing when more than one page was displayed
