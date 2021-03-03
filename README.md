@@ -56,7 +56,11 @@ Settings do not need to be declared in any specific order.
 ### Patch Notes:
 
 ### Jump to:
-[v1.3.0](#v130) | [v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.3.1](#v131) | [v1.3.0](#v130) | [v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+
+### v1.3.1:
+Bugfixes:
+   *  Fixed error when disabling buttons
 
 ### v1.3.0:
 Features:
