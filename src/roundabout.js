@@ -40,7 +40,7 @@ MISC
 ✔ Adding a new carousel appends without using innerHTML
 RESPONSIVENESS
 ✖ Can be vertical
-✖ Multiple breakpoints and value sets can be specified
+✔ Multiple breakpoints and value sets can be specified
 
 
 SCRIPTING
