@@ -1063,7 +1063,7 @@ class Roundabout {
 
 	// Sets all required eventListeners for the carousel
 	setListeners() {
-		if (this.uiEnabled) {
+		if (this.uiEnabled && this.buttons) {
          document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
 				this.nextHandler(this);
 			});
@@ -1082,7 +1082,7 @@ class Roundabout {
 						break;
 				}
 			});
-		}
+      }
       if (this.listenForResize) {
          setTimeout(() => {
             window.addEventListener("resize", () => {
