@@ -167,8 +167,8 @@ class Roundabout {
       }
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.3.0.U-DEV";
-		console.log(`Using version ${this.VERSION}`);
+		this.VERSION = "1.3.0";
+		// console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
 			let f = false;
