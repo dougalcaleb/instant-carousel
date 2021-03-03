@@ -155,7 +155,8 @@ Pages
 
 .roundabout-page {
    height: 100%;
-
+   background-position: center center;
+   background-size: cover;
    /* Cannot change: "width", "position", "background", and "left" */
 
    /* NOTE: when giving any Roundabout page element a transition, be sure to give transition ONLY to the properties that need it.
