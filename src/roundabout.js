@@ -84,7 +84,6 @@ Misc
 // To do:
 /*
 -  Mouse/touch swipe
--  Settings for background images (position/size)
 */
 
 //? Ideas:
@@ -97,7 +96,8 @@ Misc
 
 let roundabout = {
 	on: -1,
-	usedIds: [],
+   usedIds: [],
+   overwritten: "no",
 
 	defaults: {
 		pages: [],
@@ -154,16 +154,17 @@ let roundabout = {
 		throttleNavigation: true,
 
 		nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
-		prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
-
-		// offsetIn: 20,
-		// offsetOut: -20,
-		// offsetUnits: "px",
+      prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
+      
+      initOnly: false
 	},
 };
 
 class Roundabout {
-	constructor(settings = roundabout.defaults) {
+   constructor(settings = roundabout.defaults) {
+      if (!roundabout.overwritten || roundabout.overwritten != "no") {
+         console.error(`Do not redefine the variable "roundabout". Roundabout requires this variable to store data across multiple carousels.`);
+      }
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
 		this.VERSION = "1.3.0.U-DEV";
@@ -185,10 +186,6 @@ class Roundabout {
 				this[d[a][0].toString()] = d[a][1];
 			}
 		}
-
-		// this.mobile = settings.mobile ? settings.mobile : {swipeThreshold: 50};
-		// this.mobileBreakpoint = settings.mobileBreakpoint ? settings.mobileBreakpoint : 700;
-
 		// Private
 
 		// general
@@ -227,23 +224,24 @@ class Roundabout {
 		// bound functions
 		this.boundFollow = null;
 		this.boundEnd = null;
-		this.boundCancel = null;
+      this.boundCancel = null;
 
-		// Function calls
-      this.initialActions();
-		try {
-			this.setBreakpoints();
-		} catch (e) {
-			console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
-			console.error(e);
-		}
-		try {
-			this.setListeners();
-		} catch (e) {
-			console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
-			console.error(e);
-		}
-		// this.debug_output();
+      // Function calls
+      if (!this.initOnly) {
+         this.initialActions();
+         try {
+            this.setBreakpoints();
+         } catch (e) {
+            console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
+            console.error(e);
+         }
+         try {
+            this.setListeners();
+         } catch (e) {
+            console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
+            console.error(e);
+         }
+      }      
 	}
 
 	/*
