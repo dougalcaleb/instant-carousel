@@ -1,15 +1,24 @@
 const c = new Roundabout({
-   pagesToShow: 3,
-   scrollBy: 3,
-   transition: 1000,
-   pageSpacing: 10,
-   pageSpacingUnits: "px",
-   swipeThreshold: 50,
+   // pagesToShow: 3,
+   // scrollBy: 3,
+   transition: 200,
+   // pageSpacing: 10,
+   // pageSpacingUnits: "px",
+   swipeThreshold: 1000,
 
-   pageSpacingMode: "evenly",
+   // pageSpacingMode: "evenly",
 
-   throttleTimeout: 1000,
+   throttleTimeout: 200,
+   // swipeSnap: false,
+   // infinite: false,
+   throttleSwipe: false,
    // initOnly: true,
+
+   swipeSpeed: 1500, // pixels per second
+
+   // swipeInertia: true, // movement continues
+
+   //! TEST NON-INFINITE A LOT
 
    pages: [
       {

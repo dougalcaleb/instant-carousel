@@ -123,7 +123,9 @@ let roundabout = {
 		swipe: true,
 		swipeThreshold: 300,
 		swipeMultiplier: 1,
-		swipeResistance: 0.95,
+      swipeResistance: 0.95,
+      swipeSnap: true,
+      swipeSpeed: 10,
 
 		pagesToShow: 1,
 		pageSpacing: 0,
@@ -156,7 +158,7 @@ let roundabout = {
 		nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
       prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
       
-      initOnly: false
+      initOnly: false // does not generate the carousel, but initializes all variables and functions
 	},
 };
 
@@ -167,8 +169,8 @@ class Roundabout {
       }
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.3.0";
-		// console.log(`Using version ${this.VERSION}`);
+		this.VERSION = "1.4.0-DEV";
+		console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
 			let f = false;
@@ -200,23 +202,27 @@ class Roundabout {
 		this.uniqueId = roundabout.on + 1;
       this.overriddenValues = [];
       this.currentBp = -2;
+      this.atEnd = true;
 		// internal
 		this.allowInternalStyles = true;
 		this.allowInternalHTML = true;
 		// swipe
 		this.sx = 0;
-		this.sy = 0;
+		// this.sy = 0;
 		this.ex = 0;
-		this.ey = 0;
+		// this.ey = 0;
 		this.dx = 0;
 		this.x = 0;
-		this.y = 0;
+      this.y = 0;
+      this.lastDx = 0;
 		this.lastMove = null;
 		this.t = false;
 		this.dragging = false;
 		this.canSnap = false;
 		this.swipeFrom = 0;
-		this.swipeIsAllowed = true;
+      this.swipeIsAllowed = true;
+      this.sts = 0;
+      this.ste = 0;
 		// autoscroll
 		this.scrollTimeoutHolder = null;
       this.scrollIntervalHolder = null;
@@ -280,7 +286,13 @@ class Roundabout {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
 				document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-			}
+         }
+         
+         if (this.navigationTrim) {
+            overflow = 0;
+         }
+
+         console.log(`Overflow is ${overflow}`);
 
 			// transition wrapper
          if (!valuesOnly) {
@@ -302,7 +314,8 @@ class Roundabout {
 					.classList.add(`roundabout-${this.uniqueId}-visible-page-${a}`);
 			}
 
-			this.onPage += distance;
+         this.onPage += distance;
+         this.lastDx = 0;
 
 			if (this.onPage >= this.pages.length) {
 				this.onPage -= this.pages.length;
@@ -367,7 +380,8 @@ class Roundabout {
 				this.orderedPages.unshift(this.orderedPages.pop());
 			}
 
-			this.onPage += distance;
+         this.onPage += distance;
+         this.lastDx = 0;
 
 			if (this.onPage < 0) {
 				this.onPage += this.pages.length;
@@ -571,7 +585,11 @@ class Roundabout {
 			} else {
 				return;
 			}
-		}
+      }
+      
+      if (parent.swipeSpeed > 0) {
+         parent.sts = Date.now();
+      }
 
 		event.preventDefault();
 		parent.dragging = true;
@@ -587,17 +605,21 @@ class Roundabout {
 			parent.x = event.touches[0].clientX;
 			parent.y = event.touches[0].clientY;
 			parent.sx = event.touches[0].clientX;
-			parent.sy = event.touches[0].clientY;
+			// parent.sy = event.touches[0].clientY;
 		} else {
 			parent.x = event.clientX;
 			parent.y = event.clientY;
 
 			parent.sx = event.clientX;
-			parent.sy = event.clientY;
+			// parent.sy = event.clientY;
 		}
 
 		document.addEventListener("mousemove", parent.boundFollow, false);
-		document.addEventListener("mouseup", parent.boundEnd, false);
+      document.addEventListener("mouseup", parent.boundEnd, false);
+      
+      // if (!parent.swipeSnap) {
+      //    parent.dx = parent.
+      // }
 
 		if (parent.t) {
 			document.addEventListener("touchmove", parent.boundFollow, false);
@@ -643,23 +665,19 @@ class Roundabout {
 						parent.dx -= parent.dx * parent.swipeResistance;
 					}
 				}
-			}
+         }
+         
+         parent.dx += parent.lastDx;
 
 			// get distance values
-			let dist = Math.abs(parent.dx);
-
-			if (
-				(dist >= parent.swipeThreshold && parent.infinite) ||
-				(dist >= parent.swipeThreshold &&
-					!parent.infinite &&
-					(parent.onPage < parent.pages.length - parent.pagesToShow ||
-						(parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)) &&
-					(parent.onPage > 0 || (parent.onPage == 0 && parent.dx < 0)))
-			) {
-				parent.canSnap = true;
-			} else {
-				parent.canSnap = false;
-			}
+         let dist = Math.abs(parent.dx);
+         parent.checkCanSnap(parent);
+         
+         if (!parent.infinite && (parent.onPage == parent.pages.length - parent.pagesToShow || parent.onPage == 0)) {
+            parent.atEnd = true;
+         } else {
+            parent.atEnd = false;
+         }
 
 			let totalSize =
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-` + parent.orderedPages[parent.orderedPagesMainIndex]).offsetWidth +
@@ -679,13 +697,38 @@ class Roundabout {
 				} else if (parent.dx < 0) {
 					parent.scrollNext(1, true);
 				}
-				parent.sx = parent.x / 1;
-				parent.dx = 0;
-			} else {
+				parent.sx = parent.x * 1;
+            parent.dx = 0;
+            parent.lastDx = 0;
+         } else {
 				document.querySelector(`.roundabout-${parent.uniqueId}-page-wrap`).style.left = parent.dx + "px";
 			}
 		}
-	}
+   }
+
+   checkCanSnap(parent, checkSpeed = false) {
+      let dist = Math.abs(parent.dx);
+      // console.log(`swipe speed is `)
+      if (
+         (dist >= parent.swipeThreshold && parent.infinite) ||                               // infinite and over threshold OR
+         (parent.infinite && parent.swipeSpeed > 0 && checkSpeed) ||
+         (dist >= parent.swipeThreshold &&                                                         // (over threshold AND (
+            !parent.infinite &&                                                                    // not infinite AND
+            (parent.onPage < parent.pages.length - parent.pagesToShow ||                           // is less than right end OR
+               (parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx > 0)) &&    // is at right and and moving left) AND
+            (parent.onPage > 0 || (parent.onPage == 0 && parent.dx < 0)))                          // (is not at left end OR is at left end and is moving right)))
+      ) {
+         if (checkSpeed && Math.abs(((parent.ex - parent.sx) / (parent.ste - parent.sts)) * 1000) > parent.swipeSpeed) {
+            parent.canSnap = true;
+         } else if (checkSpeed) {
+            parent.canSnap = false;
+         } else if (!checkSpeed) {
+            parent.canSnap = true;
+         }
+      } else {
+         parent.canSnap = false;
+      }
+   }
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
@@ -701,14 +744,33 @@ class Roundabout {
 		// log the end of touch position
 		if (parent.t) {
 			parent.ex = event.changedTouches[0].clientX;
-			parent.ey = event.changedTouches[0].clientY;
+			// parent.ey = event.changedTouches[0].clientY;
 		} else {
 			parent.ex = event.clientX;
-			parent.ey = event.clientY;
+			// parent.ey = event.clientY;
 		}
 
+      if (!parent.swipeSnap) {
+         parent.lastDx = parent.dx * 1;
+      }
+
+      if (parent.swipeSpeed > 0 && Math.abs(parent.dx) < parent.swipeThreshold) {
+         parent.ste = Date.now();
+         parent.checkCanSnap(parent, true);
+      }
+
+      let tempSwipeSpeed = Math.abs(((parent.ex - parent.sx) / (parent.ste - parent.sts)) * 1000);
+      console.log(`Swipe speed was ${tempSwipeSpeed}`);
+
+      // parent.checkCanSnap(parent);
+
 		// snap the page to the correct position, and reset for next swipe
-		parent.snap(parent.canSnap, parent.dx, parent);
+      if (parent.swipeSnap || (!parent.swipeSnap && !parent.canSnap && parent.atEnd)) {
+         parent.snap(parent.canSnap, parent.dx, parent);
+         if (!parent.swipeSnap) {
+            parent.lastDx = 0;
+         }
+      }
 		parent.resetSwipeVars(parent);
 
 		document.removeEventListener("mousemove", parent.boundFollow, false);
@@ -761,14 +823,17 @@ class Roundabout {
 	}
 
 	// reset all variables to defaults to avoid strange movements when a new touch starts
-	resetSwipeVars(parent) {
-		parent.sx = 0;
-		parent.sy = 0;
-		parent.ex = 0;
-		parent.ey = 0;
-		parent.x = 0;
-		parent.y = 0;
-		parent.dx = 0;
+   resetSwipeVars(parent) {
+      if (parent.swipeSnap) {
+         parent.sx = 0;
+         // parent.sy = 0;
+         parent.ex = 0;
+         // parent.ey = 0;
+         parent.x = 0;
+         parent.y = 0;
+         parent.dx = 0;
+      }
+		
 		parent.lastMove = [];
 		parent.t = false;
 		parent.canSnap = false;
@@ -1219,7 +1284,7 @@ class Roundabout {
 	}
 
 	// sets page wrap back to left: 0. true = instant movment, false = current transition
-	positionWrap(setTransitions = true, position = 0) {
+   positionWrap(setTransitions = true, position = 0) {
 		let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 		if (setTransitions) {
 			wrapper.classList.remove(`roundabout-${this.uniqueId}-has-transition`);
