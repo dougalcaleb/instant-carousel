@@ -10,7 +10,7 @@ const c = new Roundabout({
    // navigation: false,
 
    throttleTimeout: 500,
-   swipeSnap: false,
+   // swipeSnap: false,
    throttleSwipe: false,
    infinite: false,
 

@@ -534,29 +534,29 @@ class Roundabout {
 			this.load(toLoad);
 		}
 		if (!this.infinite || this.navigationBehavior == "direction") {
-			if (page < this.onPage) {
+			// if (page < this.onPage) {
+			// 	if (this.throttleNavigation) {
+			// 		this.previousHandler(this, "scrollto", page - this.onPage);
+			// 	} else {
+			// 		this.scroll(page - this.onPage);
+			// 	}
+			// } else {
 				if (this.throttleNavigation) {
-					this.previousHandler(this, "scrollto", page - this.onPage);
+					this.scrollHandler(this, "scrollto", page - this.onPage);
 				} else {
 					this.scroll(page - this.onPage);
 				}
-			} else {
-				if (this.throttleNavigation) {
-					this.nextHandler(this, "scrollto", page - this.onPage);
-				} else {
-					this.scroll(page - this.onPage);
-				}
-			}
+			// }
 		} else {
 			if (this.findOffset(this.onPage, page, "p") < this.findOffset(this.onPage, page, "n")) {
 				if (this.throttleNavigation) {
-					this.previousHandler(this, "scrollto", -1 * this.findOffset(this.onPage, page, "p"));
+					this.scrollHandler(this, "scrollto", -1 * this.findOffset(this.onPage, page, "p"));
 				} else {
 					this.scroll(-1 * this.findOffset(this.onPage, page, "p"));
 				}
 			} else {
 				if (this.throttleNavigation) {
-					this.nextHandler(this, "scrollto", this.findOffset(this.onPage, page, "n"));
+					this.scrollHandler(this, "scrollto", this.findOffset(this.onPage, page, "n"));
 				} else {
 					this.scroll(this.findOffset(this.onPage, page, "n"));
 				}
@@ -579,35 +579,43 @@ class Roundabout {
 			.classList.remove(`roundabout-${this.uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
 	}
 
-	nextHandler(parent, from, distance) {
-		let sd;
-		if (from == "snap") {
-			sd = 1;
-		} else if (from == "scrollto") {
-			sd = distance;
-		} else {
-			sd = parent.scrollBy;
-		}
-		parent.resetScrollTimeout();
-		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scroll(sd, false);
-			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
-				parent.scrollIsAllowed = false;
-				setTimeout(() => {
-					parent.scrollIsAllowed = true;
-				}, parent.throttleTimeout);
-			}
-		}
-	}
+	// nextHandler(parent, from, distance) {
+	// 	let sd;
+	// 	if (from == "snap") {
+	// 		sd = 1;
+	// 	} else if (from == "scrollto") {
+	// 		sd = distance;
+	// 	} else {
+	// 		sd = parent.scrollBy;
+	// 	}
+	// 	parent.resetScrollTimeout();
+	// 	if (parent.scrollIsAllowed && !parent.dragging) {
+	// 		parent.scroll(sd, false);
+	// 		if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
+	// 			parent.scrollIsAllowed = false;
+	// 			setTimeout(() => {
+	// 				parent.scrollIsAllowed = true;
+	// 			}, parent.throttleTimeout);
+	// 		}
+	// 	}
+	// }
 
-	previousHandler(parent, from, distance) {
+	scrollHandler(parent, from, distance) {
 		let sd;
-		if (from == "snap") {
-			sd = -1;
+      if (from == "snap") {
+         if (distance > 0) {
+            sd = 1;
+         } else if (distance < 0) {
+            sd = -1
+         }
 		} else if (from == "scrollto") {
 			sd = distance;
-		} else {
-			sd = -parent.scrollBy;
+      } else {
+         if (distance > 0) {
+            sd = parent.scrollBy;
+         } else if (distance < 0) {
+            sd = -parent.scrollBy;
+         }
 		}
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
@@ -938,10 +946,10 @@ class Roundabout {
 	snap(al, dir, parent) {
 		if (al) {
 			if (dir > 0) {
-				parent.previousHandler(parent, "snap");
+				parent.scrollHandler(parent, "snap", -1);
 				parent.positionWrap(false, 1);
 			} else if (dir < 0) {
-				parent.nextHandler(parent, "snap");
+				parent.scrollHandler(parent, "snap", 1);
 				parent.positionWrap(false, -1);
 			}
 		} else {
@@ -1257,20 +1265,20 @@ class Roundabout {
 	setListeners() {
 		if (this.uiEnabled && this.buttons) {
 			document.querySelector(`.roundabout-${this.uniqueId}-btn-next`).addEventListener("click", () => {
-				this.nextHandler(this);
+				this.scrollHandler(this, "listener", this.scrollBy);
 			});
 			document.querySelector(`.roundabout-${this.uniqueId}-btn-prev`).addEventListener("click", () => {
-				this.previousHandler(this);
+            this.scrollHandler(this, "listener", -this.scrollBy);
 			});
 		}
 		if (this.keys) {
 			document.addEventListener("keydown", (event) => {
 				switch (event.key) {
 					case "ArrowLeft":
-						this.previousHandler(this, "key");
+						this.scrollHandler(this, "key", -this.scrollBy);
 						break;
 					case "ArrowRight":
-						this.nextHandler(this, "key");
+						this.scrollHandler(this, "key", this.scrollBy);
 						break;
 				}
 			});
