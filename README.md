@@ -60,6 +60,9 @@ Settings do not need to be declared in any specific order.
 
 ### v1.4.0:
 Features:
+   *  Raised minimum pages requirement to 3 from 2
+      *  Due to multiple bugs that start cropping up from less than 3 pages
+      *  Can use 4 pages (duplicate each page) and disable navigation to achieve the same effect
    *  New setting: swipeSnap
       *  values: true, false
       *  Enables or disables snapping on swipe release
@@ -70,6 +73,7 @@ Features:
 
 Bugfixes:
    *  Fixed error when scrolling next when navigationTrim is on and the number of pages to the right is less than scrollBy
+   *  Fixed non-visible pages being positioned incorrectly when scrolling left. This fixes transitions that have bounce showing nothing beyond the current pages.
 
 ### v1.3.1:
 Bugfixes:
