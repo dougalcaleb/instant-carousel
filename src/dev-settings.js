@@ -1,7 +1,7 @@
 const c = new Roundabout({
-   // pagesToShow: 5,
-   // scrollBy: 3,
-   transition: 800,
+   pagesToShow: 5,
+   scrollBy: 3,
+   transition: 500,
    // pageSpacing: 10,
    // pageSpacingUnits: "px",
 
@@ -9,13 +9,15 @@ const c = new Roundabout({
 
    // navigation: false,
 
-   throttleTimeout: 800,
-   // swipeSnap: false,
+   throttleTimeout: 500,
+   swipeSnap: false,
    throttleSwipe: false,
+   infinite: false,
 
    // swipe: false,
 
-   transitionFunction: "cubic-bezier(0.5, 0, 0.2, 1.3)",
+   // transitionFunction: "cubic-bezier(0.5, 0, 0.2, 1.3)",
+   // transitionFunction: "cubic-bezier(.8,-0.3,.5,1)",
 
    pages: [
       {
@@ -29,45 +31,45 @@ const c = new Roundabout({
       {
          backgroundImage: "../images/numbers/2.png"
       },
-      // {
-      //    backgroundImage: "../images/numbers/3.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/4.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/5.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/6.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/7.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/8.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/9.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/10.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/11.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/12.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/13.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/14.png"
-      // },
-      // {
-      //    backgroundImage: "../images/numbers/15.png"
-      // }
+      {
+         backgroundImage: "../images/numbers/3.png"
+      },
+      {
+         backgroundImage: "../images/numbers/4.png"
+      },
+      {
+         backgroundImage: "../images/numbers/5.png"
+      },
+      {
+         backgroundImage: "../images/numbers/6.png"
+      },
+      {
+         backgroundImage: "../images/numbers/7.png"
+      },
+      {
+         backgroundImage: "../images/numbers/8.png"
+      },
+      {
+         backgroundImage: "../images/numbers/9.png"
+      },
+      {
+         backgroundImage: "../images/numbers/10.png"
+      },
+      {
+         backgroundImage: "../images/numbers/11.png"
+      },
+      {
+         backgroundImage: "../images/numbers/12.png"
+      },
+      {
+         backgroundImage: "../images/numbers/13.png"
+      },
+      {
+         backgroundImage: "../images/numbers/14.png"
+      },
+      {
+         backgroundImage: "../images/numbers/15.png"
+      }
    ]
 });
 

@@ -132,7 +132,7 @@ let roundabout = {
 		pageSpacingUnits: "px",
 		pageSpacingMode: "fill",
 		scrollBy: 1,
-		showWrappedPage: false,
+      showWrappedPage: false,
 
 		transition: 300,
 		transitionFunction: "ease",
@@ -268,20 +268,45 @@ class Roundabout {
    - flush buffer
    - undo transition change   
    */
+   
 
-	// Scrolls to the next page. Does not handle clicks/taps
-	scrollNext(distance, valuesOnly = false, overflow = 0) {
-		if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
-			return;
-		} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
-			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
-			this.scrollNext(remainingDistance, valuesOnly, distance - remainingDistance);
-		} else {
-			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
-
+   scroll(distance, valuesOnly, overflow = 0) {
+      console.log(`Distance is ${distance}`);
+      if (
+         (distance > 0 && this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") ||
+         (distance < 0 && this.onPage <= 0 && !this.infinite && this.type == "normal")
+      ) {
+         return;
+      } else if (distance > 0 && distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
+         let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
+         this.scroll(remainingDistance, valuesOnly, distance - remainingDistance);
+      } else if (distance < 0 && Math.abs(distance) > this.onPage && !this.infinite) {
+         let remainingDistance = -1 * this.onPage;
+			this.scroll(remainingDistance, valuesOnly);
+      } else {
+         let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
+         
+         // set up a position modifier array to mutate the normal right-based positioning
+         let pos = [];
+         if (distance > 0) {
+            for (let a = 0; a < this.positions.length; a++) {
+		         pos.push(a);
+            }
+         } else if (distance < 0) {
+            for (let a = 0; a < this.positions.length; a++) {
+		         pos.push(a - Math.abs(distance) - 1);
+            }
+         }
+			
+         if (distance < 0) {
+            for (let a = 0; a < Math.abs(distance)+1; a++) {
+				   pos.push(pos.shift());
+            }
+         }
+         
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this.positions.length; a++) {
-				let beforeMove = this.calcPagePos(a);
+				let beforeMove = this.calcPagePos(pos[a]);
 				if (beforeMove != "0px") {
 					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
 				}
@@ -298,9 +323,14 @@ class Roundabout {
 			}
 
 			// adjust values
-			for (let a = 0; a < distance; a++) {
-				this.positions.unshift(this.positions.pop());
-				this.orderedPages.push(this.orderedPages.shift());
+         for (let a = 0; a < Math.abs(distance); a++) {
+            if (distance > 0) {
+               this.positions.unshift(this.positions.pop());
+				   this.orderedPages.push(this.orderedPages.shift());
+            } else if (distance < 0) {
+               this.positions.push(this.positions.shift());
+               this.orderedPages.unshift(this.orderedPages.pop());
+            }
 			}
 
 			for (let a = 0; a < this.pagesToShow; a++) {
@@ -315,9 +345,11 @@ class Roundabout {
 			this.onPage += distance;
 			this.lastDx = 0;
 
-			if (this.onPage >= this.pages.length) {
+         if (distance > 0 && this.onPage >= this.pages.length) {
 				this.onPage -= this.pages.length;
-			}
+         } else if (distance < 0 && this.onPage < 0) {
+            this.onPage += this.pages.length;
+         }
 
 			// finished positioning
 			if (!valuesOnly) {
@@ -334,80 +366,155 @@ class Roundabout {
 				this.setActiveBtn(this.onPage + overflow);
 			}
 
-			if (this.lazyLoad == "hidden") {
-				this.load(this.orderedPages.slice(this.pagesToShow, this.pagesToShow + this.scrollBy));
+         if (this.lazyLoad == "hidden") {
+            if (distance > 0) {
+               this.load(this.orderedPages.slice(this.pagesToShow, this.pagesToShow + this.scrollBy));
+            } else if (distance < 0) {
+               this.load(this.orderedPages.slice(this.orderedPages.length - this.scrollBy, this.orderedPages.length));
+            }
 			}
 		}
-	}
+   }
 
-	// Scrolls to the previous page. Does not handle clicks/taps
-	scrollPrevious(distance, valuesOnly = false) {
-		if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
-			return;
-		} else if (Math.abs(distance) > this.onPage && !this.infinite) {
-			let remainingDistance = -1 * this.onPage;
-			this.scrollPrevious(remainingDistance, valuesOnly);
-		} else {
-			let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
+	// Scrolls to the next page. Does not handle clicks/taps
+	// scrollNext(distance, valuesOnly = false, overflow = 0) {
+	// 	if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
+	// 		return;
+	// 	} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
+	// 		let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
+	// 		this.scrollNext(remainingDistance, valuesOnly, distance - remainingDistance);
+	// 	} else {
+	// 		let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
 
-			// set up a position modifier array to mutate the normal right-based positioning
-			let pos = [];
-			for (let a = 0; a < this.positions.length; a++) {
-				pos.push(a - Math.abs(distance)-1);
-			}
-			for (let a = 0; a < Math.abs(distance)+1; a++) {
-				pos.push(pos.shift());
-         }
-         // console.log("pos array is ");
-         // console.log(pos);
-			// position all pages to correct place before move and remove hidden pages
-			for (let a = 0; a < this.positions.length; a++) {
-            let beforeMove = this.calcPagePos(pos[a]);
-            // console.log(`Giving page ${a} position ${beforeMove}`);
-				if (beforeMove != "0px") {
-					document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
-				}
-				document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
-			}
+	// 		// position all pages to correct place before move and remove hidden pages
+	// 		for (let a = 0; a < this.positions.length; a++) {
+	// 			let beforeMove = this.calcPagePos(a);
+	// 			if (beforeMove != "0px") {
+	// 				document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
+	// 			}
+	// 			document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
+	// 		}
 
-			// transition wrapper
-			if (!valuesOnly) {
-				wrapper.style.left = this.calcPagePos(-distance, true);
-			}
+	// 		if (this.navigationTrim) {
+	// 			overflow = 0;
+	// 		}
 
-			// adjust values
-			for (let a = 0; a < Math.abs(distance); a++) {
-				this.positions.push(this.positions.shift());
-				this.orderedPages.unshift(this.orderedPages.pop());
-			}
+	// 		// transition wrapper
+	// 		if (!valuesOnly) {
+	// 			wrapper.style.left = this.calcPagePos(-distance, true);
+	// 		}
 
-			this.onPage += distance;
-			this.lastDx = 0;
+	// 		// adjust values
+	// 		for (let a = 0; a < distance; a++) {
+	// 			this.positions.unshift(this.positions.pop());
+	// 			this.orderedPages.push(this.orderedPages.shift());
+	// 		}
 
-			if (this.onPage < 0) {
-				this.onPage += this.pages.length;
-			}
+	// 		for (let a = 0; a < this.pagesToShow; a++) {
+	// 			document
+	// 				.querySelector(`.roundabout-${this.uniqueId}-visible-page-${a}`)
+	// 				.classList.remove(`roundabout-${this.uniqueId}-visible-page-${a}`);
+	// 			document
+	// 				.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`)
+	// 				.classList.add(`roundabout-${this.uniqueId}-visible-page-${a}`);
+	// 		}
 
-			// finished positioning
-			if (!valuesOnly) {
-				setTimeout(() => {
-					this.positionWrap(!valuesOnly);
-					this.positionPages();
-				}, this.transition);
-			} else {
-				this.positionWrap(!valuesOnly);
-				this.positionPages();
-			}
+	// 		this.onPage += distance;
+	// 		this.lastDx = 0;
 
-			if (this.navigation) {
-				this.setActiveBtn(this.onPage);
-			}
+	// 		if (this.onPage >= this.pages.length) {
+	// 			this.onPage -= this.pages.length;
+	// 		}
 
-			if (this.lazyLoad == "hidden") {
-				this.load(this.orderedPages.slice(this.orderedPages.length - this.scrollBy, this.orderedPages.length));
-			}
-		}
-	}
+	// 		// finished positioning
+	// 		if (!valuesOnly) {
+	// 			setTimeout(() => {
+	// 				this.positionWrap(!valuesOnly);
+	// 				this.positionPages();
+	// 			}, this.transition);
+	// 		} else {
+	// 			this.positionWrap(!valuesOnly);
+	// 			this.positionPages();
+	// 		}
+
+	// 		if (this.navigation) {
+	// 			this.setActiveBtn(this.onPage + overflow);
+	// 		}
+
+	// 		if (this.lazyLoad == "hidden") {
+	// 			this.load(this.orderedPages.slice(this.pagesToShow, this.pagesToShow + this.scrollBy));
+	// 		}
+	// 	}
+	// }
+
+	// // Scrolls to the previous page. Does not handle clicks/taps
+	// scrollPrevious(distance, valuesOnly = false) {
+	// 	if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
+	// 		return;
+	// 	} else if (Math.abs(distance) > this.onPage && !this.infinite) {
+	// 		let remainingDistance = -1 * this.onPage;
+	// 		this.scrollPrevious(remainingDistance, valuesOnly);
+	// 	} else {
+	// 		let wrapper = document.querySelector(`.roundabout-${this.uniqueId}-page-wrap`);
+
+	// 		// set up a position modifier array to mutate the normal right-based positioning
+	// 		let pos = [];
+	// 		for (let a = 0; a < this.positions.length; a++) {
+	// 			pos.push(a - Math.abs(distance)-1);
+	// 		}
+	// 		for (let a = 0; a < Math.abs(distance)+1; a++) {
+	// 			pos.push(pos.shift());
+   //       }
+   //       // console.log("pos array is ");
+   //       // console.log(pos);
+	// 		// position all pages to correct place before move and remove hidden pages
+	// 		for (let a = 0; a < this.positions.length; a++) {
+   //          let beforeMove = this.calcPagePos(pos[a]);
+   //          // console.log(`Giving page ${a} position ${beforeMove}`);
+	// 			if (beforeMove != "0px") {
+	// 				document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).classList.remove("roundabout-hidden-page");
+	// 			}
+	// 			document.querySelector(`.roundabout-${this.uniqueId}-page-${this.orderedPages[a]}`).style.left = beforeMove;
+	// 		}
+
+	// 		// transition wrapper
+	// 		if (!valuesOnly) {
+	// 			wrapper.style.left = this.calcPagePos(-distance, true);
+	// 		}
+
+	// 		// adjust values
+	// 		for (let a = 0; a < Math.abs(distance); a++) {
+	// 			this.positions.push(this.positions.shift());
+	// 			this.orderedPages.unshift(this.orderedPages.pop());
+	// 		}
+
+	// 		this.onPage += distance;
+	// 		this.lastDx = 0;
+
+	// 		if (this.onPage < 0) {
+	// 			this.onPage += this.pages.length;
+	// 		}
+
+	// 		// finished positioning
+	// 		if (!valuesOnly) {
+	// 			setTimeout(() => {
+	// 				this.positionWrap(!valuesOnly);
+	// 				this.positionPages();
+	// 			}, this.transition);
+	// 		} else {
+	// 			this.positionWrap(!valuesOnly);
+	// 			this.positionPages();
+	// 		}
+
+	// 		if (this.navigation) {
+	// 			this.setActiveBtn(this.onPage);
+	// 		}
+
+	// 		if (this.lazyLoad == "hidden") {
+	// 			this.load(this.orderedPages.slice(this.orderedPages.length - this.scrollBy, this.orderedPages.length));
+	// 		}
+	// 	}
+	// }
 
 	scrollTo(page) {
 		if (this.scrollIsAllowed && this.throttleNavigation && this.navigation) {
@@ -431,13 +538,13 @@ class Roundabout {
 				if (this.throttleNavigation) {
 					this.previousHandler(this, "scrollto", page - this.onPage);
 				} else {
-					this.scrollPrevious(page - this.onPage);
+					this.scroll(page - this.onPage);
 				}
 			} else {
 				if (this.throttleNavigation) {
 					this.nextHandler(this, "scrollto", page - this.onPage);
 				} else {
-					this.scrollNext(page - this.onPage);
+					this.scroll(page - this.onPage);
 				}
 			}
 		} else {
@@ -445,13 +552,13 @@ class Roundabout {
 				if (this.throttleNavigation) {
 					this.previousHandler(this, "scrollto", -1 * this.findOffset(this.onPage, page, "p"));
 				} else {
-					this.scrollPrevious(-1 * this.findOffset(this.onPage, page, "p"));
+					this.scroll(-1 * this.findOffset(this.onPage, page, "p"));
 				}
 			} else {
 				if (this.throttleNavigation) {
 					this.nextHandler(this, "scrollto", this.findOffset(this.onPage, page, "n"));
 				} else {
-					this.scrollNext(this.findOffset(this.onPage, page, "n"));
+					this.scroll(this.findOffset(this.onPage, page, "n"));
 				}
 			}
 		}
@@ -483,7 +590,7 @@ class Roundabout {
 		}
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scrollNext(sd, false);
+			parent.scroll(sd, false);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent.scrollIsAllowed = false;
 				setTimeout(() => {
@@ -504,7 +611,7 @@ class Roundabout {
 		}
 		parent.resetScrollTimeout();
 		if (parent.scrollIsAllowed && !parent.dragging) {
-			parent.scrollPrevious(sd, false);
+			parent.scroll(sd, false);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent.scrollIsAllowed = false;
 				setTimeout(() => {
@@ -553,9 +660,9 @@ class Roundabout {
 	// Called at each interval, determines how to scroll
 	scrollAuto(parent) {
 		if (parent.autoscrollDirection.toLowerCase() == "left" && parent.scrollIsAllowed) {
-			parent.scrollPrevious(-this.scrollBy);
+			parent.scroll(-this.scrollBy);
 		} else if (parent.autoscrollDirection.toLowerCase() == "right" && parent.scrollIsAllowed) {
-			parent.scrollNext(this.scrollBy);
+			parent.scroll(this.scrollBy);
 		}
 	}
 
@@ -699,9 +806,9 @@ class Roundabout {
 					(parent.onPage > 0 || (parent.onPage == 0 && parent.dx < 0)))
 			) {
 				if (parent.dx > 0) {
-					parent.scrollPrevious(-1, true);
+					parent.scroll(-1, true);
 				} else if (parent.dx < 0) {
-					parent.scrollNext(1, true);
+					parent.scroll(1, true);
 				}
 				parent.sx = parent.x * 1;
 				parent.dx = 0;
@@ -742,10 +849,10 @@ class Roundabout {
             ((parent.onPage == parent.pages.length - parent.pagesToShow && parent.dx < 0) || // (at right end and moving right OR
             (parent.onPage == 0 && parent.dx > 0))                                           // at left and and moving left
          ) {
-            parent.canSnap == false;
+            parent.canSnap = false;
          } else {
             // console.log("set to true");
-            parent.canSnap == true;
+            parent.canSnap = true;
          }
 		}
 	}
@@ -792,7 +899,7 @@ class Roundabout {
 			}
 		}
 		parent.resetSwipeVars(parent);
-
+      
 		document.removeEventListener("mousemove", parent.boundFollow, false);
 		document.removeEventListener("mouseup", parent.boundEnd, false);
 
