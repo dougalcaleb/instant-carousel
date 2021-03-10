@@ -1,7 +1,4 @@
 const rs = new RoundaboutScripter();
-
-
-
 const c = new Roundabout({
    pagesToShow: 5,
    scrollBy: 3,
@@ -77,20 +74,10 @@ const c = new Roundabout({
    ]
 });
 
-// const c2 = new Roundabout({
-//    id: ".bruh",
-//    pages: [
-//       {
-//          backgroundImage: "../images/numbers/1.png"
-//       },
-//       {
-//          backgroundImage: "../images/numbers/2.png"
-//       },
-//       {
-//          backgroundImage: "../images/numbers/3.png"
-//       },
-//       {
-//          backgroundImage: "../images/numbers/4.png"
-//       },
-//    ]
-// });
+rs.onScroll(c, () => {
+   alert("Scrolling started");
+});
+
+rs.onScroll(c, () => {
+   console.log("SCROLL!!!!");
+})

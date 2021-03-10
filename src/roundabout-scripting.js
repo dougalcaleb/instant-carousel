@@ -20,15 +20,10 @@ class RoundaboutScripter {
 /*
 
 
-subscribe(event, newCallback) {
-      this.callbacks[event].push(newCallback);
-   }
 
 
-// scripting helpers
-      this.callbacks = {
-         "scroll": []
-      }
+
+
 
 
 
