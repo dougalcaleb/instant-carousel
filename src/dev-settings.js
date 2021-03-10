@@ -3,17 +3,25 @@ const rs = new RoundaboutScripter();
 
 
 const c = new Roundabout({
-   pagesToShow: 3,
+   pagesToShow: 5,
    scrollBy: 3,
-   transition: 1000,
-   pageSpacing: 10,
-   pageSpacingUnits: "px",
-   swipeThreshold: 50,
+   transition: 500,
+   // pageSpacing: 10,
+   // pageSpacingUnits: "px",
 
-   pageSpacingMode: "evenly",
+   // pageSpacingMode: "evenly",
 
-   throttleTimeout: 1000,
-   // initOnly: true,
+   // navigation: false,
+
+   throttleTimeout: 500,
+   // swipeSnap: false,
+   throttleSwipe: false,
+   infinite: false,
+
+   // swipe: false,
+
+   // transitionFunction: "cubic-bezier(0.5, 0, 0.2, 1.3)",
+   // transitionFunction: "cubic-bezier(.8,-0.3,.5,1)",
 
    pages: [
       {

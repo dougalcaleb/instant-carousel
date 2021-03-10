@@ -56,7 +56,24 @@ Settings do not need to be declared in any specific order.
 ### Patch Notes:
 
 ### Jump to:
-[v1.3.1](#v131) | [v1.3.0](#v130) | [v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+[v1.4.0](#v140) | [v1.3.1](#v131) | [v1.3.0](#v130) | [v1.2.1](#v121) | [v1.2.0](#v120) | [v1.1.0](#v110) | [v1.0.0](#v100)
+
+### v1.4.0:
+Features:
+   *  Raised minimum pages requirement to 3 from 2
+      *  Due to multiple bugs that start cropping up from less than 3 pages
+      *  Can use 4 pages (duplicate each page) and disable navigation to achieve the same effect
+   *  New setting: swipeSnap
+      *  values: true, false
+      *  Enables or disables snapping on swipe release
+   *  New setting: swipeSpeed
+      *  value: integer
+      *  Sets the speed (pixels/s) that must be exceeded to advance the page
+      *  Can be used alongside swipeThreshold
+
+Bugfixes:
+   *  Fixed error when scrolling next when navigationTrim is on and the number of pages to the right is less than scrollBy
+   *  Fixed non-visible pages being positioned incorrectly when scrolling left. This fixes transitions that have bounce showing nothing beyond the current pages.
 
 ### v1.3.1:
 Bugfixes:
