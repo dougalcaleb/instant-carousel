@@ -1,3 +1,7 @@
+const rs = new RoundaboutScripter();
+
+
+
 const c = new Roundabout({
    pagesToShow: 3,
    scrollBy: 3,
