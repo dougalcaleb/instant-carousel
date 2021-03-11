@@ -43,37 +43,6 @@ RESPONSIVENESS
 ✔ Multiple breakpoints and value sets can be specified
 
 
-SCRIPTING
-On Functions
-✖ onScroll(callback, includeAutoscroll)
-✖ onScrollEnd(callback, includeAutoscroll)
-✖ onDragStart(callback)
-✖ onDragEnd(callback)
-✖ onScrollRight(callback, includeAutoscroll)
-✖ onScrollLeft(callback, includeAutoscroll)
-✖ onScrollRightEnd(callback, includeAutoscroll)
-✖ onScrollLeftEnd(callback, includeAutoscroll)
-✖ setValue(setting, value)
--  Change page stuff?
-Methods
-✖ Change page elements
-✖ scrollTo(page)
-✖ destroy(regen, complete)
-✖ Scroll next/prev
-✖ Pause/play autoscroll
-✖ Add page
-✖ Remove page
-✖ Update page
-✖ Load page image
-Properties
-✖ Classlist
-✖ Drag position
-✖ onPage
-✖ Active breakpoint
-Misc
-✖ Async lazy load promises
-*/
-
 //! KNOWN ISSUES:
 /*
    
@@ -231,7 +200,12 @@ class Roundabout {
 		this._boundCancel = null;
 		// scripting helpers
 		this._callbacks = {
-			scroll: [],
+         scroll: [],
+         scrollEnd: [],
+         dragStart: [],
+         dragEnd: [],
+         scrollNext: [],
+         scrollPrevious: [],
       };
       
 		// Function calls
@@ -275,7 +249,6 @@ class Roundabout {
       this._callbacks.scroll.forEach(cb => {
          cb();
       });
-		console.log(`Distance is ${distance}`);
 		if (
 			(distance > 0 && this._onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") ||
 			(distance < 0 && this._onPage <= 0 && !this.infinite && this.type == "normal")
@@ -295,11 +268,17 @@ class Roundabout {
 			if (distance > 0) {
 				for (let a = 0; a < this._positions.length; a++) {
 					pos.push(a);
-				}
+            }
+            this._callbacks.scrollNext.forEach(cb => {
+               cb();
+            });
 			} else if (distance < 0) {
 				for (let a = 0; a < this._positions.length; a++) {
 					pos.push(a - Math.abs(distance) - 1);
-				}
+            }
+            this._callbacks.scrollPrevious.forEach(cb => {
+               cb();
+            });
 			}
 
 			if (distance < 0) {
@@ -359,7 +338,10 @@ class Roundabout {
 			if (!valuesOnly) {
 				setTimeout(() => {
 					this.positionWrap(!valuesOnly);
-					this.positionPages();
+               this.positionPages();
+               this._callbacks.scrollEnd.forEach(cb => {
+                  cb();
+               });
 				}, this.transition);
 			} else {
 				this.positionWrap(!valuesOnly);
@@ -694,7 +676,10 @@ class Roundabout {
 	}
 
 	// called once when touch or click starts
-	tStart(event, parent) {
+   tStart(event, parent) {
+      this._callbacks.dragStart.forEach(cb => {
+         cb();
+      });
 		// throttling
 		parent.resetScrollTimeout();
 		if (parent.throttleSwipe) {
@@ -874,7 +859,10 @@ class Roundabout {
 	}
 
 	// called once when the touch or click ends
-	tEnd(event, parent) {
+   tEnd(event, parent) {
+      this._callbacks.dragEnd.forEach(cb => {
+         cb();
+      });
 		setTimeout(() => {
 			parent._swipeIsAllowed = true;
 		}, parent.throttleTimeout);
@@ -925,7 +913,10 @@ class Roundabout {
 	}
 
 	// handle touch cancel
-	tCancel(event, parent) {
+   tCancel(event, parent) {
+      this._callbacks.dragEnd.forEach(cb => {
+         cb();
+      });
 		event.preventDefault();
 		document.removeEventListener(
 			"mouseup",
@@ -1192,9 +1183,16 @@ class Roundabout {
 			if (regen) {
 				this._positions = [];
 				this._orderedPages = [];
-				try {
+            try {
+               //! not working
+               let oe = document.querySelector(this.id);
+               let ne = oe.cloneNode(true);
+               oe.parentNode.replaceChild(ne, oe);
+               document.removeEventListener("keydown", (event) => {
+                  this.keyListener(event);
+               });
 					this.initialActions(true);
-					// this.setListeners();
+					this.setListeners(true);
 				} catch (e) {
 					console.error(`Error while attempting to regenerate Roundabout with id ${this.id}:`);
 					console.error(e);
@@ -1270,7 +1268,7 @@ class Roundabout {
 	}
 
 	// Sets all required eventListeners for the carousel
-	setListeners() {
+   setListeners(r = false) {
 		if (this.uiEnabled && this.buttons) {
 			document.querySelector(`.roundabout-${this._uniqueId}-btn-next`).addEventListener("click", () => {
 				this.scrollHandler(this, "listener", this.scrollBy);
@@ -1281,14 +1279,7 @@ class Roundabout {
 		}
 		if (this.keys) {
 			document.addEventListener("keydown", (event) => {
-				switch (event.key) {
-					case "ArrowLeft":
-						this.scrollHandler(this, "key", -this.scrollBy);
-						break;
-					case "ArrowRight":
-						this.scrollHandler(this, "key", this.scrollBy);
-						break;
-				}
+            this.keyListener(event);
 			});
 		}
 		if (this.listenForResize) {
@@ -1323,7 +1314,18 @@ class Roundabout {
 				false
 			);
 		}
-	}
+   }
+   
+   keyListener(event) {
+      switch (event.key) {
+         case "ArrowLeft":
+            this.scrollHandler(this, "key", -this.scrollBy);
+            break;
+         case "ArrowRight":
+            this.scrollHandler(this, "key", this.scrollBy);
+            break;
+      }
+   }
 
 	// prevents breakage by providing constraints and displaying an error message
 	checkForErrors(r) {

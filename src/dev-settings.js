@@ -13,7 +13,7 @@ const c = new Roundabout({
    throttleTimeout: 500,
    // swipeSnap: false,
    throttleSwipe: false,
-   infinite: false,
+   // infinite: false,
 
    // swipe: false,
 
@@ -75,9 +75,31 @@ const c = new Roundabout({
 });
 
 rs.onScroll(c, () => {
-   alert("Scrolling started");
+   console.log("Scroll");
 });
 
-rs.onScroll(c, () => {
-   console.log("SCROLL!!!!");
-})
+rs.onScrollEnd(c, () => {
+   console.log("Scroll ended");
+});
+
+rs.onDragStart(c, () => {
+   console.log("Drag start");
+});
+
+rs.onDragEnd(c, () => {
+   console.log("Drag ended");
+});
+
+rs.onScrollNext(c, () => {
+   console.log("Scrolled Next");
+});
+
+rs.onScrollPrevious(c, () => {
+   console.log("Scrolled Previous");
+});
+
+function set() {
+   rs.setValue(c, "pagesToShow", 2);
+   rs.setValue(c, "scrollBy", 2);
+   rs.destroy(c);
+}
