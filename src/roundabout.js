@@ -164,14 +164,15 @@ class Roundabout {
 		this._positions = [];
 		this._orderedPagesMainIndex = 0;
 		this._scrollIsAllowed = true;
-		this._onPage = 0;
+		this.onPage = 0;
 		this._handledLoad = false;
 		this._loadQueue = [];
 		this._loadingPages = false;
 		this._uniqueId = roundabout.on + 1;
 		this._overriddenValues = [];
 		this._currentBp = -2;
-		this._atEnd = true;
+      this._atEnd = true;
+      this.activeBreakpoint = null;
 		// internal
 		this._allowInternalStyles = true;
 		this._allowInternalHTML = true;
@@ -180,7 +181,6 @@ class Roundabout {
 		this._ex = 0;
 		this._dx = 0;
 		this._x = 0;
-		// this.y = 0;
 		this._lastDx = 0;
 		this._lastMove = null;
 		this._t = false;
@@ -200,12 +200,15 @@ class Roundabout {
 		this._boundCancel = null;
 		// scripting helpers
 		this._callbacks = {
-         scroll: [],
-         scrollEnd: [],
-         dragStart: [],
-         dragEnd: [],
-         scrollNext: [],
-         scrollPrevious: [],
+         // scroll: [],
+         // scrollEnd: [],
+         // dragStart: [],
+         // dragEnd: [],
+         // scrollNext: [],
+         // scrollPrevious: [],
+         // scrollNextEnd: [],
+         // scrollPreviousEnd: [],
+         // onLoad: [],
       };
       
 		// Function calls
@@ -250,15 +253,15 @@ class Roundabout {
          cb();
       });
 		if (
-			(distance > 0 && this._onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") ||
-			(distance < 0 && this._onPage <= 0 && !this.infinite && this.type == "normal")
+			(distance > 0 && this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") ||
+			(distance < 0 && this.onPage <= 0 && !this.infinite && this.type == "normal")
 		) {
 			return;
-		} else if (distance > 0 && distance > this.pages.length - this.pagesToShow - this._onPage && !this.infinite) {
-			let remainingDistance = this.pages.length - this.pagesToShow - this._onPage;
+		} else if (distance > 0 && distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
+			let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 			this.scroll(remainingDistance, valuesOnly, distance - remainingDistance);
-		} else if (distance < 0 && Math.abs(distance) > this._onPage && !this.infinite) {
-			let remainingDistance = -1 * this._onPage;
+		} else if (distance < 0 && Math.abs(distance) > this.onPage && !this.infinite) {
+			let remainingDistance = -1 * this.onPage;
 			this.scroll(remainingDistance, valuesOnly);
 		} else {
 			let wrapper = document.querySelector(`.roundabout-${this._uniqueId}-page-wrap`);
@@ -325,13 +328,13 @@ class Roundabout {
 					.classList.add(`roundabout-${this._uniqueId}-visible-page-${a}`);
 			}
 
-			this._onPage += distance;
+			this.onPage += distance;
 			this._lastDx = 0;
 
-			if (distance > 0 && this._onPage >= this.pages.length) {
-				this._onPage -= this.pages.length;
-			} else if (distance < 0 && this._onPage < 0) {
-				this._onPage += this.pages.length;
+			if (distance > 0 && this.onPage >= this.pages.length) {
+				this.onPage -= this.pages.length;
+			} else if (distance < 0 && this.onPage < 0) {
+				this.onPage += this.pages.length;
 			}
 
 			// finished positioning
@@ -342,6 +345,15 @@ class Roundabout {
                this._callbacks.scrollEnd.forEach(cb => {
                   cb();
                });
+               if (distance > 0) {
+                  this._callbacks.scrollNextEnd.forEach(cb => {
+                     cb();
+                  });
+               } else if (distance < 0) {
+                  this._callbacks.scrollPreviousEnd.forEach(cb => {
+                     cb();
+                  });
+               }
 				}, this.transition);
 			} else {
 				this.positionWrap(!valuesOnly);
@@ -349,7 +361,7 @@ class Roundabout {
 			}
 
 			if (this.navigation) {
-				this.setActiveBtn(this._onPage + overflow);
+				this.setActiveBtn(this.onPage + overflow);
 			}
 
 			if (this.lazyLoad == "hidden") {
@@ -364,10 +376,10 @@ class Roundabout {
 
 	// Scrolls to the n_ext page. Does not handle clicks/taps
 	// scrollN_ext(distance, valuesOnly = false, overflow = 0) {
-	// 	if (this._onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
+	// 	if (this.onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "normal") {
 	// 		return;
-	// 	} else if (distance > this.pages.length - this.pagesToShow - this._onPage && !this.infinite) {
-	// 		let remainingDistance = this.pages.length - this.pagesToShow - this._onPage;
+	// 	} else if (distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
+	// 		let remainingDistance = this.pages.length - this.pagesToShow - this.onPage;
 	// 		this.scrollN_ext(remainingDistance, valuesOnly, distance - remainingDistance);
 	// 	} else {
 	// 		let wrapper = document.querySelector(`.roundabout-${this._uniqueId}-page-wrap`);
@@ -405,11 +417,11 @@ class Roundabout {
 	// 				.classList.add(`roundabout-${this._uniqueId}-visible-page-${a}`);
 	// 		}
 
-	// 		this._onPage += distance;
+	// 		this.onPage += distance;
 	// 		this._lastDx = 0;
 
-	// 		if (this._onPage >= this.pages.length) {
-	// 			this._onPage -= this.pages.length;
+	// 		if (this.onPage >= this.pages.length) {
+	// 			this.onPage -= this.pages.length;
 	// 		}
 
 	// 		// finished positioning
@@ -424,7 +436,7 @@ class Roundabout {
 	// 		}
 
 	// 		if (this.navigation) {
-	// 			this.setActiveBtn(this._onPage + overflow);
+	// 			this.setActiveBtn(this.onPage + overflow);
 	// 		}
 
 	// 		if (this.lazyLoad == "hidden") {
@@ -435,10 +447,10 @@ class Roundabout {
 
 	// // Scrolls to the previous page. Does not handle clicks/taps
 	// scrollPrevious(distance, valuesOnly = false) {
-	// 	if (this._onPage <= 0 && !this.infinite && this.type == "normal") {
+	// 	if (this.onPage <= 0 && !this.infinite && this.type == "normal") {
 	// 		return;
-	// 	} else if (Math.abs(distance) > this._onPage && !this.infinite) {
-	// 		let remainingDistance = -1 * this._onPage;
+	// 	} else if (Math.abs(distance) > this.onPage && !this.infinite) {
+	// 		let remainingDistance = -1 * this.onPage;
 	// 		this.scrollPrevious(remainingDistance, valuesOnly);
 	// 	} else {
 	// 		let wrapper = document.querySelector(`.roundabout-${this._uniqueId}-page-wrap`);
@@ -474,11 +486,11 @@ class Roundabout {
 	// 			this._orderedPages.unshift(this._orderedPages.pop());
 	// 		}
 
-	// 		this._onPage += distance;
+	// 		this.onPage += distance;
 	// 		this._lastDx = 0;
 
-	// 		if (this._onPage < 0) {
-	// 			this._onPage += this.pages.length;
+	// 		if (this.onPage < 0) {
+	// 			this.onPage += this.pages.length;
 	// 		}
 
 	// 		// finished positioning
@@ -493,7 +505,7 @@ class Roundabout {
 	// 		}
 
 	// 		if (this.navigation) {
-	// 			this.setActiveBtn(this._onPage);
+	// 			this.setActiveBtn(this.onPage);
 	// 		}
 
 	// 		if (this.lazyLoad == "hidden") {
@@ -502,7 +514,7 @@ class Roundabout {
 	// 	}
 	// }
 
-	scrollTo(page) {
+	scrollTo(page, transition = true) {
 		if (this._scrollIsAllowed && this.throttleNavigation && this.navigation) {
 			this.setActiveBtn(page);
 		} else if (!this.throttleNavigation && this.navigation) {
@@ -518,33 +530,35 @@ class Roundabout {
 				toLoad.push(this._orderedPages[idx]);
 			}
 			this.load(toLoad);
-		}
+      }
+      
+
 		if (!this.infinite || this.navigationBehavior == "direction") {
-			// if (page < this._onPage) {
+			// if (page < this.onPage) {
 			// 	if (this.throttleNavigation) {
-			// 		this.previousHandler(this, "scrollto", page - this._onPage);
+			// 		this.previousHandler(this, "scrollto", page - this.onPage);
 			// 	} else {
-			// 		this.scroll(page - this._onPage);
+			// 		this.scroll(page - this.onPage);
 			// 	}
 			// } else {
 			if (this.throttleNavigation) {
-				this.scrollHandler(this, "scrollto", page - this._onPage);
+				this.scrollHandler(this, "scrollto", page - this.onPage);
 			} else {
-				this.scroll(page - this._onPage);
+				this.scroll(page - this.onPage, transition);
 			}
 			// }
 		} else {
-			if (this.findOffset(this._onPage, page, "p") < this.findOffset(this._onPage, page, "n")) {
+			if (this.findOffset(this.onPage, page, "p") < this.findOffset(this.onPage, page, "n")) {
 				if (this.throttleNavigation) {
-					this.scrollHandler(this, "scrollto", -1 * this.findOffset(this._onPage, page, "p"));
+					this.scrollHandler(this, "scrollto", -1 * this.findOffset(this.onPage, page, "p"), transition);
 				} else {
-					this.scroll(-1 * this.findOffset(this._onPage, page, "p"));
+					this.scroll(-1 * this.findOffset(this.onPage, page, "p"), transition);
 				}
 			} else {
 				if (this.throttleNavigation) {
-					this.scrollHandler(this, "scrollto", this.findOffset(this._onPage, page, "n"));
+					this.scrollHandler(this, "scrollto", this.findOffset(this.onPage, page, "n"));
 				} else {
-					this.scroll(this.findOffset(this._onPage, page, "n"));
+					this.scroll(this.findOffset(this.onPage, page, "n"), transition);
 				}
 			}
 		}
@@ -586,7 +600,7 @@ class Roundabout {
 	// 	}
 	// }
 
-	scrollHandler(parent, from, distance) {
+	scrollHandler(parent, from, distance, transition = true) {
 		let sd;
 		if (from == "snap") {
 			if (distance > 0) {
@@ -605,7 +619,7 @@ class Roundabout {
 		}
 		parent.resetScrollTimeout();
 		if (parent._scrollIsAllowed && !parent._dragging) {
-			parent.scroll(sd, false);
+			parent.scroll(sd, false, transition);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent._scrollIsAllowed = false;
 				setTimeout(() => {
@@ -750,8 +764,8 @@ class Roundabout {
 			// check if at an end and trying to scroll past
 			if (
 				!parent.infinite &&
-				((parent._onPage == parent.pages.length - parent.pagesToShow && parent._dx < -1 * parent._lastDx) ||
-					(parent._onPage == 0 && parent._dx > -1 * parent._lastDx))
+				((parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx < -1 * parent._lastDx) ||
+					(parent.onPage == 0 && parent._dx > -1 * parent._lastDx))
 			) {
 				parent._atEnd = true;
 			} else {
@@ -764,7 +778,7 @@ class Roundabout {
 			} else if (parent._dx < 0) {
 				if (parent.infinite) {
 					parent._dx -= (parent._dx + document.querySelector(parent.parent).offsetWidth) * parent.swipeResistance;
-				} else if (parent.pages.length - parent.pagesToShow == parent._onPage) {
+				} else if (parent.pages.length - parent.pagesToShow == parent.onPage) {
 					if (parent.swipeResistance == 1) {
 						parent._dx = 0;
 					} else if (parent._atEnd) {
@@ -800,9 +814,9 @@ class Roundabout {
 				(dist >= totalSize && parent.infinite) ||
 				(dist >= totalSize &&
 					!parent.infinite &&
-					(parent._onPage < parent.pages.length - parent.pagesToShow ||
-						(parent._onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) &&
-					(parent._onPage > 0 || (parent._onPage == 0 && parent._dx < 0)))
+					(parent.onPage < parent.pages.length - parent.pagesToShow ||
+						(parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) &&
+					(parent.onPage > 0 || (parent.onPage == 0 && parent._dx < 0)))
 			) {
 				if (parent._dx > 0) {
 					parent.scroll(-1, true);
@@ -829,9 +843,9 @@ class Roundabout {
 				(checkSpeed && parent.infinite) || // (infinite and checking for speed) OR
 				((dist >= parent.swipeThreshold || checkSpeed) && // [(over threshold OR checking for speed) AND
 					!parent.infinite && // not infinite AND
-					(parent._onPage < parent.pages.length - parent.pagesToShow || // {is less than right end OR
-						(parent._onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) && // is at right and and moving left} AND
-					(parent._onPage > 0 || (parent._onPage == 0 && parent._dx < 0))) // (is not at left end OR is at left end and is moving right)]
+					(parent.onPage < parent.pages.length - parent.pagesToShow || // {is less than right end OR
+						(parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) && // is at right and and moving left} AND
+					(parent.onPage > 0 || (parent.onPage == 0 && parent._dx < 0))) // (is not at left end OR is at left end and is moving right)]
 			) {
 				if (checkSpeed && Math.abs(((parent._ex - parent._sx) / (parent._ste - parent._sts)) * 1000) > parent.swipeSpeed) {
 					parent._canSnap = true; // checking speed and speed is over required
@@ -847,8 +861,8 @@ class Roundabout {
 			// snap is disabled - not using threshold or speed, but must check for non-inf ends
 			if (
 				!parent.infinite && // not infinite AND
-				((parent._onPage == parent.pages.length - parent.pagesToShow && parent._dx < 0) || // (at right end and moving right OR
-					(parent._onPage == 0 && parent._dx > 0)) // at left and and moving left
+				((parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx < 0) || // (at right end and moving right OR
+					(parent.onPage == 0 && parent._dx > 0)) // at left and and moving left
 			) {
 				parent._canSnap = false;
 			} else {
@@ -1214,7 +1228,12 @@ class Roundabout {
 		});
 
 		if (this._currentBp != lbp.width) {
-			this._currentBp = lbp.width;
+         this._currentBp = lbp.width;
+         if (lbp.width == -1) {
+            this.activeBreakpoint = {};
+         } else {
+            this.activeBreakpoint = lbp;
+         }
 			this.applyBreakpoint(lbp);
 		}
 	}
@@ -1390,7 +1409,13 @@ class Roundabout {
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${this._loadQueue[0]}`).style.backgroundSize = "cover";
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${this._loadQueue[0]}`).style.backgroundPosition = "center center";
 
-				this.pages[this._loadQueue[0]].isLoaded = true;
+            this.pages[this._loadQueue[0]].isLoaded = true;
+            
+            this._callbacks.onLoad.forEach(cb => {
+               if (cb.pageId == this._loadQueue[0]) {
+                  cb.callback(this._loadQueue[0]);
+               }
+            });
 
 				this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
 				this.load(this._loadQueue, true);
@@ -1412,10 +1437,10 @@ class Roundabout {
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.remove("roundabout-hidden-page");
 
-				if (!this.infinite && a == 0 && this._onPage > 1 && !this.showWrappedPage) {
+				if (!this.infinite && a == 0 && this.onPage > 1 && !this.showWrappedPage) {
 					document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.add("roundabout-hidden-page");
 				}
-				if (!this.infinite && a == this._positions.length - 1 && this._onPage == 0 && !this.showWrappedPage) {
+				if (!this.infinite && a == this._positions.length - 1 && this.onPage == 0 && !this.showWrappedPage) {
 					document.querySelector(`.roundabout-${this._uniqueId}-page-${this._positions.length - 1}`).classList.add("roundabout-hidden-page");
 				}
 			}
@@ -1496,6 +1521,9 @@ class Roundabout {
    */
    
    subscribe(event, newCallback) {
+      if (!this._callbacks[event]) {
+         this._callbacks[event] = [];
+      }
       this._callbacks[event].push(newCallback);
    }
 

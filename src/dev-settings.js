@@ -8,17 +8,28 @@ const c = new Roundabout({
 
    // pageSpacingMode: "evenly",
 
-   // navigation: false,
-
    throttleTimeout: 500,
-   // swipeSnap: false,
-   throttleSwipe: false,
-   // infinite: false,
 
-   // swipe: false,
+   // lazyLoad: "no-load",
 
-   // transitionFunction: "cubic-bezier(0.5, 0, 0.2, 1.3)",
-   // transitionFunction: "cubic-bezier(.8,-0.3,.5,1)",
+   breakpoints: [
+      {
+         width: 1500,
+         pagesToShow: 3,
+         scrollBy: 3,
+         // navigation: false,
+         swipeThreshold: 50
+      },
+      {
+         width: 1000,
+         pagesToShow: 2,
+         scrollBy: 2,
+         navigation: false,
+         swipeThreshold: 50
+      }
+   ],
+
+   listenForResize: true,
 
    pages: [
       {
@@ -98,8 +109,14 @@ rs.onScrollPrevious(c, () => {
    console.log("Scrolled Previous");
 });
 
-function set() {
-   rs.setValue(c, "pagesToShow", 2);
-   rs.setValue(c, "scrollBy", 2);
-   rs.destroy(c);
-}
+rs.onScrollNextEnd(c, () => {
+   console.log("Scroll next ended");
+});
+
+rs.onScrollPreviousEnd(c, () => {
+   console.log("Scroll previous ended");
+});
+
+// rs.lazyLoad(c, [0, 2, 3], (id) => {
+//    console.log(`Page ${id} was loaded`);
+// });
