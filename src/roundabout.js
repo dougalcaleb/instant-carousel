@@ -173,6 +173,7 @@ class Roundabout {
 		this._currentBp = -2;
       this._atEnd = true;
       this.activeBreakpoint = null;
+      // this._aborter = new AbortController(); // KEEP THIS IN -- Chrome 90 will have it enabled, (firefox has it) and it is MUCH BETTER than removeEventListener
 		// internal
 		this._allowInternalStyles = true;
 		this._allowInternalHTML = true;
@@ -200,30 +201,30 @@ class Roundabout {
 		this._boundCancel = null;
 		// scripting helpers
 		this._callbacks = {
-         // scroll: [],
-         // scrollEnd: [],
-         // dragStart: [],
-         // dragEnd: [],
-         // scrollNext: [],
-         // scrollPrevious: [],
-         // scrollNextEnd: [],
-         // scrollPreviousEnd: [],
-         // onLoad: [],
+         scroll: [],
+         scrollEnd: [],
+         dragStart: [],
+         dragEnd: [],
+         scrollNext: [],
+         scrollPrevious: [],
+         scrollNextEnd: [],
+         scrollPreviousEnd: [],
+         onLoad: [],
       };
       
 		// Function calls
 		if (!this.initOnly) {
 			this.initialActions();
 			try {
-				this.setBreakpoints();
-			} catch (e) {
-				console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
-				console.error(e);
-			}
-			try {
 				this.setListeners();
 			} catch (e) {
 				console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
+				console.error(e);
+         }
+         try {
+				this.setBreakpoints();
+			} catch (e) {
+				console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
 				console.error(e);
 			}
 		}
@@ -686,7 +687,7 @@ class Roundabout {
 	setTouch(event, parent) {
 		event.preventDefault();
 		parent._t = true;
-		parent.tStart(event, parent);
+      parent.tStart(event, parent);
 	}
 
 	// called once when touch or click starts
@@ -905,7 +906,7 @@ class Roundabout {
 		}
 
 		let tempSwipeSpeed = Math.abs(((parent._ex - parent._sx) / (parent._ste - parent._sts)) * 1000);
-		console.log(`Swipe speed was ${tempSwipeSpeed}`);
+		// console.log(`Swipe speed was ${tempSwipeSpeed}`);
 
 		// parent.checkCanSnap(parent);
 
@@ -1186,7 +1187,8 @@ class Roundabout {
 	}
 
 	// Destroys the HTML of the carousel
-	destroy(regen = true, complete = false) {
+   destroy(regen = true, complete = false) {
+      console.log("Destroying");
 		clearTimeout(this._scrollTimeoutHolder);
 		clearInterval(this._scrollIntervalHolder);
 		clearTimeout(this._scrollAfterTimeoutHolder);
@@ -1198,13 +1200,6 @@ class Roundabout {
 				this._positions = [];
 				this._orderedPages = [];
             try {
-               //! not working
-               let oe = document.querySelector(this.id);
-               let ne = oe.cloneNode(true);
-               oe.parentNode.replaceChild(ne, oe);
-               document.removeEventListener("keydown", (event) => {
-                  this.keyListener(event);
-               });
 					this.initialActions(true);
 					this.setListeners(true);
 				} catch (e) {
@@ -1268,7 +1263,7 @@ class Roundabout {
 				this.defaultHTML(r);
 			}
 			if (this.autoscroll) {
-				this.setAutoScroll(this, true);
+				this.setAutoScroll(this, r);
 			}
 			if (!this.uiEnabled) {
 				this.navigation = false;
@@ -1288,6 +1283,7 @@ class Roundabout {
 
 	// Sets all required eventListeners for the carousel
    setListeners(r = false) {
+      console.log(`Adding listeners. (${r})`);
 		if (this.uiEnabled && this.buttons) {
 			document.querySelector(`.roundabout-${this._uniqueId}-btn-next`).addEventListener("click", () => {
 				this.scrollHandler(this, "listener", this.scrollBy);
@@ -1296,12 +1292,12 @@ class Roundabout {
 				this.scrollHandler(this, "listener", -this.scrollBy);
 			});
 		}
-		if (this.keys) {
+		if (this.keys && !r) {
 			document.addEventListener("keydown", (event) => {
             this.keyListener(event);
 			});
 		}
-		if (this.listenForResize) {
+		if (this.listenForResize && !r) {
 			setTimeout(() => {
 				window.addEventListener("resize", () => {
 					this.setBreakpoints();
@@ -1322,15 +1318,17 @@ class Roundabout {
 				"mousedown",
 				(event) => {
 					this.tStart(event, this);
-				},
-				false
+            },
+            {capture: false}
+            // false
 			);
 			document.querySelector(`.roundabout-${this._uniqueId}-swipe-overlay`).addEventListener(
 				"touchstart",
 				(event) => {
 					this.setTouch(event, this);
-				},
-				false
+            },
+            {capture: false}
+            // false
 			);
 		}
    }
@@ -1521,9 +1519,9 @@ class Roundabout {
    */
    
    subscribe(event, newCallback) {
-      if (!this._callbacks[event]) {
-         this._callbacks[event] = [];
-      }
+      // if (!this._callbacks[event]) {
+      //    this._callbacks[event] = [];
+      // }
       this._callbacks[event].push(newCallback);
    }
 
