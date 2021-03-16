@@ -14,17 +14,28 @@ const c = new Roundabout({
 
    // pageSpacingMode: "evenly",
 
-   // navigation: false,
-
    throttleTimeout: 500,
-   // swipeSnap: false,
-   throttleSwipe: false,
-   // infinite: false,
 
-   // swipe: false,
+   // lazyLoad: "no-load",
 
-   // transitionFunction: "cubic-bezier(0.5, 0, 0.2, 1.3)",
-   // transitionFunction: "cubic-bezier(.8,-0.3,.5,1)",
+   breakpoints: [
+      {
+         width: 1500,
+         pagesToShow: 3,
+         scrollBy: 3,
+         // navigation: false,
+         swipeThreshold: 50
+      },
+      {
+         width: 1000,
+         pagesToShow: 2,
+         scrollBy: 2,
+         navigation: false,
+         swipeThreshold: 50
+      }
+   ],
+
+   listenForResize: true,
 
    pages: [
       {
