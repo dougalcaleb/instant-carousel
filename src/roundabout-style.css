@@ -35,7 +35,7 @@ Swipe detector
 	right: 0;
 	position: absolute;
 	margin: auto;
-	z-index: 2;
+	z-index: 3;
 }
 
 /*
@@ -64,6 +64,7 @@ Next and Previous buttons
 	width: 80px;
 	cursor: pointer;
 	color: #fff;
+   z-index: 2;
 }
 
 .roundabout-btn-next svg, .roundabout-btn-prev svg {
@@ -166,5 +167,5 @@ Pages
    */
 }
 
-/* Each page also gains the class ".roundabout-[UNIQUE ID]-page-[NTH PAGE]", 
+/* Each page also gains the classes ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" and ".roundabout-[UNIQUE ID]-page", 
 and all visible pages gain the class ".roundabout-[UNIQUE ID]-visible-page-[NTH VISIBLE PAGE] */

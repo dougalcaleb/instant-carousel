@@ -5,35 +5,35 @@ const c = new Roundabout({
 
    pagesToShow: 3,
    scrollBy: 3,
-   transition: 5000,
+   transition: 300,
 
    navigation: false,
    transitionFunction: "ease-in-out",
-   // pageSpacing: 10,
-   // pageSpacingUnits: "px",
+   pageSpacing: 10,
+   pageSpacingUnits: "px",
 
    // pageSpacingMode: "evenly",
 
-   throttleTimeout: 500,
+   throttleTimeout: 300,
 
    // lazyLoad: "no-load",
 
-   breakpoints: [
-      {
-         width: 1500,
-         pagesToShow: 3,
-         scrollBy: 3,
-         // navigation: false,
-         swipeThreshold: 50
-      },
-      {
-         width: 1000,
-         pagesToShow: 2,
-         scrollBy: 2,
-         navigation: false,
-         swipeThreshold: 50
-      }
-   ],
+   // breakpoints: [
+   //    {
+   //       width: 1500,
+   //       pagesToShow: 3,
+   //       scrollBy: 3,
+   //       // navigation: false,
+   //       swipeThreshold: 50
+   //    },
+   //    {
+   //       width: 1000,
+   //       pagesToShow: 2,
+   //       scrollBy: 2,
+   //       navigation: false,
+   //       swipeThreshold: 50
+   //    }
+   // ],
 
    listenForResize: true,
 
