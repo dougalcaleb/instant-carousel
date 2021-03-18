@@ -60,6 +60,9 @@ Settings do not need to be declared in any specific order.
 
 ### v1.4.0:
 Features:
+   *  Scripting module
+      *  Provides methods for controlling, listening to, and modifying Roundabout carousels
+      *  
    *  Raised minimum pages requirement to 3 from 2
       *  Due to multiple bugs that start cropping up from less than 3 pages
       *  Can use 4 pages (duplicate each page) and disable navigation to achieve the same effect
@@ -70,10 +73,19 @@ Features:
       *  value: integer
       *  Sets the speed (pixels/s) that must be exceeded to advance the page
       *  Can be used alongside swipeThreshold
+   *  New setting: rotation
+      *  values: "none", "left", "right"
+      *  Changes the way the swiping is handled for rotated carousels
+   *  New setting: type
+      *  values: "slider", "gallery"
+      *  Selects the type of carousel to use
+   *  New class: ".roundabout-[ID]-page"
+      *  Applied to every individual page
 
 Bugfixes:
    *  Fixed error when scrolling next when navigationTrim is on and the number of pages to the right is less than scrollBy
    *  Fixed non-visible pages being positioned incorrectly when scrolling left. This fixes transitions that have bounce showing nothing beyond the current pages.
+   *  Fixed duplicate event listeners
 
 ### v1.3.1:
 Bugfixes:
