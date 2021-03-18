@@ -1,10 +1,10 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
 
-   // type: "gallery", // normal should be slider
+   type: "gallery", // normal should be slider
 
    pagesToShow: 3,
-   scrollBy: 3,
+   scrollBy: 1,
    transition: 300,
 
    navigation: false,
@@ -92,13 +92,16 @@ const c = new Roundabout({
    ]
 });
 
-// rs.onScroll(c, () => {
-//    console.log("Scroll");
-// });
+rs.onScroll(c, () => {
+   console.log("Scroll Start");
+});
 
-// rs.onScrollEnd(c, () => {
-//    console.log("Scroll ended");
-// });
+rs.onScrollEnd(c, () => {
+   console.log("-----------------------");
+   console.log(c._scrollTimeoutHolder, c._scrollIntervalHolder, c._scrollAfterTimeoutHolder);
+   console.log("-----------------------");
+   console.log("-----------------------");
+});
 
 // rs.onDragStart(c, () => {
 //    console.log("Drag start");

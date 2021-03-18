@@ -39,7 +39,23 @@ RESPONSIVENESS
 
 //! KNOWN ISSUES:
 /*
-   
+   - Leftmost page gets a ton of layers that show immediately and fade out. Hidden obv not working right. Have seen these: 
+   (top line is nums seen, grid is where the pages should have been)
+   ?- Pages are getting hidden class because they move to 0px, but they fade out. Need to cancel transition.
+
+
+   9 8 13
+
+    6  7  8
+    9 10 11
+   12 13 14
+
+
+   10 11 12 15
+
+    7  8  9
+   10 11 12
+   13 14 15
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -77,7 +93,7 @@ let roundabout = {
 		parent: "body",
 		lazyLoad: "none",
       uiEnabled: true,
-      rotation: "default",
+      rotation: "none",
 
 		type: "slider",
 		infinite: true,
@@ -244,7 +260,7 @@ class Roundabout {
    - undo transition change   
    */
 
-	scroll(distance, valuesOnly, overflow = 0) {
+   scroll(distance, valuesOnly, overflow = 0) {
 		this._callbacks.scroll.forEach((cb) => {
 			cb();
 		});
@@ -287,23 +303,22 @@ class Roundabout {
 			}
 
 			// position all pages to correct place before move and remove hidden pages
-			console.log("Before positions:");
-			console.log(this._positions);
-			console.log(pos);
 			for (let a = 0; a < this._positions.length; a++) {
 				let beforeMove = this.type == "slider" ? this.calcPagePos(pos[a]) : this.calcPagePos(pos[a], {direction: distance});
             if (beforeMove != "0px") {
-               console.warn(`Removing hidden from for page ${this._orderedPages[a]} scroll()`);
 					document
 						.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`)
 						.classList.remove(`roundabout-${this._uniqueId}-hidden-page`);
             }
-            // if (this.type == "gallery" && a < this.pagesToShow) {
-            //    document
-				// 		.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`)
-				// 		.classList.add(`roundabout-fadeout`);
-            // }
-				console.log(`Setting page ${this._orderedPages[a]} to position ${beforeMove}`);
+            if (a < this.pagesToShow) {
+               document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "0";
+            } else {
+               document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "1";
+            }
+            console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
+
+            // console.log(`Page ${this._orderedPages[a]} is hidden: ${document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).classList.contains(`roundabout-${this._uniqueId}-hidden-page`)}`);
+            
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.left = beforeMove;
 			}
 
@@ -313,7 +328,6 @@ class Roundabout {
 
 			// transition wrapper if sliding
 			if (!valuesOnly && this.type == "slider") {
-				console.log(`sending wrap to ${-distance}`);
 				wrapper.style.left = this.calcPagePos(-distance, {wrap: true});
 			}
 
@@ -349,7 +363,6 @@ class Roundabout {
 			// finished positioning
 			if (!valuesOnly) {
 				setTimeout(() => {
-					console.log("AFTER scroll");
 					if (this.type == "slider") {
 						this.positionWrap(!valuesOnly);
 					}
@@ -572,14 +585,14 @@ class Roundabout {
 		parent._lastMove = event.touches;
 		if (parent._t) {
          // parent.y = event.touches[0].clientY;
-         parent.rotation == "default" ? parent._sx = event.touches[0].clientX : parent._sx = parent.rotation * event.touches[0].clientY;
-         parent.rotation == "default" ? parent._x = event.touches[0].clientX : parent._x = parent.rotation * event.touches[0].clientY;
+         parent.rotation == "none" ? parent._sx = event.touches[0].clientX : parent._sx = parent.rotation * event.touches[0].clientY;
+         parent.rotation == "none" ? parent._x = event.touches[0].clientX : parent._x = parent.rotation * event.touches[0].clientY;
 			// parent.sy = event.touches[0].clientY;
 		} else {
-			parent.rotation == "default" ? parent._x = event.clientX : parent._x = parent.rotation * event.clientY;
+			parent.rotation == "none" ? parent._x = event.clientX : parent._x = parent.rotation * event.clientY;
 			// parent.y = event.clientY;
 
-			parent.rotation == "default" ? parent._sx = event.clientX : parent._sx = parent.rotation * event.clientY;
+			parent.rotation == "none" ? parent._sx = event.clientX : parent._sx = parent.rotation * event.clientY;
 			// parent.sy = event.clientY;
 		}
 
@@ -602,10 +615,10 @@ class Roundabout {
 		if (parent._dragging) {
 			// capture movements
 			if (parent._t) {
-				parent.rotation == "default" ? parent._x = event.changedTouches[0].clientX : parent._x = parent.rotation * event.changedTouches[0].clientY;
+				parent.rotation == "none" ? parent._x = event.changedTouches[0].clientX : parent._x = parent.rotation * event.changedTouches[0].clientY;
 				// parent.y = event.changedTouches[0].clientY;
 			} else {
-				parent.rotation == "default" ? parent._x = event.clientX : parent._x = parent.rotation * event.clientY;
+				parent.rotation == "none" ? parent._x = event.clientX : parent._x = parent.rotation * event.clientY;
 				// parent.y = event.clientY;
 			}
 
@@ -666,10 +679,10 @@ class Roundabout {
 						(parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) &&
 					(parent.onPage > 0 || (parent.onPage == 0 && parent._dx < 0)))
 			) {
-				if (parent._dx > 0) {
-					parent.scroll(-1, true);
+            if (parent._dx > 0) {
+					parent.scroll(parent.type == "slider" ? -1 : -parent.scrollBy, parent.type == "slider" ? true: false);
 				} else if (parent._dx < 0) {
-					parent.scroll(1, true);
+					parent.scroll(parent.type == "slider" ? 1 : parent.scrollBy, parent.type == "slider" ? true : false);
 				}
 				parent._sx = parent._x * 1;
 				parent._dx = 0;
@@ -682,7 +695,6 @@ class Roundabout {
 
 	checkCanSnap(parent, checkSpeed = false) {
 		let dist = Math.abs(parent._dx);
-		// console.log(`swipe speed is `)
 
 		if (parent.swipeSnap) {
 			// snap is enabled - using threshold and speed
@@ -714,7 +726,6 @@ class Roundabout {
 			) {
 				parent._canSnap = false;
 			} else {
-				// console.log("set to true");
 				parent._canSnap = true;
 			}
 		}
@@ -736,12 +747,12 @@ class Roundabout {
 
 		// log the end of touch position
 		if (parent._t) {
-			parent.rotation == "default" ? parent._ex = event.changedTouches[0].clientX : parent._ex = parent.rotation * event.changedTouches[0].clientY;
+			parent.rotation == "none" ? parent._ex = event.changedTouches[0].clientX : parent._ex = parent.rotation * event.changedTouches[0].clientY;
          
 			// parent.ey = event.changedTouches[0].clientY;
 		} else {
          // parent._ex = event.clientX;
-			parent.rotation == "default" ? parent._ex = event.clientX : parent._ex = parent.rotation * event.clientY;
+			parent.rotation == "none" ? parent._ex = event.clientX : parent._ex = parent.rotation * event.clientY;
          
 			// parent.ey = event.clientY;
 		}
@@ -756,7 +767,6 @@ class Roundabout {
 		}
 
 		let tempSwipeSpeed = Math.abs(((parent._ex - parent._sx) / (parent._ste - parent._sts)) * 1000);
-		// console.log(`Swipe speed was ${tempSwipeSpeed}`);
 
 		// parent.checkCanSnap(parent);
 
@@ -813,12 +823,12 @@ class Roundabout {
 				if (parent.type == "slider") {
 					parent.positionWrap(false, 1);
 				}
-				parent.scrollHandler(parent, "snap", -1);
+				parent.scrollHandler(parent, "snap", parent.type == "slider" ? -1 : -parent.scrollBy);
 			} else if (dir < 0) {
 				if (parent.type == "slider") {
 					parent.positionWrap(false, -1);
 				}
-				parent.scrollHandler(parent, "snap", 1);
+				parent.scrollHandler(parent, "snap", parent.type == "slider" ? 1 : parent.scrollBy);
 			}
 		} else if (parent.type == "slider") {
 			parent.positionWrap(false, 0);
@@ -910,7 +920,7 @@ class Roundabout {
 			this.transitionFunction
 		}}.roundabout-has-no-transition{transition: left 0s;}.roundabout-error-message {position:relative;margin:auto;left:0;right:0;top:0;bottom:0;border-radius:5px;border:3px solid black;background: white;text-align:center;font-family:sans-serif;width:30%;}`;
 		if (this.type == "gallery") {
-         css += `.roundabout-${this._uniqueId}-hidden-page {opacity: 0; z-index: 0;} .roundabout-fadeout {z-index: 0;} .roundabout-${this._uniqueId}-page {z-index: 0;}`;
+         css += `.roundabout-${this._uniqueId}-hidden-page {opacity: 0; z-index: 0;}`;
          for (let a = 0; a < this.pagesToShow; a++) {
             css += `.roundabout-${this._uniqueId}-page-wrap .roundabout-${this._uniqueId}-visible-page-${a} {z-index: 1}`;
          }
@@ -987,7 +997,8 @@ class Roundabout {
 			// 	newPage.style.width = "100%";
 			// }
 			// newPage.style.height = "100%";
-			newPage.style.position = "absolute";
+         newPage.style.position = "absolute";
+         newPage.style.zIndex = "1";
 
 			// Give a background image (if supplied)
 			if (
@@ -1085,7 +1096,6 @@ class Roundabout {
 
 	// Destroys the HTML of the carousel
 	destroy(regen = true, complete = false) {
-		console.log("Destroying");
 		clearTimeout(this._scrollTimeoutHolder);
 		clearInterval(this._scrollIntervalHolder);
 		clearTimeout(this._scrollAfterTimeoutHolder);
@@ -1171,9 +1181,9 @@ class Roundabout {
          } else if (this.rotation == "right") {
             this.rotation = 1;
          }
-			// if (this.type == "gallery") {
-			// 	this.scrollBy = this.pagesToShow;
-			// }
+			if (this.type == "gallery") {
+				this.scrollBy = this.pagesToShow;
+			}
 			try {
 				this.generatePages();
 			} catch (e) {
@@ -1327,27 +1337,38 @@ class Roundabout {
 			this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
 			this.load(this._loadQueue, true);
 		}
-	}
+   }
+   
+   /*
+   
+   const flushCssBuffer = document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).offsetWidth;
+   transition changes:
+   - change transition
+   - make style change
+   - flush buffer
+   - undo transition change  
+   
+   */
 
 	// after a transition, places each page where they should be for the next transiton
 	positionPages() {
-		console.log("Positioning pages");
 		for (let a = 0; a < this._positions.length; a++) {
          if (this._positions[a] == "0px") {
-            console.log(`Setting page ${a} to hidden`);
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.add(`roundabout-${this._uniqueId}-hidden-page`);
-				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
+            document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
+            if (this.type == "gallery") {
+               document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.transition = "opacity 0s";
+               const flushCssBuffer = document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).offsetWidth;
+               document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.transition = `opacity ${this.transition/1000}s`;
+            }
          } else {
-            console.warn(`Removing hidden from page ${a}: positionPages()`);
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.remove(`roundabout-${this._uniqueId}-hidden-page`);
 
             if (!this.infinite && a == 0 && this._onPage > 1 && !this.showWrappedPage) {
-               console.log(`Adding hidden to page ${a}: positionPages() at showWrapped`)
 					document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.add(`roundabout-${this._uniqueId}-hidden-page`);
 				}
             if (!this.infinite && a == this._positions.length - 1 && this._onPage == 0 && !this.showWrappedPage) {
-               console.log(`Adding hidden to page ${this._positions.length - 1}: positionPages() at showWrapped`)
                
 					document
 						.querySelector(`.roundabout-${this._uniqueId}-page-${this._positions.length - 1}`)
@@ -1359,7 +1380,6 @@ class Roundabout {
 
 	// sets page wrap back to left: 0. true = instant movment, false = current transition
 	positionWrap(setTransitions = true, position = 0) {
-		console.log("Positioning wrap");
 		let wrapper = document.querySelector(`.roundabout-${this._uniqueId}-page-wrap`);
 		if (setTransitions) {
 			wrapper.classList.remove(`roundabout-${this._uniqueId}-has-transition`);
@@ -1391,24 +1411,19 @@ class Roundabout {
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
    calcPagePos(pagePos, options = { wrap: false, forceType: this.type, direction: null }) {
-		// console.log(`options are`, options);
 		if (options.forceType == undefined) {
 			options.forceType = this.type;
 		}
-		// console.log(`Calculating position from pos ${pagePos}`);
 		if (pagePos == 0 && options.forceType == "slider" && (this.pageSpacingMode == "fill" || options.wrap)) {
-			// console.log(`Returning 0 for page ${pagePos}`);
 			return "0px";
 		}
 		if (options.forceType == "gallery") {
-			//(options.forceType == "gallery" && (this._orderedPages.indexOf(pagePos) >= (this.pagesToShow * 2) && this._orderedPages.indexOf(pagePos) < this._orderedPages.length - this.pagesToShow))
-			if (options.direction > 0 && pagePos >= this.pagesToShow * 2) {
-				// console.log(`Returning 0 for page ${pagePos}`);
+         if (options.direction > 0 && pagePos >= this.pagesToShow * 2) {
+            console.log(`%c returning 0 for page ${pagePos}`, "background: green;")
 				return "0px";
 			}
-			if (options.direction < 0 && pagePos < this._orderedPages.length - this.pagesToShow) {
-				// console.log(`Returning 0 for page ${pagePos}`);
-				return "0px";
+			if (options.direction < 0 && pagePos < this._orderedPages.length - this.pagesToShow && pagePos > this.pagesToShow) {
+            return "0px";
 			}
 		}
 		if (options.forceType == "slider") {
@@ -1454,7 +1469,6 @@ class Roundabout {
 				")";
 		}
 
-		// console.log(`Returning ${newPos}. Direction was ${options.direction}. PagePos was ${pagePos}`);
 		return newPos;
 	}
 
