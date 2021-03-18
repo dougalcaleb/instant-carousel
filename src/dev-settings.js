@@ -1,7 +1,7 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
 
-   type: "gallery", // normal should be slider
+   // type: "gallery", // normal should be slider
 
    pagesToShow: 3,
    scrollBy: 3,
@@ -15,6 +15,7 @@ const c = new Roundabout({
    // pageSpacingMode: "evenly",
 
    throttleTimeout: 300,
+   // rotation: "left",
 
    // lazyLoad: "no-load",
 

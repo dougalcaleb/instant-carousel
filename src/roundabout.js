@@ -76,7 +76,8 @@ let roundabout = {
 		id: ".myCarousel",
 		parent: "body",
 		lazyLoad: "none",
-		uiEnabled: true,
+      uiEnabled: true,
+      rotation: "default",
 
 		type: "slider",
 		infinite: true,
@@ -570,15 +571,15 @@ class Roundabout {
 		// log the first touch position
 		parent._lastMove = event.touches;
 		if (parent._t) {
-			parent._x = event.touches[0].clientX;
-			// parent.y = event.touches[0].clientY;
-			parent._sx = event.touches[0].clientX;
+         // parent.y = event.touches[0].clientY;
+         parent.rotation == "default" ? parent._sx = event.touches[0].clientX : parent._sx = parent.rotation * event.touches[0].clientY;
+         parent.rotation == "default" ? parent._x = event.touches[0].clientX : parent._x = parent.rotation * event.touches[0].clientY;
 			// parent.sy = event.touches[0].clientY;
 		} else {
-			parent._x = event.clientX;
+			parent.rotation == "default" ? parent._x = event.clientX : parent._x = parent.rotation * event.clientY;
 			// parent.y = event.clientY;
 
-			parent._sx = event.clientX;
+			parent.rotation == "default" ? parent._sx = event.clientX : parent._sx = parent.rotation * event.clientY;
 			// parent.sy = event.clientY;
 		}
 
@@ -601,10 +602,10 @@ class Roundabout {
 		if (parent._dragging) {
 			// capture movements
 			if (parent._t) {
-				parent._x = event.changedTouches[0].clientX;
+				parent.rotation == "default" ? parent._x = event.changedTouches[0].clientX : parent._x = parent.rotation * event.changedTouches[0].clientY;
 				// parent.y = event.changedTouches[0].clientY;
 			} else {
-				parent._x = event.clientX;
+				parent.rotation == "default" ? parent._x = event.clientX : parent._x = parent.rotation * event.clientY;
 				// parent.y = event.clientY;
 			}
 
@@ -735,10 +736,13 @@ class Roundabout {
 
 		// log the end of touch position
 		if (parent._t) {
-			parent._ex = event.changedTouches[0].clientX;
+			parent.rotation == "default" ? parent._ex = event.changedTouches[0].clientX : parent._ex = parent.rotation * event.changedTouches[0].clientY;
+         
 			// parent.ey = event.changedTouches[0].clientY;
 		} else {
-			parent._ex = event.clientX;
+         // parent._ex = event.clientX;
+			parent.rotation == "default" ? parent._ex = event.clientX : parent._ex = parent.rotation * event.clientY;
+         
 			// parent.ey = event.clientY;
 		}
 
@@ -1161,7 +1165,12 @@ class Roundabout {
 			if (!this.uiEnabled) {
 				this.navigation = false;
 				this.swipe = false;
-			}
+         }
+         if (this.rotation == "left") {
+            this.rotation = -1;
+         } else if (this.rotation == "right") {
+            this.rotation = 1;
+         }
 			// if (this.type == "gallery") {
 			// 	this.scrollBy = this.pagesToShow;
 			// }
@@ -1265,7 +1274,7 @@ class Roundabout {
 		if (this.pagesToShow < this.scrollBy) {
 			this.displayError("'scrollBy' must be less than or equal to 'pagesToShow'.");
 			return false;
-		}
+      }
 		return true;
 	}
 
