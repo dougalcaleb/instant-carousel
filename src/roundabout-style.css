@@ -158,8 +158,8 @@ Pages
    height: 100%;
    background-position: center center;
    background-size: cover;
-   opacity: 1;
-   /* Cannot change: "width", "position", "background", and "left" */
+   
+   /* Cannot change: "width", "position", "background", "z-index", and "left" */
 
    /* NOTE: when giving any Roundabout page element a transition, be sure to give transition ONLY to the properties that need it.
       Roundabout uses transitions of 0 to accomplish seamless position adjustments. See the Mozilla documentation for examples:
