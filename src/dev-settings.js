@@ -7,7 +7,7 @@ const c = new Roundabout({
    scrollBy: 1,
    transition: 300,
 
-   navigation: false,
+   // navigation: false,
    transitionFunction: "ease-in-out",
    pageSpacing: 10,
    pageSpacingUnits: "px",

@@ -39,23 +39,8 @@ RESPONSIVENESS
 
 //! KNOWN ISSUES:
 /*
-   - Leftmost page gets a ton of layers that show immediately and fade out. Hidden obv not working right. Have seen these: 
-   (top line is nums seen, grid is where the pages should have been)
-   ?- Pages are getting hidden class because they move to 0px, but they fade out. Need to cancel transition.
-
-
-   9 8 13
-
-    6  7  8
-    9 10 11
-   12 13 14
-
-
-   10 11 12 15
-
-    7  8  9
-   10 11 12
-   13 14 15
+   - Left gallery mode is all sorts of fRicKED
+   - navigation is scuffed for whatever reason
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -386,7 +371,7 @@ class Roundabout {
 			}
 
 			if (this.navigation) {
-				this.setActiveBtn(this.onPage + overflow);
+				this.setActiveBtn(this.type == "slider" ? this.onPage + overflow : Math.floor(this.onPage / this.pagesToShow) + overflow);
 			}
 
 			if (this.lazyLoad == "hidden") {
@@ -401,9 +386,9 @@ class Roundabout {
 
 	scrollTo(page, transition = true) {
 		if (this._scrollIsAllowed && this.throttleNavigation && this.navigation) {
-			this.setActiveBtn(page);
+         this.setActiveBtn(this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow));
 		} else if (!this.throttleNavigation && this.navigation) {
-			this.setActiveBtn(page);
+         this.setActiveBtn(this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow));
 		}
 		if (this.lazyLoad == "hidden") {
 			let toLoad = [];
@@ -1064,14 +1049,18 @@ class Roundabout {
 			navbar.classList.add(`roundabout-${this._uniqueId}-nav-wrap`, "roundabout-nav-wrap");
 			document.querySelector(`.roundabout-${this._uniqueId}-ui`).appendChild(navbar);
 
-			let numButtons;
+         let numButtons
+         let m = 1;
 			if (this.type == "slider") {
 				if (this.infinite || !this.navigationTrim) {
 					numButtons = this.pages.length;
 				} else {
 					numButtons = this.pages.length - (this.pagesToShow - 1);
 				}
-			}
+         } else if (this.type == "gallery") {
+            m = this.pagesToShow;
+            numButtons = Math.floor(this.pages.length / this.pagesToShow);
+         }
 			for (let a = 0; a < numButtons; a++) {
 				let newNavBtn = document.createElement("div");
 				if (a == 0) {
@@ -1082,7 +1071,7 @@ class Roundabout {
 				newNavBtn.classList.add(`roundabout-${this._uniqueId}-nav-btn`, `roundabout-${this._uniqueId}-nav-btn-${a}`, `roundabout-nav-btn`);
 				navbar.appendChild(newNavBtn);
 				newNavBtn.addEventListener("click", () => {
-					this.scrollTo(a);
+					this.scrollTo(a * m);
 				});
 			}
 		}
