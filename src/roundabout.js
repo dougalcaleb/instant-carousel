@@ -40,7 +40,7 @@ RESPONSIVENESS
 //! KNOWN ISSUES:
 /*
    - Left gallery mode is all sorts of fRicKED
-   - navigation is scuffed for whatever reason
+   - scrolling > 1 bubble with navigation is scuffed
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -205,25 +205,37 @@ class Roundabout {
 			scrollPrevious: [],
 			scrollNextEnd: [],
 			scrollPreviousEnd: [],
-			onLoad: [],
-		};
+         load: [],
+         beforeMount: [],
+         afterMount: [],
+      };
+      
+      // console.log(JSON.stringify(this._callbacks));
+      // this._callbacks.beforeMount.forEach((cb) => {
+		// 	cb();
+		// });
 
 		// Function calls
 		if (!this.initOnly) {
-			this.initialActions();
-			try {
-				this.setListeners();
-			} catch (e) {
-				console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
-				console.error(e);
-			}
-			try {
-				this.setBreakpoints();
-			} catch (e) {
-				console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
-				console.error(e);
-			}
-		}
+         if (this.initialActions()) {
+            try {
+               this.setListeners();
+            } catch (e) {
+               console.error(`Error while attempting to add event listeners to Roundabout with id ${this.id}:`);
+               console.error(e);
+            }
+            try {
+               this.setBreakpoints();
+            } catch (e) {
+               console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
+               console.error(e);
+            }
+         }
+      }
+
+      this._callbacks.afterMount.forEach((cb) => {
+			cb();
+		});
 	}
 
 	/*
@@ -371,7 +383,7 @@ class Roundabout {
 			}
 
 			if (this.navigation) {
-				this.setActiveBtn(this.type == "slider" ? this.onPage + overflow : Math.floor(this.onPage / this.pagesToShow) + overflow);
+				this.setActiveBtn(this.type == "slider" ? this.onPage + overflow : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow));
 			}
 
 			if (this.lazyLoad == "hidden") {
@@ -386,9 +398,10 @@ class Roundabout {
 
 	scrollTo(page, transition = true) {
 		if (this._scrollIsAllowed && this.throttleNavigation && this.navigation) {
-         this.setActiveBtn(this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow));
+         this.setActiveBtn(this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow));
+
 		} else if (!this.throttleNavigation && this.navigation) {
-         this.setActiveBtn(this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow));
+         this.setActiveBtn(this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow));
 		}
 		if (this.lazyLoad == "hidden") {
 			let toLoad = [];
@@ -434,6 +447,7 @@ class Roundabout {
 	}
 
 	setActiveBtn(id) {
+      console.log(`%c Id is: ${id}`, "background: orange");
 		document
 			.querySelector(`.roundabout-${this._uniqueId}-active-nav-btn`)
 			.classList.add(`roundabout-${this._uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
@@ -1096,8 +1110,9 @@ class Roundabout {
 				this._positions = [];
 				this._orderedPages = [];
 				try {
-					this.initialActions(true);
-					this.setListeners(true);
+               if (this.initialActions(true)) {
+                  this.setListeners(true);
+               }
 				} catch (e) {
 					console.error(`Error while attempting to regenerate Roundabout with id ${this.id}:`);
 					console.error(e);
@@ -1172,7 +1187,7 @@ class Roundabout {
          }
 			if (this.type == "gallery") {
 				this.scrollBy = this.pagesToShow;
-			}
+         }
 			try {
 				this.generatePages();
 			} catch (e) {
@@ -1181,8 +1196,11 @@ class Roundabout {
 			}
 			this._boundFollow = this._execMM.bind(this);
 			this._boundEnd = this._execMU.bind(this);
-			this._boundCancel = this._execTC.bind(this);
-		}
+         this._boundCancel = this._execTC.bind(this);
+         return true;
+      } else {
+         return false;
+      }
 	}
 
 	// Sets all required eventListeners for the carousel
@@ -1274,6 +1292,10 @@ class Roundabout {
 			this.displayError("'scrollBy' must be less than or equal to 'pagesToShow'.");
 			return false;
       }
+      if (this.type == "gallery" && this.navigation && this.pages.length % this.pagesToShow != 0) {
+         this.displayError("To enable navigation on 'gallery' mode carousels, the total number of pages must be divisible by the number of pages shown. <br/> This prevents visible page inconsistencies after scrolling manually.");
+         return false;
+      }
 		return true;
 	}
 
@@ -1312,7 +1334,7 @@ class Roundabout {
 
 				this.pages[this._loadQueue[0]].isLoaded = true;
 
-				this._callbacks.onLoad.forEach((cb) => {
+				this._callbacks.load.forEach((cb) => {
 					if (cb.pageId == this._loadQueue[0]) {
 						cb.callback(this._loadQueue[0]);
 					}
@@ -1411,7 +1433,7 @@ class Roundabout {
             console.log(`%c returning 0 for page ${pagePos}`, "background: green;")
 				return "0px";
 			}
-			if (options.direction < 0 && pagePos < this._orderedPages.length - this.pagesToShow && pagePos > this.pagesToShow) {
+			if (options.direction < 0 && (pagePos < -this.pagesToShow  || pagePos >= this.pagesToShow)) {
             return "0px";
 			}
 		}
@@ -1458,6 +1480,7 @@ class Roundabout {
 				")";
 		}
 
+      console.log(`%c Page: ${pagePos}: ${newPos}`, "background: orange; color: black;");
 		return newPos;
 	}
 
