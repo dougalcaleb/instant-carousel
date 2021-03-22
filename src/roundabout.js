@@ -39,7 +39,7 @@ RESPONSIVENESS
 
 //! KNOWN ISSUES:
 /*
-   - Left gallery mode is all sorts of fRicKED
+   - interpolation breaks temporarily when swiping past the end
    - scrolling > 1 bubble with navigation is scuffed
 */
 
