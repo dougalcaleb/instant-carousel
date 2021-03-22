@@ -693,9 +693,18 @@ class Roundabout {
          
          parent._distPercent = dist / parent._calculatedPageSize;
 
-         parent.interpolate.forEach(inter => {
-            
-         });
+         if (parent._distPercent != 0) {
+            parent.interpolate.forEach(inter => {
+               if (parent._dx > 0) {
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.start[0]}`).style.transition = inter.value + " 0s";
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.start[0]}`).style[inter.value] = (inter.end[1] - inter.start[1]) * parent._distPercent + inter.start[1] + inter.unit;
+               }
+               else if (parent._dx < 0) {
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.end[0]}`).style.transition = inter.value + " 0s";
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.end[0]}`).style[inter.value] = (inter.start[1] - inter.end[1]) * parent._distPercent + inter.end[1] + inter.unit;
+               }
+            });
+         }
             
 			let totalSize =
 				document.querySelector(`.roundabout-${parent._uniqueId}-page-` + parent._orderedPages[parent._orderedPagesMainIndex]).offsetWidth +
@@ -769,7 +778,18 @@ class Roundabout {
 		});
 		setTimeout(() => {
 			parent._swipeIsAllowed = true;
-		}, parent.throttleTimeout);
+      }, parent.throttleTimeout);
+
+      if (parent.interpolate) {
+         for (let a = 0; a < parent.pagesToShow; a++) {
+            parent.interpolate.forEach(inter => {
+               document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style[inter.value] = "";
+               document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = inter.value + " " + parent.transition / 1000 + "s";
+            });
+         }
+      }
+      
+      parent._distPercent = 0;
 
 		document.querySelector(`.roundabout-${parent._uniqueId}-page-wrap`).classList.add(`roundabout-${this._uniqueId}-has-transition`);
 		document.querySelector(`.roundabout-${parent._uniqueId}-page-wrap`).classList.remove(`roundabout-has-no-transition`);
@@ -824,7 +844,8 @@ class Roundabout {
 	tCancel(event, parent) {
 		this._callbacks.dragEnd.forEach((cb) => {
 			cb();
-		});
+      });
+      parent._distPercent = 0;
 		event.preventDefault();
 		document.removeEventListener(
 			"mouseup",

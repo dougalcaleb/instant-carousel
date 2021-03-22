@@ -17,7 +17,18 @@ const c = new Roundabout({
    throttleTimeout: 300,
 
    interpolate: [
-      ["height", 80, 100, "%"]
+      {
+         value: "height",
+         start: [0, 80],
+         end: [1, 100],
+         unit: "%",
+      },
+      {
+         start: [1, 100],
+         value: "height",
+         end: [2, 80],
+         unit: "%",
+      }
    ],
    // rotation: "left",
 
