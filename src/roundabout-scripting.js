@@ -71,6 +71,14 @@ class RoundaboutScripter {
       carousel.scrollTo(pageId, !transition);
    }
 
+   beforeDestroy(carousel, callback) {
+      carousel.subscribe("beforeDestroy", callback);
+   }
+
+   afterDestroy(carousel, callback) {
+      carousel.subscribe("afterDestroy", callback);
+   }
+
    scrollNext(carousel, distance = -1, transition = true) {
       if (distance == -1) {
          carousel.scroll(carousel.scrollBy, !transition);
