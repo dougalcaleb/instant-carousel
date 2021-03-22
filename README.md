@@ -62,7 +62,6 @@ Settings do not need to be declared in any specific order.
 Features:
    *  Scripting module
       *  Provides methods for controlling, listening to, and modifying Roundabout carousels
-      *  
    *  Raised minimum pages requirement to 3 from 2
       *  Due to multiple bugs that start cropping up from less than 3 pages
       *  Can use 4 pages (duplicate each page) and disable navigation to achieve the same effect
@@ -76,9 +75,14 @@ Features:
    *  New setting: rotation
       *  values: "none", "left", "right"
       *  Changes the way the swiping is handled for rotated carousels
+   *  New setting: interpolate
+      *  Calculates intermediate values between pages when swiping
    *  New setting: type
       *  values: "slider", "gallery"
       *  Selects the type of carousel to use
+   *  New type: "gallery"
+      *  Pages do not move
+      *  Fade in/out
    *  New class: ".roundabout-[ID]-page"
       *  Applied to every individual page
 

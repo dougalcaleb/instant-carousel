@@ -1,13 +1,13 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
 
-   type: "gallery", // normal should be slider
+   // type: "gallery", // normal should be slider
 
    pagesToShow: 3,
    scrollBy: 1,
    transition: 300,
 
-   // navigation: false,
+   navigation: false,
    transitionFunction: "ease-in-out",
    pageSpacing: 10,
    pageSpacingUnits: "px",
@@ -15,6 +15,10 @@ const c = new Roundabout({
    // pageSpacingMode: "evenly",
 
    throttleTimeout: 300,
+
+   interpolate: [
+      ["height", 80, 100, "%"]
+   ],
    // rotation: "left",
 
    // lazyLoad: "no-load",
@@ -43,24 +47,36 @@ const c = new Roundabout({
          backgroundImage: "../images/numbers/0.png",
          // html: "<a href='https://github.com/dougalcaleb/roundabout' target='_blank'><button class='toRepo'>Go to Roundabout repo</button></a>",
          // css: ".toRepo {position: absolute; left: 0; right: 0; margin: auto; top: 30px; z-index: 3; border: 3px solid white; background: none; color: white; outline: none; cursor: pointer;}"
+         // html: "PAGE ZERO"
       },
       {
          backgroundImage: "../images/numbers/1.png"
+         // html: "PAGE ONE"
       },
       {
          backgroundImage: "../images/numbers/2.png"
+         // html: "PAGE TWO"
+
       },
       {
          backgroundImage: "../images/numbers/3.png"
+         // html: "<br/>PAGE THREE"
+
       },
       {
          backgroundImage: "../images/numbers/4.png"
+         // html: "<br/>PAGE FOUR"
+
       },
       {
          backgroundImage: "../images/numbers/5.png"
+         // html: "<br/>PAGE FIVE"
+
       },
       {
          backgroundImage: "../images/numbers/6.png"
+         // html: "PAGE SIX"
+
       },
       {
          backgroundImage: "../images/numbers/7.png"
@@ -92,16 +108,16 @@ const c = new Roundabout({
    ]
 });
 
-rs.onScroll(c, () => {
-   console.log("Scroll Start");
-});
+// rs.onScroll(c, () => {
+//    console.log("Scroll Start");
+// });
 
-rs.onScrollEnd(c, () => {
-   console.log("-----------------------");
-   console.log(c._scrollTimeoutHolder, c._scrollIntervalHolder, c._scrollAfterTimeoutHolder);
-   console.log("-----------------------");
-   console.log("-----------------------");
-});
+// rs.onScrollEnd(c, () => {
+//    console.log("-----------------------");
+//    console.log(c._scrollTimeoutHolder, c._scrollIntervalHolder, c._scrollAfterTimeoutHolder);
+//    console.log("-----------------------");
+//    console.log("-----------------------");
+// });
 
 // rs.onDragStart(c, () => {
 //    console.log("Drag start");
