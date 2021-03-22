@@ -73,6 +73,7 @@ let roundabout = {
 			},
 		],
 		listenForResize: false,
+      interpolate: [],
 
 		id: ".myCarousel",
 		parent: "body",
@@ -148,7 +149,7 @@ class Roundabout {
 					f = true;
 					break;
 				}
-			}
+         }
 			if (!f && roundabout.defaults.hasOwnProperty(d[a][0])) {
 				this[d[a][0].toString()] = d[a][1];
 			}
@@ -168,7 +169,8 @@ class Roundabout {
 		this._overriddenValues = [];
 		this._currentBp = -2;
 		this._atEnd = true;
-		this.activeBreakpoint = null;
+      this.activeBreakpoint = null;
+      this._calculatedPageSize = null;
 		// this._aborter = new AbortController(); // KEEP THIS IN -- Chrome 90 will have it enabled, (firefox has it) and it is MUCH BETTER than removeEventListener
 		// internal
 		this._allowInternalStyles = true;
@@ -186,7 +188,8 @@ class Roundabout {
 		this._swipeFrom = 0;
 		this._swipeIsAllowed = true;
 		this._sts = 0;
-		this._ste = 0;
+      this._ste = 0;
+      this._distPercent = 0;
 		// autoscroll
 		this._scrollTimeoutHolder = null;
 		this._scrollIntervalHolder = null;
@@ -681,12 +684,19 @@ class Roundabout {
 				}
 			}
 
-			parent._dx += parent._lastDx;
-
+         parent._dx += parent._lastDx;
+         
+         
 			// get distance values
 			let dist = Math.abs(parent._dx);
 			parent.checkCanSnap(parent);
+         
+         parent._distPercent = dist / parent._calculatedPageSize;
 
+         parent.interpolate.forEach(inter => {
+            
+         });
+            
 			let totalSize =
 				document.querySelector(`.roundabout-${parent._uniqueId}-page-` + parent._orderedPages[parent._orderedPagesMainIndex]).offsetWidth +
 				parent.pageSpacing;
@@ -1255,7 +1265,15 @@ class Roundabout {
 					this.setBreakpoints();
 				});
 			}, 0);
-		}
+      }
+      if (!r) {
+         this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
+         setTimeout(() => {
+				window.addEventListener("resize", () => {
+               this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
+				});
+			}, 0);
+      }
 		if (this.autoscrollPauseOnHover) {
 			document.querySelector(this.parent).addEventListener("mouseover", () => {
 				this._scrollIsAllowed = false;
