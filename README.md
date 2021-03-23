@@ -62,9 +62,6 @@ Settings do not need to be declared in any specific order.
 Features:
    *  Scripting module
       *  Provides methods for controlling, listening to, and modifying Roundabout carousels
-   *  Raised minimum pages requirement to 3 from 2
-      *  Due to multiple bugs that start cropping up from less than 3 pages
-      *  Can use 4 pages (duplicate each page) and disable navigation to achieve the same effect
    *  New setting: swipeSnap
       *  Values: true, false
       *  Enables or disables snapping on swipe release
@@ -87,7 +84,7 @@ Features:
    *  New setting: ignoreErrors
       *  Values: true, false
       *  Allows for error checking against settings to be bypassed
-      *  Enabling not recommended
+      *  Not recommended for general use
    *  New class: ".roundabout-[ID]-page"
       *  Applied to every individual page
 
@@ -95,6 +92,11 @@ Bugfixes:
    *  Fixed error when scrolling next when navigationTrim is on and the number of pages to the right is less than scrollBy
    *  Fixed non-visible pages being positioned incorrectly when scrolling left. This fixes transitions that have bounce showing nothing beyond the current pages.
    *  Fixed duplicate event listeners
+   *  Fixed minor sticking between pages when swiping on infinite carousels
+   *  Fixed disappearing page on scroll when parts of pages were visible. May have introduced other minor errors, keeping an eye on it
+
+Known Issues:
+   *  Swipe is currently unsupported on carousels with 2 pages. A solution is being worked on in order to fix the display issues caused in this case.
 
 ### v1.3.1:
 Bugfixes:

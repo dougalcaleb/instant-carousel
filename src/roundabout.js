@@ -268,7 +268,13 @@ class Roundabout {
 
 			// set up a position modifier array to mutate the normal right-based positioning
 			let pos = [];
-			if (distance > 0) {
+         if (distance > 0) {
+            if (this.type == "slider" && !this.swipeSnap) {
+               for (let a = 0; a < this._positions.length; a++) {
+                  pos.push(a-1);
+               }
+               pos.push(pos.shift());
+            }
 				for (let a = 0; a < this._positions.length; a++) {
 					pos.push(a);
 				}
@@ -278,7 +284,7 @@ class Roundabout {
 			} else if (distance < 0) {
 				if (this.type == "slider") {
 					for (let a = 0; a < this._positions.length; a++) {
-						pos.push(a - Math.abs(distance) - 1);
+						pos.push(a - Math.abs(distance));
 					}
 				} else if (this.type == "gallery") {
 					for (let a = 0; a < this._positions.length; a++) {
@@ -295,18 +301,15 @@ class Roundabout {
 			}
 
 			if (distance < 0) {
-				let z = this.type == "slider" ? 1 : 0;
+				let z = this.type == "slider" ? 0 : 0;
 				for (let a = 0; a < Math.abs(distance) + z; a++) {
 					pos.push(pos.shift());
 				}
-			}
-
-			// console.warn(`pos is`);
-			// console.log(pos);
+         }
 
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this._positions.length; a++) {
-				let beforeMove = this.type == "slider" ? this.calcPagePos(pos[a]) : this.calcPagePos(pos[a], {direction: distance});
+				let beforeMove = this.type == "slider" ? this.calcPagePos(pos[a], {raw: true}) : this.calcPagePos(pos[a], {direction: distance});
 				if (beforeMove != "0px") {
 					document
 						.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`)
@@ -658,7 +661,7 @@ class Roundabout {
 			// resistant scrolling
 			if (Math.abs(parent._dx) < document.querySelector(parent.parent).offsetWidth && parent.infinite) {
 				parent._dx = (parent._x - parent._sx) * parent.swipeMultiplier;
-			} else if (parent._dx < 0) {
+			} else if (parent._dx < 0 && !parent.infinite) {
 				if (parent.infinite) {
 					parent._dx -= (parent._dx + document.querySelector(parent.parent).offsetWidth) * parent.swipeResistance;
 				} else if (parent.pages.length - parent.pagesToShow == parent.onPage) {
@@ -668,7 +671,7 @@ class Roundabout {
 						parent._dx -= (parent._dx + parent._lastDx) * parent.swipeResistance;
 					}
 				}
-			} else if (parent._dx > 0) {
+			} else if (parent._dx > 0 && !parent.infinite) {
 				if (parent.infinite) {
 					parent._dx -= (parent._dx - document.querySelector(parent.parent).offsetWidth) * parent.swipeResistance;
 				} else if (parent._orderedPages[parent._orderedPagesMainInd_ex] === 0) {
@@ -1350,14 +1353,18 @@ class Roundabout {
       if (this.ignoreErrors) {
          return true;
       }
-		if (this.pages.length < 3) {
-			this.displayError("The minimum number of pages supported is 3.");
+		if (this.pages.length < 2) {
+			this.displayError("The minimum number of pages supported is 2.");
 			return false;
 		}
 		if (this.pages.length - this.pagesToShow <= 0) {
 			this.displayError("Too many pages are being displayed at once. There must be at least 2 fewer pages shown than the number of total pages.");
 			return false;
-		}
+      }
+      if (this.pages.length == 2 && this.swipe) {
+         this.displayError("Swipe is not supported on carousels with 2 pages.");
+         return false;
+      }
 		if (this.pages.length == 0 || !this.pages.length) {
 			this.displayError("No pages have been supplied. Please create a 'pages' array containing your pages. See the documentation for details.");
 		}
@@ -1509,11 +1516,11 @@ class Roundabout {
 	}
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
-	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null}) {
+	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null, raw: false}) {
 		if (options.forceType == undefined) {
 			options.forceType = this.type;
 		}
-		if (pagePos == 0 && options.forceType == "slider" && (this.pageSpacingMode == "fill" || options.wrap)) {
+		if (pagePos == 0 && options.forceType == "slider" && !options.raw && (this.pageSpacingMode == "fill" || options.wrap)) {
 			return "0px";
 		}
 		if (options.forceType == "gallery") {
@@ -1602,3 +1609,4 @@ class Roundabout {
 		console.error(message);
 	}
 }
+
