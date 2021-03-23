@@ -777,7 +777,7 @@ class Roundabout {
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
-		this._callbacks.dragEnd.forEach((cb) => {
+		parent._callbacks.dragEnd.forEach((cb) => {
 			cb();
 		});
 		setTimeout(() => {
@@ -786,16 +786,22 @@ class Roundabout {
 
       if (parent.interpolate) {
          for (let a = 0; a < parent.pagesToShow; a++) {
+            let t = "";
             parent.interpolate.forEach(inter => {
+               if (!t.includes(inter.value)) {
+                  t += inter.value + " " + (parent.transition / 1000) + "s, ";
+               }
                document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style[inter.value] = "";
-               document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = inter.value + " " + parent.transition / 1000 + "s";
             });
+            t = t.substr(0, t.length - 2) + ";";
+            document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = "";
+            document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = t;
          }
       }
       
       parent._distPercent = 0;
 
-		document.querySelector(`.roundabout-${parent._uniqueId}-page-wrap`).classList.add(`roundabout-${this._uniqueId}-has-transition`);
+		document.querySelector(`.roundabout-${parent._uniqueId}-page-wrap`).classList.add(`roundabout-${parent._uniqueId}-has-transition`);
 		document.querySelector(`.roundabout-${parent._uniqueId}-page-wrap`).classList.remove(`roundabout-has-no-transition`);
 
 		parent._dragging = false;
@@ -975,7 +981,7 @@ class Roundabout {
 	internalCSS() {
 		let css = `.roundabout-${this._uniqueId}-has-transition {transition:${this.transition / 1000}s;transition-timing-function:${
 			this.transitionFunction
-		}}.roundabout-has-no-transition{transition: left 0s;}.roundabout-error-message {position:relative;margin:auto;left:0;right:0;top:0;bottom:0;border-radius:5px;border:3px solid black;background: white;text-align:center;font-family:sans-serif;width:30%;}`;
+		}}.roundabout-has-no-transition{transition: left 0s; !important}.roundabout-error-message {position:relative;margin:auto;left:0;right:0;top:0;bottom:0;border-radius:5px;border:3px solid black;background: white;text-align:center;font-family:sans-serif;width:30%;}`;
 		if (this.type == "gallery") {
 			css += `.roundabout-${this._uniqueId}-hidden-page {opacity: 0; z-index: 0; visibility: hidden;} .roundabout-fadeout {opacity: 0}`;
 			for (let a = 0; a < this.pagesToShow; a++) {

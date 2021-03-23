@@ -17,26 +17,26 @@ const c = new Roundabout({
    throttleTimeout: 300,
 
    interpolate: [
-      {
-         value: "filter",
-         // start: [0, 10],
-         // end: [1, 100],
-         between: [
-            [0, 10],
-            [1, 100]
-         ],
-         unit: "brightness($%)",
-      },
-      {
-         value: "filter",
-         // start: [1, 100],
-         // end: [2, 10],
-         between: [
-            [2, 10],
-            [1, 100],
-         ],
-         unit: "brightness($%)",
-      },
+      // {
+      //    value: "filter",
+      //    // start: [0, 10],
+      //    // end: [1, 100],
+      //    between: [
+      //       [0, 10],
+      //       [1, 100]
+      //    ],
+      //    unit: "brightness($%)",
+      // },
+      // {
+      //    value: "filter",
+      //    // start: [1, 100],
+      //    // end: [2, 10],
+      //    between: [
+      //       [2, 10],
+      //       [1, 100],
+      //    ],
+      //    unit: "brightness($%)",
+      // },
 
       {
          value: "height",
@@ -57,7 +57,30 @@ const c = new Roundabout({
             [1, 100],
          ],
          unit: "$%",
-      }
+      },
+
+      {
+         value: "opacity",
+         // start: [0, 80],
+         // end: [1, 100],
+         between: [
+            [0, 0.1],
+            [1,1],
+         ],
+         unit: "$",
+      },
+      {
+         value: "opacity",
+         // start: [1, 100],
+         // end: [2, 80],
+         between: [
+            [1, 1],
+            [2, 0.1],
+         ],
+         unit: "$",
+      },
+
+      
    ],
    // rotation: "left",
 
