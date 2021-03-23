@@ -696,12 +696,16 @@ class Roundabout {
          if (parent._distPercent != 0) {
             parent.interpolate.forEach(inter => {
                if (parent._dx > 0) {
-                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.start[0]}`).style.transition = inter.value + " 0s";
-                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.start[0]}`).style[inter.value] = (inter.end[1] - inter.start[1]) * parent._distPercent + inter.start[1] + inter.unit;
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style.transition = inter.value + " 0s";
+                  let val = (inter.between[1][1] - inter.between[0][1]) * parent._distPercent + inter.between[0][1];
+                  let re = inter.unit.replace("$", val);
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style[inter.value] = re;
                }
                else if (parent._dx < 0) {
-                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.end[0]}`).style.transition = inter.value + " 0s";
-                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.end[0]}`).style[inter.value] = (inter.start[1] - inter.end[1]) * parent._distPercent + inter.end[1] + inter.unit;
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[1][0]}`).style.transition = inter.value + " 0s";
+                  let val = (inter.between[0][1] - inter.between[1][1]) * parent._distPercent + inter.between[1][1];
+                  let re = inter.unit.replace("$", val);
+                  document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[1][0]}`).style[inter.value] = re;
                }
             });
          }
@@ -806,7 +810,6 @@ class Roundabout {
 		} else {
 			// parent._ex = event.clientX;
 			parent.rotation == "none" ? (parent._ex = event.clientX) : (parent._ex = parent.rotation * event.clientY);
-
 			// parent.ey = event.clientY;
 		}
 
@@ -1255,7 +1258,12 @@ class Roundabout {
 			} catch (e) {
 				console.error(`Error while attempting to generate Roundabout with id ${this.id}:`);
 				console.error(e);
-			}
+         }
+         this.interpolate.forEach(i => {
+            if (i.between[0][0] > i.between[1][0]) {
+               this.interpolate[this.interpolate.indexOf(i)].between.push(this.interpolate[this.interpolate.indexOf(i)].between.shift());
+            }
+         })
 			this._boundFollow = this._execMM.bind(this);
 			this._boundEnd = this._execMU.bind(this);
 			this._boundCancel = this._execTC.bind(this);

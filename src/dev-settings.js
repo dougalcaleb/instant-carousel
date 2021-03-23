@@ -18,16 +18,45 @@ const c = new Roundabout({
 
    interpolate: [
       {
-         value: "height",
-         start: [0, 80],
-         end: [1, 100],
-         unit: "%",
+         value: "filter",
+         // start: [0, 10],
+         // end: [1, 100],
+         between: [
+            [0, 10],
+            [1, 100]
+         ],
+         unit: "brightness($%)",
       },
       {
-         start: [1, 100],
+         value: "filter",
+         // start: [1, 100],
+         // end: [2, 10],
+         between: [
+            [2, 10],
+            [1, 100],
+         ],
+         unit: "brightness($%)",
+      },
+
+      {
          value: "height",
-         end: [2, 80],
-         unit: "%",
+         // start: [0, 80],
+         // end: [1, 100],
+         between: [
+            [0, 80],
+            [1,100],
+         ],
+         unit: "$%",
+      },
+      {
+         value: "height",
+         // start: [1, 100],
+         // end: [2, 80],
+         between: [
+            [2, 80],
+            [1, 100],
+         ],
+         unit: "$%",
       }
    ],
    // rotation: "left",
