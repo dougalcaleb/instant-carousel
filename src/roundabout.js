@@ -120,7 +120,8 @@ let roundabout = {
 		nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
 		prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
 
-		initOnly: false, // does not generate the carousel, but initializes all variables and functions
+      initOnly: false, // does not generate the carousel, but initializes all variables and functions
+      ignoreErrors: false // bypasses the checkForErrors function
 	},
 };
 
@@ -131,7 +132,7 @@ class Roundabout {
 		}
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.4.0-DEV";
+		this.VERSION = "1.4.0-PRE-DEV";
 		console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
@@ -288,7 +289,6 @@ class Roundabout {
 						}
 					}
 				}
-
 				this._callbacks.scrollPrevious.forEach((cb) => {
 					cb();
 				});
@@ -689,7 +689,7 @@ class Roundabout {
          
          parent._distPercent = dist / parent._calculatedPageSize;
 
-         if (parent._distPercent != 0) {
+         if (parent._distPercent != 0 && parent.interpolate.length > 0) {
             parent.interpolate.forEach(inter => {
                if (parent._dx > 0) {
                   document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style.transition = inter.value + " 0s";
@@ -780,7 +780,7 @@ class Roundabout {
 			parent._swipeIsAllowed = true;
       }, parent.throttleTimeout);
 
-      if (parent.interpolate) {
+      if (parent.interpolate.length > 0) {
          for (let a = 0; a < parent.pages.length; a++) {
             let t = "";
             parent.interpolate.forEach(inter => {
@@ -1346,7 +1346,10 @@ class Roundabout {
 	}
 
 	// prevents breakage by providing constraints and displaying an error message
-	checkForErrors(r) {
+   checkForErrors(r) {
+      if (this.ignoreErrors) {
+         return true;
+      }
 		if (this.pages.length < 3) {
 			this.displayError("The minimum number of pages supported is 3.");
 			return false;
@@ -1374,10 +1377,14 @@ class Roundabout {
 		}
 		if (this.type == "gallery" && this.navigation && this.pages.length % this.pagesToShow != 0) {
 			this.displayError(
-				"To enable navigation on 'gallery' mode carousels, the total number of pages must be divisible by the number of pages shown. This prevents visible page inconsistencies after scrolling manually."
+				"To enable navigation on 'gallery' mode carousels, the total number of pages must be divisible by the number of pages shown. This prevents different groups of pages corresponding the same navigation bubble."
 			);
 			return false;
-		}
+      }
+      if (this.type == "gallery" && this.interpolate.length > 0) {
+         this.displayError("Interpolation is not supported by 'gallery' mode carousels.");
+         return false;
+      }
 		return true;
 	}
 

@@ -66,23 +66,28 @@ Features:
       *  Due to multiple bugs that start cropping up from less than 3 pages
       *  Can use 4 pages (duplicate each page) and disable navigation to achieve the same effect
    *  New setting: swipeSnap
-      *  values: true, false
+      *  Values: true, false
       *  Enables or disables snapping on swipe release
    *  New setting: swipeSpeed
-      *  value: integer
+      *  Value: integer
       *  Sets the speed (pixels/s) that must be exceeded to advance the page
       *  Can be used alongside swipeThreshold
    *  New setting: rotation
-      *  values: "none", "left", "right"
+      *  Values: "none", "left", "right"
       *  Changes the way the swiping is handled for rotated carousels
    *  New setting: interpolate
+      *  Values: objects (each must have a "value", "between", and "unit" property)
       *  Calculates intermediate values between pages when swiping
    *  New setting: type
-      *  values: "slider", "gallery"
+      *  Values: "slider", "gallery"
       *  Selects the type of carousel to use
-   *  New type: "gallery"
+   *  New mode: "gallery"
       *  Pages do not move
       *  Fade in/out
+   *  New setting: ignoreErrors
+      *  Values: true, false
+      *  Allows for error checking against settings to be bypassed
+      *  Enabling not recommended
    *  New class: ".roundabout-[ID]-page"
       *  Applied to every individual page
 
@@ -98,12 +103,12 @@ Bugfixes:
 ### v1.3.0:
 Features:
    *  New setting: breakpoints
-      *  values: objects (each object must have a "width" property)
+      *  Values: objects (each object must have a "width" property)
       *  Rework of the breakpoint system to support multiple breakpoints
       *  Removed mobile option
       *  Remove mobileBreakpoint option
    *  New setting: buttons
-      *  values: true, false
+      *  Values: true, false
       *  Enables or disables the previous and next navigation buttons
    *  Restructured the way settings are input to allow for editor autocomplete
    *  Added license (applies to all previous versions as well)
@@ -130,13 +135,13 @@ Features:
 ### v1.2.0:
 Features:
 *  New setting: lazyLoad
-   *  values: "all", "hidden", "none"
+   *  Values: "all", "hidden", "none"
    *  Selects the type of backgroundImage loading to use
 *  New setting: uiEnabled
-   *  values: true, false
+   *  Values: true, false
    *  Determines if the UI will be enabled and usable. Disabled UIs are not generated at all
 *  New settings: nextHTML and prevHTML
-   *  values: valid HTML string
+   *  Values: valid HTML string
    *  Replaces the default next and previous arrows with custom HTML. Supports both elements and plain text
 *  Complete overhaul of the CSS system
       *  Now much more intuitive, uses an external stylesheet for easy, on-the-fly changes and complete visual freedom
