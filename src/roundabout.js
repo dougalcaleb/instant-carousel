@@ -39,7 +39,6 @@ RESPONSIVENESS
 
 //! KNOWN ISSUES:
 /*
-   - interpolation breaks temporarily when swiping past the end
    - scrolling > 1 bubble with navigation is scuffed
 */
 
@@ -52,10 +51,7 @@ RESPONSIVENESS
 
 //? Ideas:
 /*
--  Insert properties into pages array
-   -  isLoaded
-   -  position
--  For fade, replace in/out with class additions (might even work with system already in place)
+
 */
 
 let roundabout = {
@@ -785,17 +781,17 @@ class Roundabout {
       }, parent.throttleTimeout);
 
       if (parent.interpolate) {
-         for (let a = 0; a < parent.pagesToShow; a++) {
+         for (let a = 0; a < parent.pages.length; a++) {
             let t = "";
             parent.interpolate.forEach(inter => {
                if (!t.includes(inter.value)) {
                   t += inter.value + " " + (parent.transition / 1000) + "s, ";
                }
-               document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style[inter.value] = "";
+               document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style[inter.value] = "";
             });
             t = t.substr(0, t.length - 2) + ";";
-            document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = "";
-            document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = t;
+            document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style.transition = "";
+            document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style.transition = t;
          }
       }
       
