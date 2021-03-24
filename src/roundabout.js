@@ -249,9 +249,6 @@ class Roundabout {
    */
 
 	scroll(distance, valuesOnly, overflow = 0) {
-		this._callbacks.scroll.forEach((cb) => {
-			cb();
-		});
 		if (
 			(distance > 0 && this._onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "slider") ||
 			(distance < 0 && this._onPage <= 0 && !this.infinite && this.type == "slider")
@@ -266,6 +263,10 @@ class Roundabout {
 		} else {
 			let wrapper = document.querySelector(`.roundabout-${this._uniqueId}-page-wrap`);
 
+         this._callbacks.scroll.forEach((cb) => {
+            cb(distance);
+         });
+
 			// set up a position modifier array to mutate the normal right-based positioning
 			let pos = [];
          if (distance > 0) {
@@ -279,7 +280,7 @@ class Roundabout {
 					pos.push(a);
 				}
 				this._callbacks.scrollNext.forEach((cb) => {
-					cb();
+					cb(distance);
 				});
 			} else if (distance < 0) {
 				if (this.type == "slider") {
@@ -296,7 +297,7 @@ class Roundabout {
 					}
 				}
 				this._callbacks.scrollPrevious.forEach((cb) => {
-					cb();
+					cb(distance);
 				});
 			}
 

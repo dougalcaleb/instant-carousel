@@ -35,6 +35,7 @@ class RoundaboutScripter {
    //    carousel.subscribe("", callback)
    // }
 
+   // 1 param
    onScroll(carousel, callback) {
       carousel.subscribe("scroll", callback);
    }
@@ -51,10 +52,12 @@ class RoundaboutScripter {
       carousel.subscribe("dragEnd", callback)
    }
 
+   // 1 param
    onScrollNext(carousel, callback) {
       carousel.subscribe("scrollNext", callback)
    }
 
+   // 1 param
    onScrollPrevious(carousel, callback) {
       carousel.subscribe("scrollPrevious", callback)
    }
