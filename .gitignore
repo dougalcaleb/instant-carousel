@@ -25,4 +25,4 @@ ideas.txt
 # dev-settings.js
 
 # Delete file and uncomment during dev, comment for deploy
-roundabout.min.js
+*.min.js
