@@ -1,13 +1,13 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
 
-   // type: "gallery", // normal should be slider
+   type: "gallery",
 
-   pagesToShow: 3,
+   pagesToShow: 1,
    scrollBy: 1,
-   transition: 300,
+   transition: 3000,
 
-   navigation: false,
+   // navigation: false,
    transitionFunction: "ease-in-out",
    pageSpacing: 10,
    pageSpacingUnits: "px",
@@ -15,92 +15,47 @@ const c = new Roundabout({
    // pageSpacingMode: "evenly",
 
    throttleTimeout: 300,
+   // swipe: false,
+   // navigationBehavior: "direction",
+   // ignoreErrors: true,
+   // swipeSnap: false,
 
-   interpolate: [
-      // {
-      //    value: "filter",
-      //    // start: [0, 10],
-      //    // end: [1, 100],
-      //    between: [
-      //       [0, 10],
-      //       [1, 100]
-      //    ],
-      //    unit: "brightness($%)",
-      // },
-      // {
-      //    value: "filter",
-      //    // start: [1, 100],
-      //    // end: [2, 10],
-      //    between: [
-      //       [2, 10],
-      //       [1, 100],
-      //    ],
-      //    unit: "brightness($%)",
-      // },
-
-      {
-         value: "height",
-         // start: [0, 80],
-         // end: [1, 100],
-         between: [
-            [0, 80],
-            [1,100],
-         ],
-         unit: "$%",
-      },
-      {
-         value: "height",
-         // start: [1, 100],
-         // end: [2, 80],
-         between: [
-            [2, 80],
-            [1, 100],
-         ],
-         unit: "$%",
-      },
-
-      {
-         value: "opacity",
-         // start: [0, 80],
-         // end: [1, 100],
-         between: [
-            [0, 0.1],
-            [1,1],
-         ],
-         unit: "$",
-      },
-      {
-         value: "opacity",
-         // start: [1, 100],
-         // end: [2, 80],
-         between: [
-            [1, 1],
-            [2, 0.1],
-         ],
-         unit: "$",
-      },
-
-      
-   ],
-   // rotation: "left",
-
-   // lazyLoad: "no-load",
-
-   // breakpoints: [
+   // interpolate: [
    //    {
-   //       width: 1500,
-   //       pagesToShow: 3,
-   //       scrollBy: 3,
-   //       // navigation: false,
-   //       swipeThreshold: 50
+   //       value: "height",
+   //       between: [
+   //          [0, 80],
+   //          [1,100],
+   //       ],
+   //       unit: "$%",
    //    },
    //    {
-   //       width: 1000,
-   //       pagesToShow: 2,
-   //       scrollBy: 2,
-   //       navigation: false,
-   //       swipeThreshold: 50
-   //    }
+   //       value: "height",
+   //       between: [
+   //          [2, 80],
+   //          [1, 100],
+   //       ],
+   //       unit: "$%",
+   //    },
+
+   //    {
+   //       value: "opacity",
+   //       between: [
+   //          [0, 0.1],
+   //          [1,1],
+   //       ],
+   //       unit: "$",
+   //    },
+   //    {
+   //       value: "opacity",
+   //       between: [
+   //          [1, 1],
+   //          [2, 0.1],
+   //       ],
+   //       unit: "$",
+   //    },
+
+      
    // ],
 
    listenForResize: true,
@@ -203,3 +158,7 @@ const c = new Roundabout({
 //    rs.setValue(c, "scrollBy", 2);
 //    rs.destroy(c);
 // }
+
+// setInterval(() => {
+//    console.log(c._atEnd);
+// }, 100);

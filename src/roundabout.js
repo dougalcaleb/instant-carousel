@@ -39,7 +39,6 @@ RESPONSIVENESS
 
 //! KNOWN ISSUES:
 /*
-   - interpolation breaks temporarily when swiping past the end
    - scrolling > 1 bubble with navigation is scuffed
 */
 
@@ -47,15 +46,12 @@ RESPONSIVENESS
 
 // To do:
 /*
--  Mouse/touch swipe
+
 */
 
 //? Ideas:
 /*
--  Insert properties into pages array
-   -  isLoaded
-   -  position
--  For fade, replace in/out with class additions (might even work with system already in place)
+
 */
 
 let roundabout = {
@@ -124,7 +120,8 @@ let roundabout = {
 		nextHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" /></svg>`,
 		prevHTML: `<svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" /></svg>`,
 
-		initOnly: false, // does not generate the carousel, but initializes all variables and functions
+      initOnly: false, // does not generate the carousel, but initializes all variables and functions
+      ignoreErrors: false // bypasses the checkForErrors function
 	},
 };
 
@@ -135,7 +132,7 @@ class Roundabout {
 		}
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.4.0-DEV";
+		this.VERSION = "1.4.0-PRE-DEV";
 		console.log(`Using version ${this.VERSION}`);
 
 		for (let a = 0; a < d.length; a++) {
@@ -271,7 +268,13 @@ class Roundabout {
 
 			// set up a position modifier array to mutate the normal right-based positioning
 			let pos = [];
-			if (distance > 0) {
+         if (distance > 0) {
+            if (this.type == "slider" && !this.swipeSnap) {
+               for (let a = 0; a < this._positions.length; a++) {
+                  pos.push(a-1);
+               }
+               pos.push(pos.shift());
+            }
 				for (let a = 0; a < this._positions.length; a++) {
 					pos.push(a);
 				}
@@ -281,7 +284,7 @@ class Roundabout {
 			} else if (distance < 0) {
 				if (this.type == "slider") {
 					for (let a = 0; a < this._positions.length; a++) {
-						pos.push(a - Math.abs(distance) - 1);
+						pos.push(a - Math.abs(distance));
 					}
 				} else if (this.type == "gallery") {
 					for (let a = 0; a < this._positions.length; a++) {
@@ -292,25 +295,23 @@ class Roundabout {
 						}
 					}
 				}
-
 				this._callbacks.scrollPrevious.forEach((cb) => {
 					cb();
 				});
 			}
 
 			if (distance < 0) {
-				let z = this.type == "slider" ? 1 : 0;
-				for (let a = 0; a < Math.abs(distance) + z; a++) {
+				// let z = this.type == "slider" ? 0 : 0;
+				for (let a = 0; a < Math.abs(distance); a++) {
 					pos.push(pos.shift());
 				}
-			}
+         }
 
-			// console.warn(`pos is`);
-			// console.log(pos);
+         console.log("pos is", pos);
 
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this._positions.length; a++) {
-				let beforeMove = this.type == "slider" ? this.calcPagePos(pos[a]) : this.calcPagePos(pos[a], {direction: distance});
+				let beforeMove = this.type == "slider" ? this.calcPagePos(pos[a], {raw: true}) : this.calcPagePos(pos[a], {direction: distance});
 				if (beforeMove != "0px") {
 					document
 						.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`)
@@ -328,7 +329,7 @@ class Roundabout {
 				// } else {
 				//    // document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "1";
 				// }
-				// console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
+				console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
 
 				// console.log(`Page ${this._orderedPages[a]} is hidden: ${document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).classList.contains(`roundabout-${this._uniqueId}-hidden-page`)}`);
 
@@ -662,7 +663,7 @@ class Roundabout {
 			// resistant scrolling
 			if (Math.abs(parent._dx) < document.querySelector(parent.parent).offsetWidth && parent.infinite) {
 				parent._dx = (parent._x - parent._sx) * parent.swipeMultiplier;
-			} else if (parent._dx < 0) {
+			} else if (parent._dx < 0 && !parent.infinite) {
 				if (parent.infinite) {
 					parent._dx -= (parent._dx + document.querySelector(parent.parent).offsetWidth) * parent.swipeResistance;
 				} else if (parent.pages.length - parent.pagesToShow == parent.onPage) {
@@ -672,7 +673,7 @@ class Roundabout {
 						parent._dx -= (parent._dx + parent._lastDx) * parent.swipeResistance;
 					}
 				}
-			} else if (parent._dx > 0) {
+			} else if (parent._dx > 0 && !parent.infinite) {
 				if (parent.infinite) {
 					parent._dx -= (parent._dx - document.querySelector(parent.parent).offsetWidth) * parent.swipeResistance;
 				} else if (parent._orderedPages[parent._orderedPagesMainInd_ex] === 0) {
@@ -693,7 +694,7 @@ class Roundabout {
          
          parent._distPercent = dist / parent._calculatedPageSize;
 
-         if (parent._distPercent != 0) {
+         if (parent._distPercent != 0 && parent.interpolate.length > 0) {
             parent.interpolate.forEach(inter => {
                if (parent._dx > 0) {
                   document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style.transition = inter.value + " 0s";
@@ -784,18 +785,18 @@ class Roundabout {
 			parent._swipeIsAllowed = true;
       }, parent.throttleTimeout);
 
-      if (parent.interpolate) {
-         for (let a = 0; a < parent.pagesToShow; a++) {
+      if (parent.interpolate.length > 0) {
+         for (let a = 0; a < parent.pages.length; a++) {
             let t = "";
             parent.interpolate.forEach(inter => {
                if (!t.includes(inter.value)) {
                   t += inter.value + " " + (parent.transition / 1000) + "s, ";
                }
-               document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style[inter.value] = "";
+               document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style[inter.value] = "";
             });
             t = t.substr(0, t.length - 2) + ";";
-            document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = "";
-            document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${a}`).style.transition = t;
+            document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style.transition = "";
+            document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style.transition = t;
          }
       }
       
@@ -1350,15 +1351,22 @@ class Roundabout {
 	}
 
 	// prevents breakage by providing constraints and displaying an error message
-	checkForErrors(r) {
-		if (this.pages.length < 3) {
-			this.displayError("The minimum number of pages supported is 3.");
+   checkForErrors(r) {
+      if (this.ignoreErrors) {
+         return true;
+      }
+		if (this.pages.length < 2) {
+			this.displayError("The minimum number of pages supported is 2.");
 			return false;
 		}
 		if (this.pages.length - this.pagesToShow <= 0) {
 			this.displayError("Too many pages are being displayed at once. There must be at least 2 fewer pages shown than the number of total pages.");
 			return false;
-		}
+      }
+      if (this.pages.length == 2 && this.swipe) {
+         this.displayError("Swipe is not supported on carousels with 2 pages.");
+         return false;
+      }
 		if (this.pages.length == 0 || !this.pages.length) {
 			this.displayError("No pages have been supplied. Please create a 'pages' array containing your pages. See the documentation for details.");
 		}
@@ -1378,10 +1386,14 @@ class Roundabout {
 		}
 		if (this.type == "gallery" && this.navigation && this.pages.length % this.pagesToShow != 0) {
 			this.displayError(
-				"To enable navigation on 'gallery' mode carousels, the total number of pages must be divisible by the number of pages shown. This prevents visible page inconsistencies after scrolling manually."
+				"To enable navigation on 'gallery' mode carousels, the total number of pages must be divisible by the number of pages shown. This prevents different groups of pages corresponding the same navigation bubble."
 			);
 			return false;
-		}
+      }
+      if (this.type == "gallery" && this.interpolate.length > 0) {
+         this.displayError("Interpolation is not supported by 'gallery' mode carousels.");
+         return false;
+      }
 		return true;
 	}
 
@@ -1506,11 +1518,11 @@ class Roundabout {
 	}
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
-	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null}) {
+	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null, raw: false}) {
 		if (options.forceType == undefined) {
 			options.forceType = this.type;
 		}
-		if (pagePos == 0 && options.forceType == "slider" && (this.pageSpacingMode == "fill" || options.wrap)) {
+		if (pagePos == 0 && options.forceType == "slider" && !options.raw && (this.pageSpacingMode == "fill" || options.wrap)) {
 			return "0px";
 		}
 		if (options.forceType == "gallery") {
@@ -1599,3 +1611,4 @@ class Roundabout {
 		console.error(message);
 	}
 }
+
