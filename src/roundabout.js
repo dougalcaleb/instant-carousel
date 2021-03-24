@@ -46,7 +46,7 @@ RESPONSIVENESS
 
 // To do:
 /*
-
+   -  Try on initial actions, "may be issue with settings"
 */
 
 //? Ideas:
@@ -1516,7 +1516,7 @@ class Roundabout {
 				return end - start;
 			}
 		}
-	}
+   }
 
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
 	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null, raw: false}) {
@@ -1525,7 +1525,8 @@ class Roundabout {
 		}
 		if (pagePos == 0 && options.forceType == "slider" && !options.raw && (this.pageSpacingMode == "fill" || options.wrap)) {
 			return "0px";
-		}
+      }
+      //! CHANGE HIDING OF PAGES TO AN INDEX-BASED THING INSTEAD OF POSITION
 		if (options.forceType == "gallery") {
 			if (options.direction > 0 && pagePos >= this.pagesToShow * 2) {
 				// console.log(`%c returning 0 for page ${pagePos}`, "background: green;")

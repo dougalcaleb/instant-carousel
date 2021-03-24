@@ -3,9 +3,9 @@ const c = new Roundabout({
 
    type: "gallery",
 
-   pagesToShow: 1,
+   pagesToShow: 3,
    scrollBy: 1,
-   transition: 3000,
+   transition: 300,
 
    // navigation: false,
    transitionFunction: "ease-in-out",
@@ -120,15 +120,11 @@ const c = new Roundabout({
       {
          backgroundImage: "../images/numbers/14.png"
       },
-      {
-         backgroundImage: "../images/numbers/15.png"
-      }
+      // {
+      //    backgroundImage: "../images/numbers/15.png"
+      // }
    ]
 });
-
-// rs.onScroll(c, () => {
-//    console.log("Scroll Start");
-// });
 
 // rs.onScrollEnd(c, () => {
 //    console.log("-----------------------");
