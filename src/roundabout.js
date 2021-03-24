@@ -46,7 +46,7 @@ RESPONSIVENESS
 
 // To do:
 /*
--  Mouse/touch swipe
+
 */
 
 //? Ideas:
@@ -301,11 +301,13 @@ class Roundabout {
 			}
 
 			if (distance < 0) {
-				let z = this.type == "slider" ? 0 : 0;
-				for (let a = 0; a < Math.abs(distance) + z; a++) {
+				// let z = this.type == "slider" ? 0 : 0;
+				for (let a = 0; a < Math.abs(distance); a++) {
 					pos.push(pos.shift());
 				}
          }
+
+         console.log("pos is", pos);
 
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this._positions.length; a++) {
@@ -327,7 +329,7 @@ class Roundabout {
 				// } else {
 				//    // document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "1";
 				// }
-				// console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
+				console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
 
 				// console.log(`Page ${this._orderedPages[a]} is hidden: ${document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).classList.contains(`roundabout-${this._uniqueId}-hidden-page`)}`);
 

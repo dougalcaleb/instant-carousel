@@ -1,11 +1,11 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
 
-   // type: "gallery",
+   type: "gallery",
 
    pagesToShow: 1,
    scrollBy: 1,
-   transition: 300,
+   transition: 3000,
 
    // navigation: false,
    transitionFunction: "ease-in-out",
