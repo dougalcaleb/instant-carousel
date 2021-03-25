@@ -85,6 +85,9 @@ Features:
       *  Values: true, false
       *  Allows for error checking against settings to be bypassed
       *  Not recommended for general use
+   *  New lazy load type: "lazy-hidden"
+      *  All initially visible images and images within one scroll in each direction load after the page has loaded
+      *  All other pages wait to be loaded until they are within one scroll
    *  New class: ".roundabout-[ID]-page"
       *  Applied to every individual page
 

@@ -58,7 +58,8 @@ RESPONSIVENESS
 let roundabout = {
 	on: -1,
 	usedIds: [],
-	overwritten: "no",
+   overwritten: "no",
+   logged: false,
 
 	defaults: {
 		pages: [],
@@ -134,7 +135,8 @@ class Roundabout {
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
 		this.VERSION = "1.4.0-PRE-DEV";
-		console.log(`Using version ${this.VERSION}`);
+      if (!roundabout.logged) console.log(`Using Roundabout version ${this.VERSION} (github.com/dougalcaleb/roundabout)`);
+      roundabout.logged = true;
 
 		for (let a = 0; a < d.length; a++) {
 			let f = false;
@@ -309,7 +311,7 @@ class Roundabout {
 				}
          }
 
-         console.log("pos is", pos);
+         // console.log("pos is", pos);
 
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this._positions.length; a++) {
@@ -331,7 +333,7 @@ class Roundabout {
 				// } else {
 				//    // document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "1";
 				// }
-				console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
+				// console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
 
 				// console.log(`Page ${this._orderedPages[a]} is hidden: ${document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).classList.contains(`roundabout-${this._uniqueId}-hidden-page`)}`);
 
@@ -1082,13 +1084,11 @@ class Roundabout {
                if (b < 0) {
                   i = this.pages.length + b;
                }
-               console.log(`will load ${i}`);
                initial.push(i);
             }
             window.addEventListener("load", () => {
 					this.load(initial);
             });
-            console.log(`loading`, initial);
             this._handledLoad = true;
          } else if (this.lazyLoad == "all" && !this._handledLoad) {
 				this._handledLoad = true;
@@ -1459,7 +1459,7 @@ class Roundabout {
 				this.load(this._loadQueue, true);
 			};
          bgImg.src = this.pages[this._loadQueue[0]].backgroundImage;
-         console.log(`Requesting image ${this._loadQueue[0]}`);
+         // console.log(`Requesting image ${this._loadQueue[0]}`);
 		} else {
 			this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
 			this.load(this._loadQueue, true);
@@ -1630,4 +1630,3 @@ class Roundabout {
 		console.error(message);
 	}
 }
-
