@@ -695,10 +695,10 @@ class Roundabout {
 			// get distance values
 			let dist = Math.abs(parent._dx);
 			parent.checkCanSnap(parent);
-         
-         parent._distPercent = dist / parent._calculatedPageSize;
 
          if (parent._distPercent != 0 && parent.interpolate.length > 0) {
+            parent._distPercent = dist / parent._calculatedPageSize;
+            if (parent._distPercent > 1) parent._distPercent = 1;
             parent.interpolate.forEach(inter => {
                if (parent._dx > 0) {
                   document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style.transition = inter.value + " 0s";
