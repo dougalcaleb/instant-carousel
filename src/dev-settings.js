@@ -15,6 +15,7 @@ const c = new Roundabout({
    // pageSpacingMode: "evenly",
 
    throttleTimeout: 300,
+   lazyLoad: "lazy-hidden",
    // swipe: false,
    // navigationBehavior: "direction",
    // ignoreErrors: true,

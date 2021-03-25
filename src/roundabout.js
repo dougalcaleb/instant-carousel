@@ -47,6 +47,7 @@ RESPONSIVENESS
 // To do:
 /*
    -  Try on initial actions, "may be issue with settings"
+   -  lazy load: lazy-hidden: lazy load initials, wait on others
 */
 
 //? Ideas:
@@ -408,7 +409,7 @@ class Roundabout {
 				);
 			}
 
-			if (this.lazyLoad == "hidden") {
+			if (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") {
 				if (distance > 0) {
 					this.load(this._orderedPages.slice(this.pagesToShow, this.pagesToShow + this.scrollBy));
 				} else if (distance < 0) {
@@ -428,7 +429,7 @@ class Roundabout {
 				this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow)
 			);
 		}
-		if (this.lazyLoad == "hidden") {
+		if (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") {
 			let toLoad = [];
 			for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
 				let idx = (a + page) % this._orderedPages.length;
@@ -1074,7 +1075,22 @@ class Roundabout {
 			) {
 				newPage.style.backgroundImage = "url(" + this.pages[a].backgroundImage + ")";
 				this.pages[a].isLoaded = true;
-			} else if (this.lazyLoad == "all" && !this._handledLoad) {
+         } else if (this.lazyLoad == "lazy-hidden" && !this._handledLoad) {
+            let initial = [];
+            for (let b = -this.scrollBy; b < this.pagesToShow + this.scrollBy; b++) {
+               let i = b;
+               if (b < 0) {
+                  i = this.pages.length + b;
+               }
+               console.log(`will load ${i}`);
+               initial.push(i);
+            }
+            window.addEventListener("load", () => {
+					this.load(initial);
+            });
+            console.log(`loading`, initial);
+            this._handledLoad = true;
+         } else if (this.lazyLoad == "all" && !this._handledLoad) {
 				this._handledLoad = true;
 				window.addEventListener("load", () => {
 					this.load(this._orderedPages);
@@ -1442,7 +1458,8 @@ class Roundabout {
 				this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
 				this.load(this._loadQueue, true);
 			};
-			bgImg.src = this.pages[this._loadQueue[0]].backgroundImage;
+         bgImg.src = this.pages[this._loadQueue[0]].backgroundImage;
+         console.log(`Requesting image ${this._loadQueue[0]}`);
 		} else {
 			this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
 			this.load(this._loadQueue, true);
