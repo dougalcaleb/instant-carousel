@@ -299,15 +299,6 @@ class Roundabout {
 						document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).classList.remove(`roundabout-fadeout`);
 					}
 				}
-				// if (a < this.pagesToShow) {
-				//    // document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "0";
-				// } else {
-				//    // document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.zIndex = "1";
-				// }
-				// console.log(`Setting page ${this._orderedPages[a]} to pos ${beforeMove}`);
-
-				// console.log(`Page ${this._orderedPages[a]} is hidden: ${document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).classList.contains(`roundabout-${this._uniqueId}-hidden-page`)}`);
-
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${this._orderedPages[a]}`).style.left = beforeMove;
 			}
 
@@ -415,19 +406,11 @@ class Roundabout {
 		}
 
 		if (!this.infinite || this.navigationBehavior == "direction") {
-			// if (page < this.onPage) {
-			// 	if (this.throttleNavigation) {
-			// 		this.previousHandler(this, "scrollto", page - this.onPage);
-			// 	} else {
-			// 		this.scroll(page - this.onPage);
-			// 	}
-			// } else {
 			if (this.throttleNavigation) {
 				this.scrollHandler(this, "scrollto", page - this.onPage);
 			} else {
 				this.scroll(page - this.onPage, transition);
 			}
-			// }
 		} else {
 			if (this.findOffset(this.onPage, page, "p") < this.findOffset(this.onPage, page, "n")) {
 				if (this.throttleNavigation) {
@@ -446,7 +429,6 @@ class Roundabout {
 	}
 
 	setActiveBtn(id) {
-		// console.log(`%c Id is: ${id}`, "background: orange");
 		document
 			.querySelector(`.roundabout-${this._uniqueId}-active-nav-btn`)
 			.classList.add(`roundabout-${this._uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
@@ -584,25 +566,17 @@ class Roundabout {
 		// log the first touch position
 		parent._lastMove = event.touches;
 		if (parent._t) {
-			// parent.y = event.touches[0].clientY;
 			parent.rotation == "none" ? (parent._sx = event.touches[0].clientX) : (parent._sx = parent.rotation * event.touches[0].clientY);
 			parent.rotation == "none" ? (parent._x = event.touches[0].clientX) : (parent._x = parent.rotation * event.touches[0].clientY);
-			// parent.sy = event.touches[0].clientY;
 		} else {
 			parent.rotation == "none" ? (parent._x = event.clientX) : (parent._x = parent.rotation * event.clientY);
-			// parent.y = event.clientY;
 
 			parent.rotation == "none" ? (parent._sx = event.clientX) : (parent._sx = parent.rotation * event.clientY);
-			// parent.sy = event.clientY;
 		}
 
 		document.addEventListener("mousemove", parent._boundFollow, false);
-		document.addEventListener("mouseup", parent._boundEnd, false);
-
-		// if (!parent.swipeSnap) {
-		//    parent._dx = parent.
-		// }
-
+      document.addEventListener("mouseup", parent._boundEnd, false);
+      
 		if (parent._t) {
 			document.addEventListener("touchmove", parent._boundFollow, false);
 			document.addEventListener("touchend", parent._boundEnd, false);
@@ -618,10 +592,8 @@ class Roundabout {
 				parent.rotation == "none"
 					? (parent._x = event.changedTouches[0].clientX)
 					: (parent._x = parent.rotation * event.changedTouches[0].clientY);
-				// parent.y = event.changedTouches[0].clientY;
 			} else {
 				parent.rotation == "none" ? (parent._x = event.clientX) : (parent._x = parent.rotation * event.clientY);
-				// parent.y = event.clientY;
 			}
 
 			parent._dx = (parent._x - parent._sx) * parent.swipeMultiplier;
@@ -802,12 +774,8 @@ class Roundabout {
 			parent.rotation == "none"
 				? (parent._ex = event.changedTouches[0].clientX)
 				: (parent._ex = parent.rotation * event.changedTouches[0].clientY);
-
-			// parent.ey = event.changedTouches[0].clientY;
 		} else {
-			// parent._ex = event.clientX;
 			parent.rotation == "none" ? (parent._ex = event.clientX) : (parent._ex = parent.rotation * event.clientY);
-			// parent.ey = event.clientY;
 		}
 
 		if (!parent.swipeSnap) {
@@ -891,11 +859,8 @@ class Roundabout {
 	resetSwipeVars(parent) {
 		if (parent.swipeSnap) {
 			parent._sx = 0;
-			// parent.sy = 0;
 			parent._ex = 0;
-			// parent.ey = 0;
 			parent._x = 0;
-			// parent.y = 0;
 			parent._dx = 0;
 		}
 
@@ -1000,7 +965,6 @@ class Roundabout {
 			let newPage = document.createElement("DIV");
 			newPage.classList.add(`roundabout-${this._uniqueId}-page-${a}`, "roundabout-page", `roundabout-${this._uniqueId}-page`);
 			let newPos;
-			// if (this.type == "slider") {
 			// Set width and positions based on mode: calculated to accomodate spacing and number of pages
 			let iteratorMod, iteratorMod2;
 			if (this.pageSpacingMode == "evenly") {
@@ -1028,29 +992,11 @@ class Roundabout {
 						") + " +
 						(this.pageSpacing * (a + iteratorMod2) + this.pageSpacingUnits) +
 						")";
-					// newPos = this.calcPagePos(a);
 				}
 			} else if (this.type == "gallery") {
-				// newPos =
-				// 	"calc((((100% - " +
-				// 	(this.pagesToShow + iteratorMod) * this.pageSpacing +
-				// 	this.pageSpacingUnits +
-				// 	") / " +
-				// 	this.pagesToShow +
-				// 	") * " +
-				// 	(a % this.pagesToShow) +
-				// 	") + " +
-				// 	(this.pageSpacing * (a + iteratorMod2) + this.pageSpacingUnits) +
-				// 	")";
 				newPos = this.calcPagePos(a);
 			}
-
-			// } else {
-			// 	newPage.style.width = "100%";
-			// }
-			// newPage.style.height = "100%";
 			newPage.style.position = "absolute";
-			// newPage.style.zIndex = "1";
 
 			// Give a background image (if supplied)
 			if (
@@ -1474,11 +1420,6 @@ class Roundabout {
 			if (this._positions[a] == "0px") {
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.add(`roundabout-${this._uniqueId}-hidden-page`);
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
-				// if (this.type == "gallery") {
-				//    document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.transition = "opacity 0s";
-				//    const flushCssBuffer = document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).offsetWidth;
-				//    document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.transition = `opacity ${this.transition/1000}s`;
-				// }
 			} else {
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.remove(`roundabout-${this._uniqueId}-hidden-page`);
@@ -1524,8 +1465,8 @@ class Roundabout {
 				return end - start;
 			}
 		}
-	}
-
+   }
+   
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
 	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null, raw: false}) {
 		if (options.forceType == undefined) {
@@ -1534,15 +1475,16 @@ class Roundabout {
 		if (pagePos == 0 && options.forceType == "slider" && !options.raw && (this.pageSpacingMode == "fill" || options.wrap)) {
 			return "0px";
 		}
-		//! CHANGE HIDING OF PAGES TO AN INDEX-BASED THING INSTEAD OF POSITION
 		if (options.forceType == "gallery") {
 			if (options.direction > 0 && pagePos >= this.pagesToShow * 2) {
-				// console.log(`%c returning 0 for page ${pagePos}`, "background: green;")
 				return "0px";
 			}
 			if (options.direction < 0 && (pagePos < -this.pagesToShow || pagePos >= this.pagesToShow)) {
 				return "0px";
-			}
+         }
+         if (pagePos == -1) {
+            return "0px";
+         }
 		}
 		if (options.forceType == "slider") {
 			pagePos += 1;
@@ -1586,8 +1528,6 @@ class Roundabout {
 				(this.pageSpacing * ((pagePos % this.pagesToShow) + spacesAdjust2) + adjust + this.pageSpacingUnits) + // adjustment for spacing
 				")";
 		}
-
-		// console.log(`%c Page: ${pagePos}: ${newPos}`, "background: orange; color: black;");
 		return newPos;
 	}
 
