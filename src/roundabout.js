@@ -2,6 +2,7 @@
 /*
    - scrolling > 1 bubble with navigation is scuffed
    - lazy loading on scroll with bubbles sometimes doesn't work
+   - first scroll with gallery hitches because of z-index inconsistencies
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -26,13 +27,7 @@ let roundabout = {
 
 	defaults: {
 		pages: [],
-		breakpoints: [
-			{
-				width: 300,
-				height: 0,
-				swipeThreshold: 50,
-			},
-		],
+		breakpoints: [],
 		listenForResize: false,
 		interpolate: [],
 
@@ -52,7 +47,7 @@ let roundabout = {
 		swipeMultiplier: 1,
 		swipeResistance: 0.95,
 		swipeSnap: true,
-		swipeSpeed: 1200,
+		swipeSpeedThreshold: 1200,
 
 		scrollwheel: false,
 
@@ -266,10 +261,14 @@ class Roundabout {
                for (let a = 0; a < this._positions.length; a++) {
 						// modified by distance because the pages have to move to display correctly while left-based
 						pos.push(a - Math.abs(distance));
-					}
+               }
+               // Move everything left because the pages will be moving past the left end when they normally do not
+               for (let a = 0; a < Math.abs(distance); a++) {
+                  pos.push(pos.shift());
+               }
             } else if (this.type == "gallery") {
                for (let a = 0; a < this._positions.length; a++) {
-                  if (a < this.pagesToShow || a >= this._positions.length - this.pagesToShow) {
+                  if (a < this.pagesToShow || (a >= this._positions.length + distance && a < this._positions.length + distance + this.pagesToShow )) {
                      console.log(`pushing ${a}`);
                      pos.push(a % this.pagesToShow);
                   } else {
@@ -282,14 +281,6 @@ class Roundabout {
 					cb(distance);
 				});
 			}
-
-			//? what's the deal with this? slider needs it
-         //* don't delete until fixed
-			// if (distance < 0) {
-			// 	for (let a = 0; a < Math.abs(distance); a++) {
-			// 		pos.push(pos.shift());
-			// 	}
-			// }
 
 			console.log("pos is", pos);
 
@@ -470,7 +461,8 @@ class Roundabout {
 			.classList.remove(`roundabout-${this._uniqueId}-inactive-nav-btn`, `roundabout-inactive-nav-btn`);
 	}
 
-	scrollHandler(parent, from, distance, transition = true) {
+   scrollHandler(parent, from, distance, transition = true) {
+      console.log(`sh vals: ${from}, ${distance}, ${transition}`);
 		let sd;
 		if (from == "snap") {
 			if (distance > 0) {
@@ -487,8 +479,9 @@ class Roundabout {
 				sd = -parent.scrollBy;
 			}
 		}
-		parent.resetScrollTimeout();
-		if (parent._scrollIsAllowed && !parent._dragging) {
+      parent.resetScrollTimeout();
+      // requires scroll allowed and not dragging (slider type) or from follow (gallery type is ok)
+      if (parent._scrollIsAllowed && (!parent._dragging || from == "follow")) {
 			parent.scroll(sd, false, transition);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent._scrollIsAllowed = false;
@@ -576,7 +569,7 @@ class Roundabout {
 			}
 		}
 
-		if (parent.swipeSpeed > 0) {
+		if (parent.swipeSpeedThreshold > 0) {
 			parent._sts = Date.now();
 		}
 
@@ -702,17 +695,29 @@ class Roundabout {
 
 			// determine if snapping to the next page is allowed
 			if (
-				(dist >= totalSize && parent.infinite) ||
+				(dist >= totalSize && parent.infinite && parent.type == "slider") ||
 				(dist >= totalSize &&
 					!parent.infinite &&
 					(parent.onPage < parent.pages.length - parent.pagesToShow ||
 						(parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) &&
-					(parent.onPage > 0 || (parent.onPage == 0 && parent._dx < 0)))
+               (parent.onPage > 0 || (parent.onPage == 0 && parent._dx < 0)) ||
+            (dist >= parent.swipeThreshold && parent.type == "gallery")
+            )
 			) {
-				if (parent._dx > 0) {
-					parent.scroll(parent.type == "slider" ? -1 : -parent.scrollBy, parent.type == "slider" ? true : false);
-				} else if (parent._dx < 0) {
-					parent.scroll(parent.type == "slider" ? 1 : parent.scrollBy, parent.type == "slider" ? true : false);
+            if (parent._dx > 0) { // come back
+               if (parent.type == "slider") {
+                  parent.scroll(-1,true);
+               } else if (parent.type == "gallery") {
+                  parent.scrollHandler(parent, "follow", -parent.scrollBy)
+               }
+					// parent.scroll(parent.type == "slider" ? -1 : -parent.scrollBy, parent.type == "slider" ? true : false);
+            } else if (parent._dx < 0) {
+               if (parent.type == "slider") {
+                  parent.scroll(1, true)
+               } else if (parent.type == "gallery") {
+                  parent.scrollHandler(parent, "follow", parent.scrollBy)
+               }
+					// parent.scroll(parent.type == "slider" ? 1 : parent.scrollBy, parent.type == "slider" ? true : false);
 				}
 				parent._sx = parent._x * 1;
 				parent._dx = 0;
@@ -736,10 +741,10 @@ class Roundabout {
 					(parent.onPage < parent.pages.length - parent.pagesToShow || // {is less than right end OR
 						(parent.onPage == parent.pages.length - parent.pagesToShow && parent._dx > 0)) && // is at right and and moving left} AND
 					(parent.onPage > 0 || (parent.onPage == 0 && parent._dx < 0))) // (is not at left end OR is at left end and is moving right)]
-			) {
-				if (checkSpeed && Math.abs(((parent._ex - parent._sx) / (parent._ste - parent._sts)) * 1000) > parent.swipeSpeed) {
+         ) {
+				if (checkSpeed && Math.abs(((parent._ex - parent._sx) / (parent._ste - parent._sts)) * 1000) > parent.swipeSpeedThreshold) {
 					parent._canSnap = true; // checking speed and speed is over required
-				} else if (checkSpeed) {
+            } else if (checkSpeed) {
 					parent._canSnap = false; // checking speed and speed is under required
 				} else if (!checkSpeed) {
 					parent._canSnap = true;
@@ -809,17 +814,15 @@ class Roundabout {
 			parent._lastDx = parent._dx * 1;
 		}
 
-		if (parent.swipeSpeed > 0 && Math.abs(parent._dx) < parent.swipeThreshold) {
+		if (parent.swipeSpeedThreshold > 0 && Math.abs(parent._dx) < parent.swipeThreshold) {
 			parent._ste = Date.now();
 			parent.checkCanSnap(parent, true);
-		}
-
-		let tempSwipeSpeed = Math.abs(((parent._ex - parent._sx) / (parent._ste - parent._sts)) * 1000);
-
-		// parent.checkCanSnap(parent);
-
+      }
+      
 		// snap the page to the correct position, and reset for next swipe
-		if (parent.swipeSnap || (!parent.swipeSnap && !parent._canSnap && parent._atEnd)) {
+      if (
+         (parent.type == "slider" || (parent.type == "gallery" && Math.abs(parent._dx) < parent.swipeThreshold)) &&
+         parent.swipeSnap || (!parent.swipeSnap && !parent._canSnap && parent._atEnd)) {
 			parent.snap(parent._canSnap, parent._dx, parent);
 			if (!parent.swipeSnap) {
 				parent._lastDx = 0;
@@ -872,12 +875,12 @@ class Roundabout {
 				if (parent.type == "slider") {
 					parent.positionWrap(false, 1);
 				}
-				parent.scrollHandler(parent, "snap", parent.type == "slider" ? -1 : -parent.scrollBy);
+				parent.scrollHandler(parent, parent.type == "slider" ? "snap" : "snap-g", parent.type == "slider" ? -1 : -parent.scrollBy);
 			} else if (dir < 0) {
 				if (parent.type == "slider") {
 					parent.positionWrap(false, -1);
 				}
-				parent.scrollHandler(parent, "snap", parent.type == "slider" ? 1 : parent.scrollBy);
+				parent.scrollHandler(parent, parent.type == "slider" ? "snap" : "snap-g", parent.type == "slider" ? 1 : parent.scrollBy);
 			}
 		} else if (parent.type == "slider") {
 			parent.positionWrap(false, 0);
@@ -1162,7 +1165,6 @@ class Roundabout {
 
 	// Destroys the HTML of the carousel
 	destroy(regen = true, complete = false) {
-		// come back
 		this._callbacks.beforeDestroy.forEach((cb) => {
 			cb();
 		});

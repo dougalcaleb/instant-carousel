@@ -1,6 +1,6 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
-	type: "gallery",
+	// type: "gallery",
 
 	pagesToShow: 3,
 	scrollBy: 3,
@@ -11,52 +11,15 @@ const c = new Roundabout({
 	pageSpacing: 10,
    pageSpacingUnits: "px",
    navigationBehavior: "direction",
+   swipeThreshold: 10,
 
 	// pageSpacingMode: "evenly",
 
-	throttleTimeout: 300,
+	throttleTimeout: 500,
    // lazyLoad: "hidden",
-   swipeSnap: false,
+   // swipeSnap: false,
 	// navigationBehavior: "direction",
 	// ignoreErrors: true,
-
-	// interpolate: [
-	//    {
-	//       value: "height",
-	//       between: [
-	//          [0, 80],
-	//          [1,100],
-	//       ],
-	//       unit: "$%",
-	//    },
-	//    {
-	//       value: "height",
-	//       between: [
-	//          [2, 80],
-	//          [1, 100],
-	//       ],
-	//       unit: "$%",
-	//    },
-
-	//    {
-	//       value: "opacity",
-	//       between: [
-	//          [0, 0.1],
-	//          [1,1],
-	//       ],
-	//       unit: "$",
-	//    },
-	//    {
-	//       value: "opacity",
-	//       between: [
-	//          [1, 1],
-	//          [2, 0.1],
-	//       ],
-	//       unit: "$",
-	//    },
-
-	// ],
-
    listenForResize: true,
    // swipe: false,
 
@@ -151,5 +114,7 @@ const c = new Roundabout({
 // }
 
 // setInterval(() => {
-//    console.log(c._atEnd);
+//    console.log(c._canSnap, c._dx);
 // }, 100);
+
+
