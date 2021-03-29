@@ -1,12 +1,12 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
-	// type: "gallery",
+	type: "gallery",
 
 	pagesToShow: 3,
 	scrollBy: 3,
 	transition: 300,
 
-	// navigation: false,
+	navigation: false,
 	transitionFunction: "ease-in-out",
 	pageSpacing: 10,
    pageSpacingUnits: "px",
@@ -22,6 +22,7 @@ const c = new Roundabout({
 	// ignoreErrors: true,
    listenForResize: true,
    // swipe: false,
+   // infinite: false,
 
 	pages: [
 		{
@@ -78,9 +79,9 @@ const c = new Roundabout({
 		{
 			backgroundImage: "../images/numbers/14.png",
 		},
-		// {
-		//    backgroundImage: "../images/numbers/15.png"
-		// }
+		{
+		   backgroundImage: "../images/numbers/15.png"
+		}
 	],
 });
 

@@ -1,8 +1,7 @@
 //! KNOWN ISSUES:
 /*
-   - scrolling > 1 bubble with navigation is scuffed
    - lazy loading on scroll with bubbles sometimes doesn't work
-   - first scroll with gallery hitches because of z-index inconsistencies
+   - first scroll with gallery (might) hitch because of z-index inconsistencies
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -211,12 +210,12 @@ class Roundabout {
    - undo transition change   
    */
 
-	scroll(distance, valuesOnly, overflow = 0) {
+   scroll(distance, valuesOnly, overflow = 0) {
 		if (
-			(distance > 0 && this._onPage >= this.pages.length - this.pagesToShow && !this.infinite && this.type == "slider") ||
-			(distance < 0 && this._onPage <= 0 && !this.infinite && this.type == "slider")
-		) {
-			// slider type and at end
+			(distance > 0 && this.onPage >= this.pages.length - this.pagesToShow && !this.infinite) ||
+         (distance < 0 && this.onPage <= 0 && !this.infinite)
+      ) {
+			// at end
 			return;
 		} else if (distance > 0 && distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
 			// will reach right end: return remaining
@@ -269,7 +268,6 @@ class Roundabout {
             } else if (this.type == "gallery") {
                for (let a = 0; a < this._positions.length; a++) {
                   if (a < this.pagesToShow || (a >= this._positions.length + distance && a < this._positions.length + distance + this.pagesToShow )) {
-                     console.log(`pushing ${a}`);
                      pos.push(a % this.pagesToShow);
                   } else {
                      pos.push(-1);
@@ -281,8 +279,6 @@ class Roundabout {
 					cb(distance);
 				});
 			}
-
-			console.log("pos is", pos);
 
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this._positions.length; a++) {
@@ -444,7 +440,6 @@ class Roundabout {
 	}
 
    scrollHandler(parent, from, distance, transition = true) {
-      console.log(`sh vals: ${from}, ${distance}, ${transition}`);
 		let sd;
 		if (from == "snap") {
 			if (distance > 0) {
@@ -1360,7 +1355,6 @@ class Roundabout {
 
 	// lazy load a page image
 	load(pageIds = [], a = false) {
-		console.log("loading pages", pageIds);
 		pageIds.forEach((id) => {
 			if (!this._loadQueue.includes(id)) {
 				this._loadQueue.push(id);
@@ -1396,7 +1390,6 @@ class Roundabout {
 				this.load(this._loadQueue, true);
 			};
 			bgImg.src = this.pages[this._loadQueue[0]].backgroundImage;
-			// console.log(`Requesting image ${this._loadQueue[0]}`);
 		} else {
 			this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
 			this.load(this._loadQueue, true);
@@ -1424,10 +1417,10 @@ class Roundabout {
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).style.left = this._positions[a];
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.remove(`roundabout-${this._uniqueId}-hidden-page`);
 
-				if (!this.infinite && a == 0 && this._onPage > 1 && !this.showWrappedPage) {
+				if (!this.infinite && a == 0 && this.onPage > 1 && !this.showWrappedPage) {
 					document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).classList.add(`roundabout-${this._uniqueId}-hidden-page`);
 				}
-				if (!this.infinite && a == this._positions.length - 1 && this._onPage == 0 && !this.showWrappedPage) {
+				if (!this.infinite && a == this._positions.length - 1 && this.onPage == 0 && !this.showWrappedPage) {
 					document
 						.querySelector(`.roundabout-${this._uniqueId}-page-${this._positions.length - 1}`)
 						.classList.add(`roundabout-${this._uniqueId}-hidden-page`);
