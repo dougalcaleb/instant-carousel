@@ -75,6 +75,9 @@ Features:
    *  New setting: interpolate
       *  Values: objects (each must have a "value", "between", and "unit" property)
       *  Calculates intermediate values between pages when swiping
+   *  New setting: scrollwheel
+      *  values: true, false
+      *  Allows for scrolling with a mouse wheel to advance the carousel instead of scrolling
    *  New setting: type
       *  Values: "slider", "gallery"
       *  Selects the type of carousel to use

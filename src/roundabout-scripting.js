@@ -102,6 +102,10 @@ class RoundaboutScripter {
       carousel.scroll(distance, !transition);
    }
 
+   throttledScroll(carousel, distance) {
+      carousel.scrollHandler(carousel, "script", distance);
+   }
+
    removePage(carousel, pageId) {
       carousel.pages.splice(pageId, 1);
       carousel.destroy();
