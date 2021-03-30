@@ -16,6 +16,8 @@
 /*
    - make sure listen resize doesn't break ui
    - test gallery and non-infinite
+   - dragging (especially touch and interaction ends)
+   - lazy loading with bubbles
 */
 
 let roundabout = {
@@ -187,7 +189,9 @@ class Roundabout {
 					console.error(`Error while attempting to set breakpoint values in Roundabout with id ${this.id}:`);
 					console.error(e);
 				}
-			}
+         } else {
+            console.error(`Error while attempting to initialize carousel with id ${this.id}. Ensure the settings are valid.`)
+         }
 		}
 	}
 
@@ -388,18 +392,8 @@ class Roundabout {
 			this.setActiveBtn(
 				this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow)
 			);
-		}
-		if (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") {
-			let toLoad = [];
-			for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
-				let idx = (a + page) % this._orderedPages.length;
-				if (idx < 0) {
-					idx += this._orderedPages.length;
-				}
-				toLoad.push(this._orderedPages[idx]);
-			}
-			this.load(toLoad);
-		}
+      }
+      
 
 		if (!this.infinite || this.navigationBehavior == "direction") {
 			if (this.throttleNavigation) {
@@ -421,6 +415,19 @@ class Roundabout {
 					this.scroll(this.findOffset(this.onPage, page, "n"), transition);
 				}
 			}
+      }
+      
+      //! BUBBLES PROBLEM LIKELY HERE (MAY WORK NOW, MOVED AFTER SCROLL)
+		if (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") {
+			let toLoad = [];
+			for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
+				let idx = (a + page) % this._orderedPages.length;
+				if (idx < 0) {
+					idx += this._orderedPages.length;
+				}
+				toLoad.push(this._orderedPages[idx]);
+			}
+			this.load(toLoad);
 		}
 	}
 
@@ -575,11 +582,11 @@ class Roundabout {
 		if (parent._t) {
 			document.addEventListener("touchmove", parent._boundFollow, false);
 			document.addEventListener("touchend", parent._boundEnd, false);
-			document.addEventListener("touchcancel", parent._boundCancel, false);
+			document.addEventListener("touchcancel", parent._boundEnd, false);
 		}
 	}
 
-	// called repeatedly while _dragging
+	// called repeatedly while dragging
 	follow(event, parent) {
 		if (parent._dragging) {
 			// capture movements
@@ -801,36 +808,6 @@ class Roundabout {
 		document.removeEventListener("touchcancel", parent._boundCancel, false);
 	}
 
-	// handle touch cancel
-	tCancel(event, parent) {
-		this._callbacks.dragEnd.forEach((cb) => {
-			cb();
-		});
-		parent._distPercent = 0;
-		event.preventDefault();
-		document.removeEventListener(
-			"mouseup",
-			(event) => {
-				parent.tEnd(event, parent);
-			},
-			false
-		);
-		document.removeEventListener(
-			"touchend",
-			(event) => {
-				parent.tEnd(event, parent);
-			},
-			false
-		);
-		document.removeEventListener(
-			"touchcancel",
-			(event) => {
-				parent.tCancel(event, parent);
-			},
-			false
-		);
-	}
-
 	// snap to a new slide once touch or drag ends
 	snap(al, dir, parent) {
 		if (al) {
@@ -870,9 +847,6 @@ class Roundabout {
 	}
 	_execMU(event) {
 		this.tEnd(event, this);
-	}
-	_execTC(event) {
-		this.tCancel(event, this);
 	}
 
 	/*
@@ -1214,7 +1188,7 @@ class Roundabout {
 			});
 			this._boundFollow = this._execMM.bind(this);
 			this._boundEnd = this._execMU.bind(this);
-			this._boundCancel = this._execTC.bind(this);
+			this._boundCancel = this._execMU.bind(this);
 			return true;
 		} else {
 			return false;
@@ -1284,17 +1258,6 @@ class Roundabout {
 				{capture: false}
 				// false
 			);
-		}
-	}
-
-	keyListener(event) {
-		switch (event.key) {
-			case "ArrowLeft":
-				this.scrollHandler(this, "key", -this.scrollBy);
-				break;
-			case "ArrowRight":
-				this.scrollHandler(this, "key", this.scrollBy);
-				break;
 		}
 	}
 
@@ -1459,6 +1422,17 @@ class Roundabout {
 			}
 		}
    }
+
+   keyListener(event) {
+		switch (event.key) {
+			case "ArrowLeft":
+				this.scrollHandler(this, "key", -this.scrollBy);
+				break;
+			case "ArrowRight":
+				this.scrollHandler(this, "key", this.scrollBy);
+				break;
+		}
+	}
    
 	// returns the correct css positioning of a page given its position, 0 being the leftmost visible page
 	calcPagePos(pagePos, options = {wrap: false, forceType: this.type, direction: null, raw: false}) {
