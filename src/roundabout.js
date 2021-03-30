@@ -2,6 +2,9 @@
 /*
    - lazy loading on scroll with bubbles sometimes doesn't work
    - first scroll with gallery (might) hitch because of z-index inconsistencies
+   - clicking active nav btn does weird stuff
+   - non-infinite slider is all kinds of screwed up. mostly left side
+   - showWrappedPage broken
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
