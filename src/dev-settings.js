@@ -2,8 +2,8 @@ const rs = new RoundaboutScripter();
 const c = new Roundabout({
 	type: "gallery",
 
-	pagesToShow: 3,
-	scrollBy: 3,
+	pagesToShow: 1,
+	scrollBy: 1,
 	transition: 300,
 
 	navigation: false,
@@ -16,13 +16,25 @@ const c = new Roundabout({
 	// pageSpacingMode: "evenly",
 
 	throttleTimeout: 500,
-   // lazyLoad: "hidden",
+   lazyLoad: "hidden",
    // swipeSnap: false,
 	// navigationBehavior: "direction",
 	// ignoreErrors: true,
    listenForResize: true,
    // swipe: false,
    // infinite: false,
+   showWrappedPage: true,
+   // breakpoints: [
+   //    {
+   //       width: 1000,
+   //       pagesToShow: 2
+   //    },
+   //    {
+   //       width: 800,
+   //       pagesToShow: 1,
+   //       navigation: false
+   //    }
+   // ],
 
 	pages: [
 		{
@@ -35,53 +47,53 @@ const c = new Roundabout({
 			backgroundImage: "../images/numbers/1.png",
 			// html: "PAGE ONE"
 		},
-		{
-			backgroundImage: "../images/numbers/2.png",
-			// html: "PAGE TWO"
-		},
-		{
-			backgroundImage: "../images/numbers/3.png",
-			// html: "<br/>PAGE THREE"
-		},
-		{
-			backgroundImage: "../images/numbers/4.png",
-			// html: "<br/>PAGE FOUR"
-		},
-		{
-			backgroundImage: "../images/numbers/5.png",
-			// html: "<br/>PAGE FIVE"
-		},
-		{
-			backgroundImage: "../images/numbers/6.png",
-			// html: "PAGE SIX"
-		},
-		{
-			backgroundImage: "../images/numbers/7.png",
-		},
-		{
-			backgroundImage: "../images/numbers/8.png",
-		},
-		{
-			backgroundImage: "../images/numbers/9.png",
-		},
-		{
-			backgroundImage: "../images/numbers/10.png",
-		},
-		{
-			backgroundImage: "../images/numbers/11.png",
-		},
-		{
-			backgroundImage: "../images/numbers/12.png",
-		},
-		{
-			backgroundImage: "../images/numbers/13.png",
-		},
-		{
-			backgroundImage: "../images/numbers/14.png",
-		},
-		{
-		   backgroundImage: "../images/numbers/15.png"
-		}
+		// {
+		// 	backgroundImage: "../images/numbers/2.png",
+		// 	// html: "PAGE TWO"
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/3.png",
+		// 	// html: "<br/>PAGE THREE"
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/4.png",
+		// 	// html: "<br/>PAGE FOUR"
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/5.png",
+		// 	// html: "<br/>PAGE FIVE"
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/6.png",
+		// 	// html: "PAGE SIX"
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/7.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/8.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/9.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/10.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/11.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/12.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/13.png",
+		// },
+		// {
+		// 	backgroundImage: "../images/numbers/14.png",
+		// },
+		// {
+		//    backgroundImage: "../images/numbers/15.png"
+		// }
 	],
 });
 
@@ -115,7 +127,7 @@ const c = new Roundabout({
 // }
 
 // setInterval(() => {
-//    console.log(c._canSnap, c._dx);
+//    console.log(c._atEnd);
 // }, 100);
 
 

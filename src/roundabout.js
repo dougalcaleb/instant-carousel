@@ -1,10 +1,6 @@
 //! KNOWN ISSUES:
 /*
-   - lazy loading on scroll with bubbles sometimes doesn't work
    - first scroll with gallery (might) hitch because of z-index inconsistencies
-   - clicking active nav btn does weird stuff
-   - non-infinite slider is all kinds of screwed up. mostly left side
-   - showWrappedPage broken
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -17,10 +13,8 @@
 
 //? Tests to do:
 /*
-   - make sure listen resize doesn't break ui
    - test gallery and non-infinite
    - dragging (especially touch and interaction ends)
-   - lazy loading with bubbles
 */
 
 let roundabout = {
@@ -220,7 +214,8 @@ class Roundabout {
    scroll(distance, valuesOnly, overflow = 0) {
 		if (
 			(distance > 0 && this.onPage >= this.pages.length - this.pagesToShow && !this.infinite) ||
-         (distance < 0 && this.onPage <= 0 && !this.infinite)
+         (distance < 0 && this.onPage <= 0 && !this.infinite) ||
+         distance == 0
       ) {
 			// at end
 			return;
@@ -376,7 +371,7 @@ class Roundabout {
 				);
 			}
 
-			if (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") {
+         if ((this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") && (Math.abs(distance) == this.scrollBy)) {
 				if (distance > 0) {
 					this.load(this._orderedPages.slice(this.pagesToShow, this.pagesToShow + this.scrollBy));
 				} else if (distance < 0) {
@@ -397,7 +392,6 @@ class Roundabout {
 			);
       }
       
-
 		if (!this.infinite || this.navigationBehavior == "direction") {
 			if (this.throttleNavigation) {
 				this.scrollHandler(this, "scrollto", page - this.onPage);
@@ -419,19 +413,7 @@ class Roundabout {
 				}
 			}
       }
-      
-      //! BUBBLES PROBLEM LIKELY HERE (MAY WORK NOW, MOVED AFTER SCROLL)
-		if (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") {
-			let toLoad = [];
-			for (let a = -this.scrollBy; a < this.pagesToShow + this.scrollBy; a++) {
-				let idx = (a + page) % this._orderedPages.length;
-				if (idx < 0) {
-					idx += this._orderedPages.length;
-				}
-				toLoad.push(this._orderedPages[idx]);
-			}
-			this.load(toLoad);
-		}
+      this.load([...this._orderedPages.slice(0, this.pagesToShow + this.scrollBy), ...this._orderedPages.slice(this._orderedPages.length - this.scrollBy)]);
 	}
 
 	setActiveBtn(id) {
@@ -630,7 +612,7 @@ class Roundabout {
 			} else if (parent._dx > 0 && !parent.infinite) {
 				if (parent.infinite) {
 					parent._dx -= (parent._dx - document.querySelector(parent.parent).offsetWidth) * parent.swipeResistance;
-				} else if (parent._orderedPages[parent._orderedPagesMainInd_ex] === 0) {
+				} else if (parent._orderedPages[parent._orderedPagesMainIndex] === 0) {
 					if (parent.swipeResistance == 1) {
 						parent._dx = 0;
 					} else if (parent._atEnd) {
@@ -1088,7 +1070,10 @@ class Roundabout {
 		});
 		clearTimeout(this._scrollTimeoutHolder);
 		clearInterval(this._scrollIntervalHolder);
-		clearTimeout(this._scrollAfterTimeoutHolder);
+      clearTimeout(this._scrollAfterTimeoutHolder);
+      this.pages.forEach(page => {
+         page.isLoaded = false;
+      });
 		if (complete) {
 			document.querySelector(this.id).remove();
 		} else {
@@ -1108,11 +1093,11 @@ class Roundabout {
 		}
 		this._callbacks.afterDestroy.forEach((cb) => {
 			cb();
-		});
+      });
 	}
 
 	// Check for an applicable breakpoint
-	setBreakpoints() {
+   setBreakpoints() {
 		let lbp = {width: -1};
 		this.breakpoints.forEach((bp) => {
 			if (!bp.hasOwnProperty("width")) {
@@ -1145,11 +1130,13 @@ class Roundabout {
 		for (let a = 0; a < p.length; a++) {
 			for (let b = 0; b < t.length; b++) {
 				if (p[a][0].toString() == t[b][0].toString()) {
-					this._overriddenValues.push([p[a][0].toString(), this[p[a][0]]]);
+               console.log(`pushing to OV:`, [p[a][0].toString(), this[p[a][0]]]);
+               this._overriddenValues.push([p[a][0].toString(), this[p[a][0]]]);
+               console.log(`setting ${p[a][0].toString()} to ${p[a][1]}`);
 					this[p[a][0].toString()] = p[a][1];
 				}
 			}
-		}
+      }
 		this.destroy();
 	}
 
@@ -1277,8 +1264,8 @@ class Roundabout {
 			this.displayError("Too many pages are being displayed at once. There must be at least 2 fewer pages shown than the number of total pages.");
 			return false;
 		}
-		if (this.pages.length == 2 && this.swipe) {
-			this.displayError("Swipe is not supported on carousels with 2 pages.");
+		if (this.pages.length == 2 && this.swipe && this.type == "slider") {
+			this.displayError("Swipe is not supported on sliders with 2 pages.");
 			return false;
 		}
 		if (this.pages.length == 0 || !this.pages.length) {
@@ -1294,7 +1281,7 @@ class Roundabout {
 		} else {
 			roundabout.usedIds.push(this.id);
 		}
-		if (this.pagesToShow < this.scrollBy) {
+		if (this.pagesToShow < this.scrollBy && this.type == "slider") {
 			this.displayError("'scrollBy' must be less than or equal to 'pagesToShow'.");
 			return false;
 		}
@@ -1320,7 +1307,7 @@ class Roundabout {
    */
 
 	// lazy load a page image
-	load(pageIds = [], a = false) {
+   load(pageIds = [], a = false) {
 		pageIds.forEach((id) => {
 			if (!this._loadQueue.includes(id)) {
 				this._loadQueue.push(id);
