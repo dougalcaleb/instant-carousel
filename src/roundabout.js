@@ -1229,7 +1229,7 @@ class Roundabout {
 			document.querySelector(this.parent).addEventListener("mouseout", () => {
 				this._scrollIsAllowed = true;
 				this.resetScrollTimeout(true);
-			});
+         });
 		}
 		if (this.swipe) {
 			document.querySelector(`.roundabout-${this._uniqueId}-swipe-overlay`).addEventListener(
@@ -1247,9 +1247,28 @@ class Roundabout {
 				},
 				{capture: false}
 				// false
-			);
+         );
+         document.querySelectorAll(`.roundabout-${this._uniqueId}-page`).forEach(page => {
+            page.addEventListener(
+               "mousedown",
+               (event) => {
+                  this.tStart(event, this);
+               },
+               {capture: false}
+               // false
+            );
+            page.addEventListener(
+               "touchstart",
+               (event) => {
+                  this.setTouch(event, this);
+               },
+               {capture: false}
+               // false
+            );
+         });
+         
 		}
-	}
+   }
 
 	// prevents breakage by providing constraints and displaying an error message
 	checkForErrors(r) {

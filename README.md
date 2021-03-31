@@ -62,7 +62,7 @@ Once you have that, you're all set! Define your settings, and you have a carouse
 
 Creating a new carousel is done with an object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except when using the scripting module.
 ```javascript
-new Roundabout = ({
+new Roundabout({
    // include your settings here...
 });
 ```
