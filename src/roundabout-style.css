@@ -35,7 +35,7 @@ Swipe detector
 	right: 0;
 	position: absolute;
 	margin: auto;
-	z-index: 2;
+	z-index: 3;
 }
 
 /*
@@ -64,6 +64,7 @@ Next and Previous buttons
 	width: 80px;
 	cursor: pointer;
 	color: #fff;
+   z-index: 2;
 }
 
 .roundabout-btn-next svg, .roundabout-btn-prev svg {
@@ -103,6 +104,7 @@ Navigation
 	bottom: 0;
 	height: 40px;
 	width: 25%;
+   z-index: 2;
 }
 
 .roundabout-nav-btn {
@@ -157,7 +159,8 @@ Pages
    height: 100%;
    background-position: center center;
    background-size: cover;
-   /* Cannot change: "width", "position", "background", and "left" */
+   
+   /* Cannot change: "width", "position", "background", "z-index", and "left" */
 
    /* NOTE: when giving any Roundabout page element a transition, be sure to give transition ONLY to the properties that need it.
       Roundabout uses transitions of 0 to accomplish seamless position adjustments. See the Mozilla documentation for examples:
@@ -165,5 +168,5 @@ Pages
    */
 }
 
-/* Each page also gains the class ".roundabout-[UNIQUE ID]-page-[NTH PAGE]", 
+/* Each page also gains the classes ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" and ".roundabout-[UNIQUE ID]-page", 
 and all visible pages gain the class ".roundabout-[UNIQUE ID]-visible-page-[NTH VISIBLE PAGE] */
