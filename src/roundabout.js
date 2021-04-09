@@ -1,8 +1,6 @@
 //! KNOWN ISSUES:
 /*
-   - first scroll with gallery (might) hitch because of z-index inconsistencies
-   - nav with > 1 page shown and navTrim disabled scrolls correctly but activates the next button
-   - naving to the end of a non-inf carousel after causing the last page to hide delays the last page
+   
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
@@ -94,7 +92,7 @@ class Roundabout {
 		}
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.4.0-PRE-DEV";
+		this.VERSION = "1.4.0";
 		if (!roundabout.logged) console.log(`Using Roundabout version ${this.VERSION} (github.com/dougalcaleb/roundabout)`);
 		roundabout.logged = true;
 
@@ -219,7 +217,11 @@ class Roundabout {
          (distance < 0 && this.onPage <= 0 && !this.infinite) ||
          distance == 0
       ) {
-			// at end
+         // at end
+         // will allow selection of nav button, but no scroll
+         if (!this.infinite && !this.navigationTrim && distance == 1) {
+            this.setActiveBtn(this.onPage + 1);
+         }
 			return;
 		} else if (distance > 0 && distance > this.pages.length - this.pagesToShow - this.onPage && !this.infinite) {
 			// will reach right end: return remaining
@@ -229,7 +231,7 @@ class Roundabout {
 			// will reach left end: return remaining
 			let remainingDistance = -1 * this.onPage;
 			this.scroll(remainingDistance, valuesOnly);
-		} else {
+      } else {
 			let wrapper = document.querySelector(`.roundabout-${this._uniqueId}-page-wrap`);
 
 			this._callbacks.scroll.forEach((cb) => {
@@ -246,6 +248,10 @@ class Roundabout {
                   pos.push(a - (this.pages.length > 2 ? 1 : 0));
                }
                if (this.pages.length > 2) pos.push(pos.shift());
+               // fix for last page popping in after immediate nav
+               if (!this.infinite && (this.onPage + distance + this.pagesToShow == this.pages.length)) {
+                  pos[pos.length - 1] = pos.length - 1;
+               }
             } else if (this.type == "gallery") { // in gallery type, two sets of pages will have the same position, and the rest will be hidden
                for (let a = 0; a < this._positions.length; a++) {
                   if (a < this.pagesToShow || (a >= distance && a < distance + this.pagesToShow)) { 
@@ -283,7 +289,6 @@ class Roundabout {
 					cb(distance);
 				});
 			}
-
 			// position all pages to correct place before move and remove hidden pages
 			for (let a = 0; a < this._positions.length; a++) {
 				let beforeMove = this.type == "slider" ? this.calcPagePos(pos[a], {raw: true}) : this.calcPagePos(pos[a], {direction: distance});
@@ -364,7 +369,7 @@ class Roundabout {
 				this.positionWrap(!valuesOnly);
 				this.positionPages();
 			}
-
+         
 			if (this.navigation) {
 				this.setActiveBtn(
 					this.type == "slider"
@@ -453,7 +458,7 @@ class Roundabout {
       parent.resetScrollTimeout();
       // requires scroll allowed and not dragging (slider type) or from follow (gallery type is ok)
       if (parent._scrollIsAllowed && (!parent._dragging || from == "follow")) {
-			parent.scroll(sd, false, transition);
+			parent.scroll(sd, !transition);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent._scrollIsAllowed = false;
 				setTimeout(() => {
@@ -1132,9 +1137,7 @@ class Roundabout {
 		for (let a = 0; a < p.length; a++) {
 			for (let b = 0; b < t.length; b++) {
 				if (p[a][0].toString() == t[b][0].toString()) {
-               console.log(`pushing to OV:`, [p[a][0].toString(), this[p[a][0]]]);
                this._overriddenValues.push([p[a][0].toString(), this[p[a][0]]]);
-               console.log(`setting ${p[a][0].toString()} to ${p[a][1]}`);
 					this[p[a][0].toString()] = p[a][1];
 				}
 			}

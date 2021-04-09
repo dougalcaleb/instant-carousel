@@ -1,12 +1,12 @@
 const rs = new RoundaboutScripter();
 const c = new Roundabout({
-	type: "gallery",
+	// type: "gallery",
 
-	pagesToShow: 1,
+	// pagesToShow: 2,
 	scrollBy: 1,
 	transition: 300,
 
-	navigation: false,
+	// navigation: false,
 	transitionFunction: "ease-in-out",
 	pageSpacing: 10,
    pageSpacingUnits: "px",
@@ -22,8 +22,9 @@ const c = new Roundabout({
 	// ignoreErrors: true,
    listenForResize: true,
    // swipe: false,
-   // infinite: false,
+   infinite: false,
    showWrappedPage: true,
+   // navigationTrim: false,
    // breakpoints: [
    //    {
    //       width: 1000,
@@ -47,18 +48,18 @@ const c = new Roundabout({
 			backgroundImage: "../images/numbers/1.png",
 			// html: "PAGE ONE"
 		},
-		// {
-		// 	backgroundImage: "../images/numbers/2.png",
-		// 	// html: "PAGE TWO"
-		// },
-		// {
-		// 	backgroundImage: "../images/numbers/3.png",
-		// 	// html: "<br/>PAGE THREE"
-		// },
-		// {
-		// 	backgroundImage: "../images/numbers/4.png",
-		// 	// html: "<br/>PAGE FOUR"
-		// },
+		{
+			backgroundImage: "../images/numbers/2.png",
+			// html: "PAGE TWO"
+		},
+		{
+			backgroundImage: "../images/numbers/3.png",
+			// html: "<br/>PAGE THREE"
+		},
+		{
+			backgroundImage: "../images/numbers/4.png",
+			// html: "<br/>PAGE FOUR"
+		},
 		// {
 		// 	backgroundImage: "../images/numbers/5.png",
 		// 	// html: "<br/>PAGE FIVE"
