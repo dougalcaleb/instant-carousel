@@ -1,6 +1,8 @@
 //! KNOWN ISSUES:
 /*
    - first scroll with gallery (might) hitch because of z-index inconsistencies
+   - nav with > 1 page shown and navTrim disabled scrolls correctly but activates the next button
+   - naving to the end of a non-inf carousel after causing the last page to hide delays the last page
 */
 
 //! DON'T FORGET TO UPDATE VERSION#
