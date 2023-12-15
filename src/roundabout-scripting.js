@@ -28,7 +28,7 @@ Misc
 */
 
 
-class RoundaboutScripter {
+export default class RoundaboutScripter {
    constructor() { }
    
    // on__(carousel, callback) {
@@ -36,53 +36,53 @@ class RoundaboutScripter {
    // }
 
    // 1 param
-   onScroll(carousel, callback) {
+   static onScroll(carousel, callback) {
       carousel.subscribe("scroll", callback);
    }
 
-   onScrollEnd(carousel, callback) {
+   static onScrollEnd(carousel, callback) {
       carousel.subscribe("scrollEnd", callback);
    }
 
-   onDragStart(carousel, callback) {
+   static onDragStart(carousel, callback) {
       carousel.subscribe("dragStart", callback);
    }
 
-   onDragEnd(carousel, callback) {
+   static onDragEnd(carousel, callback) {
       carousel.subscribe("dragEnd", callback)
    }
 
    // 1 param
-   onScrollNext(carousel, callback) {
+   static onScrollNext(carousel, callback) {
       carousel.subscribe("scrollNext", callback)
    }
 
    // 1 param
-   onScrollPrevious(carousel, callback) {
+   static onScrollPrevious(carousel, callback) {
       carousel.subscribe("scrollPrevious", callback)
    }
 
-   onScrollNextEnd(carousel, callback) {
+   static onScrollNextEnd(carousel, callback) {
       carousel.subscribe("scrollNextEnd", callback);
    }
 
-   onScrollPreviousEnd(carousel, callback) {
+   static onScrollPreviousEnd(carousel, callback) {
       carousel.subscribe("scrollPreviousEnd", callback);
    }
 
-   scrollTo(carousel, pageId, transition = true) {
+   static scrollTo(carousel, pageId, transition = true) {
       carousel.scrollTo(pageId, !transition);
    }
 
-   beforeDestroy(carousel, callback) {
+   static beforeDestroy(carousel, callback) {
       carousel.subscribe("beforeDestroy", callback);
    }
 
-   afterDestroy(carousel, callback) {
+   static afterDestroy(carousel, callback) {
       carousel.subscribe("afterDestroy", callback);
    }
 
-   scrollNext(carousel, distance = -1, transition = true) {
+   static scrollNext(carousel, distance = -1, transition = true) {
       if (distance == -1) {
          carousel.scroll(carousel.scrollBy, !transition);
       } else {
@@ -90,7 +90,7 @@ class RoundaboutScripter {
       }
    }
 
-   scrollPrevious(carousel, distance = -1, transition = true) {
+   static scrollPrevious(carousel, distance = -1, transition = true) {
       if (distance == -1) {
          carousel.scroll(-carousel.scrollBy, !transition);
       } else {
@@ -98,20 +98,20 @@ class RoundaboutScripter {
       }
    }
 
-   scroll(carousel, distance, transition = true) {
+   static scroll(carousel, distance, transition = true) {
       carousel.scroll(distance, !transition);
    }
 
-   throttledScroll(carousel, distance) {
+   static throttledScroll(carousel, distance) {
       carousel.scrollHandler(carousel, "script", distance);
    }
 
-   removePage(carousel, pageId) {
+   static removePage(carousel, pageId) {
       carousel.pages.splice(pageId, 1);
       carousel.destroy();
    }
 
-   addPage(carousel, page, index = -1) {
+   static addPage(carousel, page, index = -1) {
       if (index == -1) {
          carousel.pages.push(page);
       } else {
@@ -120,11 +120,11 @@ class RoundaboutScripter {
       carousel.destroy();
    }
 
-   destroy(carousel, regenerate = true, removeWrap = false) {
+   static destroy(carousel, regenerate = true, removeWrap = false) {
       carousel.destroy(regenerate, removeWrap);
    }
 
-   addPageElement(carousel, pageId, element, replace = false) {
+   static addPageElement(carousel, pageId, element, replace = false) {
       if (replace) {
          if (typeof element == "object") {
             document.querySelector(`.roundabout-${carousel._uniqueId}-page-${pageId}`).innerHTML = "";
@@ -141,15 +141,15 @@ class RoundaboutScripter {
       }
    }
 
-   lazyLoad(carousel, pageIds, callback) {
+   static lazyLoad(carousel, pageIds, callback, timeout) {
       if (typeof pageIds != "object") {
          console.error("pageIds must be an array of integers");
       } else {
          pageIds.forEach(id => {
-            carousel.subscribe("onLoad", { callback: callback, pageId: id });
+            carousel.subscribe("load", { callback: callback, pageId: id });
          });
          if (!carousel._loadingPages) {
-            carousel.load(pageIds);
+            carousel.load(pageIds, timeout);
          } else {
             pageIds.forEach(id => {
                carousel._loadQueue.push(id);
@@ -158,7 +158,7 @@ class RoundaboutScripter {
       }
    }
 
-   setValue(carousel, setting, value) {
+   static setValue(carousel, setting, value) {
       if (setting.split("")[0] == "_") {
          console.error(`The setting ${setting} cannot be overridden.`);
       } else {

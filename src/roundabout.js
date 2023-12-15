@@ -17,6 +17,14 @@
    - dragging (especially touch and interaction ends)
 */
 
+//> FOR THIS RELEASE (1.5.0)
+/**
+ * Fix the buttons / throttle issue (somewhere on the docs)
+ * Add 'html' DOM object support
+ * Fix throttle handling with scripting
+ * Ensure lazy loading bit is done
+ */
+
 let roundabout = {
 	on: -1,
 	usedIds: [],
@@ -31,7 +39,8 @@ let roundabout = {
 
 		id: ".myCarousel",
 		parent: "body",
-		lazyLoad: "none",
+      lazyLoad: "none",
+      loadTimeout: 5000,
 		uiEnabled: true,
 		rotation: "none",
 
@@ -85,14 +94,14 @@ let roundabout = {
 	},
 };
 
-class Roundabout {
+export default class Roundabout {
 	constructor(settings = roundabout.defaults) {
 		if (!roundabout.overwritten || roundabout.overwritten != "no") {
 			console.error(`Do not redefine the variable "roundabout". Roundabout requires this variable to store data across multiple carousels.`);
 		}
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.4.0";
+		this.VERSION = "1.5.0";
 		if (!roundabout.logged) console.log(`Using Roundabout version ${this.VERSION} (github.com/dougalcaleb/roundabout)`);
 		roundabout.logged = true;
 
@@ -121,7 +130,8 @@ class Roundabout {
 		this._scrollIsAllowed = true;
 		this.onPage = 0;
 		this._handledLoad = false;
-		this._loadQueue = [];
+      this._loadQueue = [];
+      this._loadTimeout = null;
 		this._loadingPages = false;
 		this._uniqueId = roundabout.on + 1;
 		this._overriddenValues = [];
@@ -1331,7 +1341,8 @@ class Roundabout {
    */
 
 	// lazy load a page image
-   load(pageIds = [], a = false) {
+   load(pageIds = [], timeout = this.loadTimeout, a = false) {
+      clearTimeout(this._loadTimeout);
 		pageIds.forEach((id) => {
 			if (!this._loadQueue.includes(id)) {
 				this._loadQueue.push(id);
@@ -1349,7 +1360,8 @@ class Roundabout {
 		}
 		if (!this.pages[this._loadQueue[0]].isLoaded) {
 			this._loadingPages = true;
-			let bgImg = new Image();
+         let bgImg = new Image();
+         
 			bgImg.onload = () => {
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${this._loadQueue[0]}`).style.backgroundImage = "url(" + bgImg.src + ")";
 				document.querySelector(`.roundabout-${this._uniqueId}-page-${this._loadQueue[0]}`).style.backgroundSize = "cover";
@@ -1363,13 +1375,21 @@ class Roundabout {
 					}
 				});
 
-				this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
-				this.load(this._loadQueue, true);
-			};
-			bgImg.src = this.pages[this._loadQueue[0]].backgroundImage;
+            this._loadQueue.shift();
+				this.load(this._loadQueue, timeout, true);
+         };
+         bgImg.src = this.pages[this._loadQueue[0]].backgroundImage;
+         
+         this._loadTimeout = setTimeout(() => {
+            console.warn(`Loading image ${this._loadQueue[0]} timed out.`);
+            bgImg.src = "";
+            bgImg.onload = null;
+            this._loadQueue.shift();
+				this.load(this._loadQueue, timeout, true);
+         }, timeout);
 		} else {
-			this._loadQueue = this._loadQueue.splice(1, this._loadQueue.length - 1);
-			this.load(this._loadQueue, true);
+         this._loadQueue.shift();
+			this.load(this._loadQueue, timeout, true);
 		}
 	}
 
