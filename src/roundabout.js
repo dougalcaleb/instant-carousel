@@ -19,9 +19,6 @@
 
 //> FOR THIS RELEASE (1.5.0)
 /**
- * Fix the buttons / throttle issue (somewhere on the docs)
- * Add 'html' DOM object support
- * Fix throttle handling with scripting
  * Ensure lazy loading bit is done
  */
 
@@ -159,6 +156,7 @@ export default class Roundabout {
 		this._ste = 0;
 		this._distPercent = 0;
 		// autoscroll
+      this._isAutoscrolling = false;
 		this._scrollTimeoutHolder = null;
 		this._scrollIntervalHolder = null;
 		this._scrollAfterTimeoutHolder = null;
@@ -465,14 +463,16 @@ export default class Roundabout {
 				sd = -parent.scrollBy;
 			}
 		}
-      parent.resetScrollTimeout();
-      // requires scroll allowed and not dragging (slider type) or from follow (gallery type is ok)
-      if (parent._scrollIsAllowed && (!parent._dragging || from == "follow")) {
+		parent.resetScrollTimeout();
+		// requires scroll allowed and not dragging (slider type) or from follow (gallery type is ok)
+		if (parent._scrollIsAllowed && (!parent._dragging || from == "follow")) {
 			parent.scroll(sd, !transition);
 			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
 				parent._scrollIsAllowed = false;
+				parent._swipeIsAllowed = false;
 				setTimeout(() => {
 					parent._scrollIsAllowed = true;
+					parent._swipeIsAllowed = true;
 				}, parent.throttleTimeout);
 			}
 		}
@@ -503,24 +503,32 @@ export default class Roundabout {
 		if (firstTime && parent.autoscroll) {
 			parent._scrollAfterTimeoutHolder = setTimeout(() => {
 				parent.scrollAuto(parent);
-				parent._scrollIntervalHolder = setInterval(() => {
+            parent._scrollIntervalHolder = setInterval(() => {
 					parent.scrollAuto(parent);
 				}, parent.autoscrollSpeed);
 			}, parent.autoscrollStartAfter);
 		} else if (parent.autoscroll) {
-			parent._scrollIntervalHolder = setInterval(() => {
+         parent._scrollIntervalHolder = setInterval(() => {
 				parent.scrollAuto(parent);
 			}, parent.autoscrollSpeed);
 		}
 	}
 
 	// Called at each interval, determines how to scroll
-	scrollAuto(parent) {
-		if (parent.autoscrollDirection.toLowerCase() == "left" && parent._scrollIsAllowed) {
+   scrollAuto(parent) {
+      this._isAutoscrolling = true;
+      setTimeout(() => {
+         parent._isAutoscrolling = false;
+         this._scrollIsAllowed = true;
+      }, parent.transition);
+      if (parent.autoscrollDirection.toLowerCase() == "left" && parent._scrollIsAllowed) {
+         this._scrollIsAllowed = false;
 			parent.scroll(-this.scrollBy);
-		} else if (parent.autoscrollDirection.toLowerCase() == "right" && parent._scrollIsAllowed) {
+      } else if (parent.autoscrollDirection.toLowerCase() == "right" && parent._scrollIsAllowed) {
+         this._scrollIsAllowed = false;
 			parent.scroll(this.scrollBy);
-		}
+      }
+      
 	}
 
 	/*
@@ -532,16 +540,18 @@ export default class Roundabout {
    */
 
 	// starts the touch if the user has a touchscreen
-	setTouch(event, parent) {
+   setTouch(event, parent) {
+      if (parent._isAutoscrolling || !parent._swipeIsAllowed) return
 		event.preventDefault();
 		parent._t = true;
 		parent.tStart(event, parent);
 	}
 
 	// called once when touch or click starts
-	tStart(event, parent) {
+   tStart(event, parent) {
+      if (parent._isAutoscrolling || !parent._swipeIsAllowed) return
 		this._callbacks.dragStart.forEach((cb) => {
-			cb();
+			cb(event);
 		});
 		// throttling
 		parent.resetScrollTimeout();
@@ -745,7 +755,7 @@ export default class Roundabout {
 	// called once when the touch or click ends
 	tEnd(event, parent) {
 		parent._callbacks.dragEnd.forEach((cb) => {
-			cb();
+			cb(event);
 		});
 		setTimeout(() => {
 			parent._swipeIsAllowed = true;
@@ -997,8 +1007,12 @@ export default class Roundabout {
 					this.load(this._orderedPages);
 				});
 			}
-			if (this.pages[a].html) {
-				newPage.innerHTML = this.pages[a].html;
+         if (this.pages[a].html) {
+            if (typeof this.pages[a].html === "string") {
+               newPage.innerHTML = this.pages[a].html;
+            } else {
+               newPage.appendChild(this.pages[a].html);
+            }
 				if (this.pages[a].css) {
 					pagesCss += this.pages[a].css;
 				}
