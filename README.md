@@ -1,8 +1,8 @@
-Project is complete and is no longer maintained.
-
 ### Documentation:
 
 [See the documentation](https://dougalcaleb.github.io/roundabout/docs).
+
+Note: Project is complete and is no longer regularly maintained.
 
 <br/>
 

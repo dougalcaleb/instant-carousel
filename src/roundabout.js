@@ -34,6 +34,7 @@ let roundabout = {
 		breakpoints: [],
 		listenForResize: false,
 		interpolate: [],
+		template: null,
 
 		id: ".myCarousel",
 		parent: "body",
@@ -92,6 +93,10 @@ let roundabout = {
 	},
 };
 
+/**
+ * @class Roundabout
+ * @param {Object} settings - The settings for the carousel
+ */
 export default class Roundabout {
 	constructor(settings = roundabout.defaults) {
 		if (!roundabout.overwritten || roundabout.overwritten != "no") {
@@ -99,7 +104,7 @@ export default class Roundabout {
 		}
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
-		this.VERSION = "1.5.0";
+		this.VERSION = "1.5.0 (PRERELASE)";
 		if (!roundabout.logged) console.log(`Using Roundabout version ${this.VERSION} (github.com/dougalcaleb/roundabout)`);
 		roundabout.logged = true;
 
@@ -137,6 +142,7 @@ export default class Roundabout {
 		this._atEnd = true;
 		this.activeBreakpoint = null;
 		this._calculatedPageSize = null;
+		this._htmlTemplates = [];
 		// this._aborter = new AbortController(); // KEEP THIS IN -- Chrome 90 will have it enabled, (firefox has it) and it is MUCH BETTER than removeEventListener
 		// internal
 		this._allowInternalStyles = true;
@@ -207,17 +213,6 @@ export default class Roundabout {
 	SCROLLING
 
 	==================================================================================================================
-	*/
-
-	/*
-	
-	flusher:
-	const flushCssBuffer = document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).offsetWidth;
-	transition changes:
-	- change transition
-	- make style change
-	- flush buffer
-	- undo transition change	
 	*/
 
 	scroll(distance, valuesOnly, overflow = 0) {
@@ -903,7 +898,15 @@ export default class Roundabout {
 				newClass = newClass.join("");
 				newCarousel.classList.add(newClass);
 			}
-			document.querySelector(this.parent).appendChild(newCarousel);
+			if (this.template) {
+				let root = document.querySelector(this.template);
+				let rootPos = Array.prototype.slice.call(root.parentNode.children).indexOf(root);
+				let appendTo = root.parentNode;
+				appendTo.removeChild(root);
+				appendTo.insertBefore(newCarousel, appendTo.childNodes[rootPos + 2]);
+			} else {
+				document.querySelector(this.parent).appendChild(newCarousel);
+			}
 			document.querySelector(this.id).style.position = "relative";
 			document.querySelector(this.id).style.overflow = "hidden";
 		}
@@ -930,6 +933,19 @@ export default class Roundabout {
 		newStyle.setAttribute("type", "text/css");
 		newStyle.innerHTML = css;
 		document.getElementsByTagName("head")[0].appendChild(newStyle);
+	}
+
+	parseTemplate() {
+		console.log("Parsing template");
+		let template = document.querySelector(this.template);
+
+		console.log(template);
+
+		for (let a = 0; a < template.childNodes.length; a++) {
+			if (template.childNodes[a].nodeType == 1) {
+				this._htmlTemplates.push({ root: template.childNodes[a], elements: template.childNodes[a].innerHTML.trim() });
+			}
+		}
 	}
 
 	/*
@@ -1008,9 +1024,20 @@ export default class Roundabout {
 					this.load(this._orderedPages);
 				});
 			}
+			if (this._htmlTemplates[a]) {
+				console.log(this._htmlTemplates[a]);
+				console.log(this._htmlTemplates[a].root.classList, this._htmlTemplates[a].root.id);
+				newPage.innerHTML += this._htmlTemplates[a].elements;
+				if (this._htmlTemplates[a].root.classList?.length) {
+					newPage.classList.add(...this._htmlTemplates[a].root.classList);
+				}
+				if (this._htmlTemplates[a].root.id) {
+					newPage.id = this._htmlTemplates[a].root.id;
+				}
+			}
 			if (this.pages[a].html) {
 				if (typeof this.pages[a].html === "string") {
-					newPage.innerHTML = this.pages[a].html;
+					newPage.innerHTML += this.pages[a].html;
 				} else {
 					newPage.appendChild(this.pages[a].html);
 				}
@@ -1175,6 +1202,9 @@ export default class Roundabout {
 		if (this._allowInternalStyles) {
 			this.internalCSS();
 		}
+		if (this.template && !r) {
+			this.parseTemplate();
+		}
 		if (this.checkForErrors(r)) {
 			if (!r) roundabout.on++;
 			if (this._allowInternalHTML) {
@@ -1305,6 +1335,10 @@ export default class Roundabout {
 		if (this.ignoreErrors) {
 			return true;
 		}
+		if (this._htmlTemplates.length < this.pages.length) {
+			this.displayError("The number of 'pages' objects is greater than the number of pages in the template. Ensure that the number of 'pages' objects is equal to or less than the number of pages in the template.");
+			return false;
+		}
 		if (this.pages.length < 2) {
 			this.displayError("The minimum number of pages supported is 2.");
 			return false;
@@ -1407,17 +1441,6 @@ export default class Roundabout {
 			this.load(this._loadQueue, timeout, true);
 		}
 	}
-
-	/*
-	
-	const flushCssBuffer = document.querySelector(`.roundabout-${this._uniqueId}-page-${a}`).offsetWidth;
-	transition changes:
-	- change transition
-	- make style change
-	- flush buffer
-	- undo transition change  
-	
-	*/
 
 	// after a transition, places each page where they should be for the next transiton
 	positionPages(pre = false) {
