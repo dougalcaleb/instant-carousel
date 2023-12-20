@@ -941,6 +941,16 @@ export default class Roundabout {
 				this._htmlTemplates.push({ root: template.childNodes[a], elements: template.childNodes[a].innerHTML.trim() });
 			}
 		}
+
+		if (!this.pages.length) {
+			this.pages = Array.from({ length: this._htmlTemplates.length }, (a) => []);
+		}
+
+		if (!!this.pages.length && this.pages.length < this._htmlTemplates.length) {
+			for (let a = 0; a < this._htmlTemplates.length - this.pages.length + 1; a++) {
+				this.pages.push([]);
+			}
+		}
 	}
 
 	/*
@@ -1329,14 +1339,14 @@ export default class Roundabout {
 			return true;
 		}
 		if (this._htmlTemplates.length < this.pages.length) {
-			this.displayError("The number of 'pages' objects is greater than the number of pages in the template. Ensure that the number of 'pages' objects is equal to or less than the number of pages in the template.");
+			this.displayError("The number of 'pages' objects is greater than the number of pages in the template. Ensure that the number of 'pages' objects is less than or equal to the number of pages in the template.");
 			return false;
 		}
-		if (this.pages.length < 2) {
+		if (this.pages.length < 2 && !this.template) {
 			this.displayError("The minimum number of pages supported is 2.");
 			return false;
 		}
-		if (this.pages.length - this.pagesToShow <= 0) {
+		if ((!this.template && this.pages.length - this.pagesToShow <= 0) || (this.template && this._htmlTemplates.length - this.pagesToShow <= 0)) {
 			this.displayError("Too many pages are being displayed at once. There must be at least 2 fewer pages shown than the number of total pages.");
 			return false;
 		}
@@ -1344,8 +1354,8 @@ export default class Roundabout {
 			this.displayError("Swipe is not supported on sliders with 2 pages.");
 			return false;
 		}
-		if (this.pages.length == 0 || !this.pages.length) {
-			this.displayError("No pages have been supplied. Please create a 'pages' array containing your pages. See the documentation for details.");
+		if (!this.pages.length && !this._htmlTemplates.length) {
+			this.displayError("No pages have been supplied. Please specify a template or add pages in settings. See the documentation for details.");
 		}
 		if (this.id.split("")[0] !== "#" && this.id.split("")[0] !== ".") {
 			this.displayError("An invalid selector prefix was given for the parent. Valid selector prefixes are '#' for IDs or '.' for classes.");
