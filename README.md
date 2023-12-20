@@ -6,23 +6,14 @@ Note: Project is complete and is no longer regularly maintained.
 
 <br/>
 
-### Downloads:
-
-Master branch: Most up-to-date but stable version. May not have all of the features intended for the next release but potentially addresses bugs that the releases do not, as well as containing the most recent features. Recommended for most cases.
-
-Releases: Major versions. May not have fixes for recently discovered issues, but are free of issues that break general usability. Updated the least frequently.
-
-1.x.x branch: Active development. No guaranteed stability. Download and use is not recommended.
-
-<br/>
-
 ### Setup:
 
-The main focus of Roundabout is quick and easy setup, with the freedom to customize extensively.
+The main focus of Roundabout is quick and easy setup, with plenty of customization options.
 
-To add Roundabout to your project, first download and link ```roundabout.min.js``` to your HTML. Create another JavaScript file (or use the provided ```roundabout-settings.js```) to contain your settings, linked *after* ```roundabout.min.js```. It is important that your settings come after the source code, so that it can load and initialize in the correct order. Do not use the ```async``` property.
+To add Roundabout to your project, download and link ```roundabout.min.js``` to your HTML. Create another JavaScript file (or use the provided ```roundabout-settings.js```) to contain your settings. Import Roundabout into your settings script.
 
-Finally, link ```roundabout-style.css``` the same HTML page as before. Your HTML should then look like this:
+
+Link ```roundabout-style.css``` to your page. Your document should then look like this:
 
 ```html
 <!DOCTYPE html>
@@ -35,38 +26,21 @@ Finally, link ```roundabout-style.css``` the same HTML page as before. Your HTML
   <body>
     <!-- ... -->
 
-    <script src="path/to/roundabout.min.js"></script>
-    <script src="path/to/roundabout-settings.js"></script>
-  </body>
-</html>
-```
-
-Alternatively, if you'd rather have your ```script``` tags in your ```head```, you must use the ```defer``` attribute and structure your HTML like this:
-
-```html
-<!DOCTYPE html>
-<html>
-  <head>
-    <!-- ... -->
-
-    <link href="path/to/roundabout-style.css" rel="stylesheet" type="text/css">
-
-    <script src="path/to/roundabout.min.js" defer></script>
-    <script src="path/to/roundabout-settings.js" defer></script>
-  </head>
-  <body>
-    <!-- ... -->
+    <script type="module" src="path/to/roundabout.min.js"></script>
+    <script type="module" src="path/to/roundabout-settings.js"></script>
   </body>
 </html>
 ```
 
 Once you have that, you're all set! Define your settings, and you have a carousel up and running in no time at all.
 
-Creating a new carousel is done with an object constructor, passed an object containing all of your settings. It does not need to be stored in a variable, except when using the scripting module.
+Creating a new carousel is done with an object constructor, passed an object containing your settings. It does not need to be stored in a variable, except when using the scripting module.
 ```javascript
+import Roundabout from "./roundabout.min.js"
+
 new Roundabout({
    // include your settings here...
 });
 ```
 
-[Learn More](https://dougalcaleb.github.io/roundabout/setup.html)
+[Documentation](https://dougalcaleb.github.io/roundabout/setup.html)
