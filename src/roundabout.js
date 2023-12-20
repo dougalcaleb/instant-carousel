@@ -143,7 +143,10 @@ export default class Roundabout {
 		this.activeBreakpoint = null;
 		this._calculatedPageSize = null;
 		this._htmlTemplates = [];
-		// this._aborter = new AbortController(); // KEEP THIS IN -- Chrome 90 will have it enabled, (firefox has it) and it is MUCH BETTER than removeEventListener
+		this._abort = {
+			all: new AbortController(),
+			swipe: new AbortController()
+		};
 		// internal
 		this._allowInternalStyles = true;
 		this._allowInternalHTML = true;
@@ -584,13 +587,13 @@ export default class Roundabout {
 			parent.rotation == "none" ? (parent._sx = event.clientX) : (parent._sx = parent.rotation * event.clientY);
 		}
 
-		document.addEventListener("mousemove", parent._boundFollow, false);
-		document.addEventListener("mouseup", parent._boundEnd, false);
+		document.addEventListener("mousemove", parent._boundFollow, false, { signal: parent._abort.swipe.signal });
+		document.addEventListener("mouseup", parent._boundEnd, false, { signal: parent._abort.swipe.signal });
 		
 		if (parent._t) {
-			document.addEventListener("touchmove", parent._boundFollow, false);
-			document.addEventListener("touchend", parent._boundEnd, false);
-			document.addEventListener("touchcancel", parent._boundEnd, false);
+			document.addEventListener("touchmove", parent._boundFollow, false, { signal: parent._abort.swipe.signal });
+			document.addEventListener("touchend", parent._boundEnd, false, { signal: parent._abort.swipe.signal });
+			document.addEventListener("touchcancel", parent._boundEnd, false, { signal: parent._abort.swipe.signal });
 		}
 	}
 
@@ -808,12 +811,8 @@ export default class Roundabout {
 		}
 		parent.resetSwipeVars(parent);
 
-		document.removeEventListener("mousemove", parent._boundFollow, false);
-		document.removeEventListener("mouseup", parent._boundEnd, false);
-
-		document.removeEventListener("touchmove", parent._boundFollow, false);
-		document.removeEventListener("touchend", parent._boundEnd, false);
-		document.removeEventListener("touchcancel", parent._boundCancel, false);
+		parent._abort.swipe.abort();
+		parent._abort.swipe = new AbortController();
 	}
 
 	// snap to a new slide once touch or drag ends
@@ -936,11 +935,7 @@ export default class Roundabout {
 	}
 
 	parseTemplate() {
-		console.log("Parsing template");
 		let template = document.querySelector(this.template);
-
-		console.log(template);
-
 		for (let a = 0; a < template.childNodes.length; a++) {
 			if (template.childNodes[a].nodeType == 1) {
 				this._htmlTemplates.push({ root: template.childNodes[a], elements: template.childNodes[a].innerHTML.trim() });
@@ -1016,17 +1011,15 @@ export default class Roundabout {
 				}
 				window.addEventListener("load", () => {
 					this.load(initial);
-				});
+				}, { signal: this._abort.all.signal });
 				this._handledLoad = true;
 			} else if (this.lazyLoad == "all" && !this._handledLoad) {
 				this._handledLoad = true;
 				window.addEventListener("load", () => {
 					this.load(this._orderedPages);
-				});
+				}, { signal: this._abort.all.signal });
 			}
 			if (this._htmlTemplates[a]) {
-				console.log(this._htmlTemplates[a]);
-				console.log(this._htmlTemplates[a].root.classList, this._htmlTemplates[a].root.id);
 				newPage.innerHTML += this._htmlTemplates[a].elements;
 				if (this._htmlTemplates[a].root.classList?.length) {
 					newPage.classList.add(...this._htmlTemplates[a].root.classList);
@@ -1111,7 +1104,7 @@ export default class Roundabout {
 				navbar.appendChild(newNavBtn);
 				newNavBtn.addEventListener("click", () => {
 					this.scrollTo(a * m);
-				});
+				}, { signal: this._abort.all.signal });
 			}
 		}
 
@@ -1130,6 +1123,8 @@ export default class Roundabout {
 		clearTimeout(this._scrollTimeoutHolder);
 		clearInterval(this._scrollIntervalHolder);
 		clearTimeout(this._scrollAfterTimeoutHolder);
+		this._abort.all.abort();
+		this._abort.all = new AbortController();
 		this.pages.forEach(page => {
 			page.isLoaded = false;
 		});
@@ -1142,7 +1137,7 @@ export default class Roundabout {
 				this._orderedPages = [];
 				try {
 					if (this.initialActions(true)) {
-						this.setListeners(true);
+						this.setListeners();
 					}
 				} catch (e) {
 					console.error(`Error while attempting to regenerate Roundabout with id ${this.id}:`);
@@ -1246,25 +1241,25 @@ export default class Roundabout {
 	}
 
 	// Sets all required eventListeners for the carousel
-	setListeners(r = false) {
+	setListeners() {
 		if (this.uiEnabled && this.buttons) {
 			document.querySelector(`.roundabout-${this._uniqueId}-btn-next`).addEventListener("click", () => {
 				this.scrollHandler(this, "listener", this.scrollBy);
-			});
+			}, { signal: this._abort.all.signal });
 			document.querySelector(`.roundabout-${this._uniqueId}-btn-prev`).addEventListener("click", () => {
 				this.scrollHandler(this, "listener", -this.scrollBy);
-			});
+			}, { signal: this._abort.all.signal });
 		}
-		if (this.keys && !r) {
+		if (this.keys) {
 			document.addEventListener("keydown", (event) => {
 				this.keyListener(event);
-			});
+			}, { signal: this._abort.all.signal });
 		}
-		if (this.listenForResize && !r) {
+		if (this.listenForResize) {
 			setTimeout(() => {
 				window.addEventListener("resize", () => {
 					this.setBreakpoints();
-				});
+				}, { signal: this._abort.all.signal });
 			}, 0);
 		}
 		if (this.scrollwheel) {
@@ -1272,24 +1267,22 @@ export default class Roundabout {
 				e.preventDefault();
 				if (e.deltaY > 0) this.scrollHandler(this, "scroll", 1);
 				if (e.deltaY < 0) this.scrollHandler(this, "wheel", -1);
-			});
+			}, { signal: this._abort.all.signal });
 		}
-		if (!r) {
-			this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
-			setTimeout(() => {
-				window.addEventListener("resize", () => {
-					this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
-				});
-			}, 0);
-		}
+		this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
+		setTimeout(() => {
+			window.addEventListener("resize", () => {
+				this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
+			}, { signal: this._abort.all.signal });
+		}, 0);
 		if (this.autoscrollPauseOnHover) {
 			document.querySelector(this.parent).addEventListener("mouseover", () => {
 				this._scrollIsAllowed = false;
-			});
+			}, { signal: this._abort.all.signal });
 			document.querySelector(this.parent).addEventListener("mouseout", () => {
 				this._scrollIsAllowed = true;
 				this.resetScrollTimeout(true);
-			});
+			}, { signal: this._abort.all.signal });
 		}
 		if (this.swipe) {
 			document.querySelector(`.roundabout-${this._uniqueId}-swipe-overlay`).addEventListener(
@@ -1297,7 +1290,7 @@ export default class Roundabout {
 				(event) => {
 					this.tStart(event, this);
 				},
-				{capture: false}
+				{capture: false, signal: this._abort.all.signal }
 				// false
 			);
 			document.querySelector(`.roundabout-${this._uniqueId}-swipe-overlay`).addEventListener(
@@ -1305,7 +1298,7 @@ export default class Roundabout {
 				(event) => {
 					this.setTouch(event, this);
 				},
-				{capture: false}
+				{capture: false, signal: this._abort.all.signal }
 				// false
 			);
 			document.querySelectorAll(`.roundabout-${this._uniqueId}-page`).forEach(page => {
@@ -1314,7 +1307,7 @@ export default class Roundabout {
 					(event) => {
 						this.tStart(event, this);
 					},
-					{capture: false}
+					{capture: false, signal: this._abort.all.signal }
 					// false
 				);
 				page.addEventListener(
@@ -1322,7 +1315,7 @@ export default class Roundabout {
 					(event) => {
 						this.setTouch(event, this);
 					},
-					{capture: false}
+					{capture: false, signal: this._abort.all.signal }
 					// false
 				);
 			});
