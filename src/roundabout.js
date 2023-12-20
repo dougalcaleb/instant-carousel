@@ -143,6 +143,7 @@ export default class Roundabout {
 		this.activeBreakpoint = null;
 		this._calculatedPageSize = null;
 		this._htmlTemplates = [];
+		this._templateRootSelectors = {};
 		this._abort = {
 			all: new AbortController(),
 			swipe: new AbortController()
@@ -885,7 +886,9 @@ export default class Roundabout {
 			newCarousel.innerHTML = html;
 		} else {
 			newCarousel.innerHTML = html;
-			newCarousel.classList.add("roundabout-wrapper");
+			newCarousel.classList.add("roundabout-wrapper", );
+			if (this._templateRootSelectors.classes) newCarousel.classList.add(...this._templateRootSelectors.classes);
+			newCarousel.id = this._templateRootSelectors.id;
 			if (this.id.split("")[0] == "#") {
 				let newId = this.id.split("");
 				newId.shift();
@@ -936,6 +939,10 @@ export default class Roundabout {
 
 	parseTemplate() {
 		let template = document.querySelector(this.template);
+		if (!template) {
+			console.error(`Template selector "${this.template}" not found.`);
+		}
+		this._templateRootSelectors = { classes: !!template.classList.length && Object.values(template.classList), id: !!template?.id && template.id };
 		for (let a = 0; a < template.childNodes.length; a++) {
 			if (template.childNodes[a].nodeType == 1) {
 				this._htmlTemplates.push({ root: template.childNodes[a], elements: template.childNodes[a].innerHTML.trim() });
