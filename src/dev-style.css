@@ -183,3 +183,15 @@ Pages
 
 /* Each page also gains the classes ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" and ".roundabout-[UNIQUE ID]-page", 
 and all visible pages gain the class ".roundabout-[UNIQUE ID]-visible-page-[NTH VISIBLE PAGE] */
+
+.page-2 img {
+   
+}
+
+.page-2-class-3 img {
+   width: 50%;
+}
+
+#myThirdPage h2 {
+   color: green
+}

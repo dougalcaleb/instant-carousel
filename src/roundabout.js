@@ -19,8 +19,28 @@
 
 //> FOR THIS RELEASE (1.5.0)
 /**
- * Ensure lazy loading bit is done
  * Convert methods to private
+ * Update docs and README
+ * - 'pages' setting needs to be reactive.
+ */
+
+/** Changelog for this release: 
+ * - Carousel can now be generated from an HTML template in addition to or instead of using the 'pages' setting
+ * - This plugin (and the scripting module) is now strictly meant to be used as a module
+ * - 'html' setting in 'pages' array now supports JS DOM objects
+ * - Scripter's onDragStart and onDragEnd now are passed the mouse event object
+ * - Added a timeout option for lazy loading
+ * - Fixed some issues with throttled scrolling
+ * - Fixed some issues with interactions being allowed during transitions
+ * - General performance improvements
+ */
+
+/**
+ * template setting implementation:
+ * - setting is a selector of a wrapper that contains the layout
+ * - replaces the whole wrapper, including root element
+ * - grabs first level div elements as pages
+ * - can coexist with pages setting, but pages is secondary and extra entries are not allowed. Pages setting is applied after template is parsed
  */
 
 let roundabout = {
@@ -467,7 +487,12 @@ export default class Roundabout {
 		// requires scroll allowed and not dragging (slider type) or from follow (gallery type is ok)
 		if (parent._scrollIsAllowed && (!parent._dragging || from == "follow")) {
 			parent.scroll(sd, !transition);
-			if ((parent.throttle && parent.throttleButtons && from != "key") || (parent.throttle && parent.throttleKeys && from == "key")) {
+			if (
+				(parent.throttle && parent.throttleButtons && from == "button") ||
+				(parent.throttle && parent.throttleKeys && from == "key") ||
+				(parent.throttle && parent.throttleSwipe && (from == "follow" || from == "snap" || from == "snap-g")) ||
+				(parent.throttle && parent.throttleNavigation && from == "scrollto")
+			) {
 				parent._scrollIsAllowed = false;
 				parent._swipeIsAllowed = false;
 				setTimeout(() => {
@@ -550,20 +575,12 @@ export default class Roundabout {
 	// called once when touch or click starts
 	tStart(event, parent) {
 		if (parent._isAutoscrolling || !parent._swipeIsAllowed) return
+		
 		this._callbacks.dragStart.forEach((cb) => {
 			cb(event);
 		});
-		// throttling
+
 		parent.resetScrollTimeout();
-		if (parent.throttleSwipe) {
-			if (parent._swipeIsAllowed) {
-				if (parent.throttle) {
-					parent._swipeIsAllowed = false;
-				}
-			} else {
-				return;
-			}
-		}
 
 		if (parent.swipeSpeedThreshold > 0) {
 			parent._sts = Date.now();
@@ -754,9 +771,13 @@ export default class Roundabout {
 
 	// called once when the touch or click ends
 	tEnd(event, parent) {
+		if (parent._isAutoscrolling || !parent._swipeIsAllowed) return
+
 		parent._callbacks.dragEnd.forEach((cb) => {
 			cb(event);
 		});
+
+		parent._swipeIsAllowed = false;
 		setTimeout(() => {
 			parent._swipeIsAllowed = true;
 		}, parent.throttleTimeout);
@@ -1261,10 +1282,10 @@ export default class Roundabout {
 	setListeners() {
 		if (this.uiEnabled && this.buttons) {
 			document.querySelector(`.roundabout-${this._uniqueId}-btn-next`).addEventListener("click", () => {
-				this.scrollHandler(this, "listener", this.scrollBy);
+				this.scrollHandler(this, "button", this.scrollBy);
 			}, { signal: this._abort.all.signal });
 			document.querySelector(`.roundabout-${this._uniqueId}-btn-prev`).addEventListener("click", () => {
-				this.scrollHandler(this, "listener", -this.scrollBy);
+				this.scrollHandler(this, "button", -this.scrollBy);
 			}, { signal: this._abort.all.signal });
 		}
 		if (this.keys) {
@@ -1283,7 +1304,7 @@ export default class Roundabout {
 			document.querySelector(this.id).addEventListener("wheel", (e) => {
 				e.preventDefault();
 				if (e.deltaY > 0) this.scrollHandler(this, "scroll", 1);
-				if (e.deltaY < 0) this.scrollHandler(this, "wheel", -1);
+				if (e.deltaY < 0) this.scrollHandler(this, "scroll", -1);
 			}, { signal: this._abort.all.signal });
 		}
 		this._calculatedPageSize = document.querySelector(`.roundabout-${this._uniqueId}-page-0`).offsetWidth;
@@ -1345,7 +1366,7 @@ export default class Roundabout {
 		if (this.ignoreErrors) {
 			return true;
 		}
-		if (this._htmlTemplates.length < this.pages.length) {
+		if (this.template && this._htmlTemplates.length < this.pages.length) {
 			this.displayError("The number of 'pages' objects is greater than the number of pages in the template. Ensure that the number of 'pages' objects is less than or equal to the number of pages in the template.");
 			return false;
 		}
