@@ -487,7 +487,8 @@ export default class Roundabout {
 				(parent.throttle && parent.throttleButtons && from == "button") ||
 				(parent.throttle && parent.throttleKeys && from == "key") ||
 				(parent.throttle && parent.throttleSwipe && (from == "follow" || from == "snap" || from == "snap-g")) ||
-				(parent.throttle && parent.throttleNavigation && from == "scrollto")
+				(parent.throttle && parent.throttleNavigation && from == "scrollto") ||
+				(parent.throttle && from == "scroll")
 			) {
 				parent._scrollIsAllowed = false;
 				parent._swipeIsAllowed = false;
