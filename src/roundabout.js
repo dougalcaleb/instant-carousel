@@ -43,10 +43,9 @@
  * - can coexist with pages setting, but pages is secondary and extra entries are not allowed. Pages setting is applied after template is parsed
  */
 
-let roundabout = {
+const roundabout = {
 	on: -1,
 	usedIds: [],
-	overwritten: "no",
 	logged: false,
 
 	defaults: {
@@ -119,9 +118,6 @@ let roundabout = {
  */
 export default class Roundabout {
 	constructor(settings = roundabout.defaults) {
-		if (!roundabout.overwritten || roundabout.overwritten != "no") {
-			console.error(`Do not redefine the variable "roundabout". Roundabout requires this variable to store data across multiple carousels.`);
-		}
 		let s = Object.entries(settings);
 		let d = Object.entries(roundabout.defaults);
 		this.VERSION = "1.5.0 (PRERELASE)";
@@ -776,11 +772,6 @@ export default class Roundabout {
 		parent._callbacks.dragEnd.forEach((cb) => {
 			cb(event);
 		});
-
-		parent._swipeIsAllowed = false;
-		setTimeout(() => {
-			parent._swipeIsAllowed = true;
-		}, parent.throttleTimeout);
 
 		if (parent.interpolate.length > 0) {
 			for (let a = 0; a < parent.pages.length; a++) {
