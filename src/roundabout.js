@@ -1308,10 +1308,10 @@ export default class Roundabout {
 			}, { signal: this._abort.all.signal });
 		}, 0);
 		if (this.autoscrollPauseOnHover) {
-			document.querySelector(this.parent).addEventListener("mouseover", () => {
+			document.querySelector(this.id).addEventListener("mouseover", () => {
 				this._autoscrollPaused = true;
 			}, { signal: this._abort.all.signal });
-			document.querySelector(this.parent).addEventListener("mouseout", () => {
+			document.querySelector(this.id).addEventListener("mouseout", () => {
 				this._autoscrollPaused = false;
 				this.resetScrollTimeout(true);
 			}, { signal: this._abort.all.signal });
