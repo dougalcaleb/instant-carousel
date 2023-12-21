@@ -184,6 +184,7 @@ export default class Roundabout {
 		this._distPercent = 0;
 		// autoscroll
 		this._isAutoscrolling = false;
+		this._autoscrollPaused = false;
 		this._scrollTimeoutHolder = null;
 		this._scrollIntervalHolder = null;
 		this._scrollAfterTimeoutHolder = null;
@@ -538,6 +539,7 @@ export default class Roundabout {
 
 	// Called at each interval, determines how to scroll
 	scrollAuto(parent) {
+		if (this._autoscrollPaused) return
 		this._isAutoscrolling = true;
 		setTimeout(() => {
 			parent._isAutoscrolling = false;
@@ -1307,10 +1309,10 @@ export default class Roundabout {
 		}, 0);
 		if (this.autoscrollPauseOnHover) {
 			document.querySelector(this.parent).addEventListener("mouseover", () => {
-				this._scrollIsAllowed = false;
+				this._autoscrollPaused = true;
 			}, { signal: this._abort.all.signal });
 			document.querySelector(this.parent).addEventListener("mouseout", () => {
-				this._scrollIsAllowed = true;
+				this._autoscrollPaused = false;
 				this.resetScrollTimeout(true);
 			}, { signal: this._abort.all.signal });
 		}
