@@ -53,6 +53,7 @@ const roundabout = {
 		breakpoints: [],
 		listenForResize: false,
 		interpolate: [],
+		precomputeInterpolation: null,
 		template: null,
 
 		id: ".myCarousel",
@@ -161,6 +162,7 @@ export default class Roundabout {
 		this._htmlTemplates = [];
 		this._templateRootSelectors = {};
 		this._interParsed = false;
+		this._interpolateCache = {};
 		this._abort = {
 			all: new AbortController(),
 			swipe: new AbortController()
@@ -675,8 +677,17 @@ export default class Roundabout {
 
 			if (parent._distPercent != 0 && parent.interpolate.length > 0) {
 				if (parent._distPercent > 1) parent._distPercent = 1;
-				parent.interpolate.forEach((inter) => {
-					let ratio = inter.curve ? inter.curve(parent._distPercent) : parent._distPercent;
+				parent.interpolate.forEach((inter, index) => {
+					let ratio;
+					if (this.precomputeInterpolation) {
+						let dec = Number(parent._distPercent.toFixed(this._interpolateCache.decLength));
+						let whole = ~~(dec * this._interpolateCache.wholeDecLength);
+						let key = (whole % (this._interpolateCache.whole) + whole) / (this._interpolateCache.wholeDecLength);
+						ratio = this._interpolateCache.map[index][key];
+					} else {
+						ratio = inter.curve ? inter.curve(parent._distPercent) : parent._distPercent;
+					}
+
 					if (parent._dx > 0) {
 						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.values[0][0]}`).style.transition =
 							inter.property + " 0s";
@@ -1226,6 +1237,23 @@ export default class Roundabout {
 		this.destroy();
 	}
 
+	precomputeInterp() {
+		this._interpolateCache.map = [];
+		this._interpolateCache.decLength = String(this.precomputeInterpolation).split(".")[1].length;
+		this._interpolateCache.whole = this.precomputeInterpolation * 10 ** this._interpolateCache.decLength;
+		this._interpolateCache.wholeDecLength = 10 ** this._interpolateCache.decLength;
+		this.interpolate.forEach((set) => {
+			let computed = {};
+			for (let a = 0; a < 1; a += this.precomputeInterpolation) {
+				let dec = this._interpolateCache.decLength;
+				let pos = Number(a.toFixed(dec));
+				let val = set.curve ? set.curve(a) : a;
+				computed[pos] = val;
+			}
+			this._interpolateCache.map.push(computed);
+		});
+	}
+
 	// Runs through applicable settings and takes actions based on them. Mostly to reduce constructor clutter
 	initialActions(r = false) {
 		if (this._allowInternalStyles) {
@@ -1270,6 +1298,9 @@ export default class Roundabout {
 					}
 					return i;
 				});
+				if (this.precomputeInterpolation) {
+					this.precomputeInterp();
+				}
 				this._interParsed = true;
 			}
 			this._boundFollow = this._execMM.bind(this);
