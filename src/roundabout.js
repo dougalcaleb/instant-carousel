@@ -160,6 +160,7 @@ export default class Roundabout {
 		this._calculatedPageSize = null;
 		this._htmlTemplates = [];
 		this._templateRootSelectors = {};
+		this._interParsed = false;
 		this._abort = {
 			all: new AbortController(),
 			swipe: new AbortController()
@@ -675,18 +676,19 @@ export default class Roundabout {
 			if (parent._distPercent != 0 && parent.interpolate.length > 0) {
 				if (parent._distPercent > 1) parent._distPercent = 1;
 				parent.interpolate.forEach((inter) => {
+					let ratio = inter.curve ? inter.curve(parent._distPercent) : parent._distPercent;
 					if (parent._dx > 0) {
-						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style.transition =
-							inter.value + " 0s";
-						let val = (inter.between[1][1] - inter.between[0][1]) * parent._distPercent + inter.between[0][1];
+						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.values[0][0]}`).style.transition =
+							inter.property + " 0s";
+						let val = (inter.values[1][1] - inter.values[0][1]) * ratio + inter.values[0][1];
 						let re = inter.unit.replace("$", val);
-						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[0][0]}`).style[inter.value] = re;
+						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.values[0][0]}`).style[inter.property] = re;
 					} else if (parent._dx < 0) {
-						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[1][0]}`).style.transition =
-							inter.value + " 0s";
-						let val = (inter.between[0][1] - inter.between[1][1]) * parent._distPercent + inter.between[1][1];
+						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.values[1][0]}`).style.transition =
+							inter.property + " 0s";
+						let val = (inter.values[0][1] - inter.values[1][1]) * ratio + inter.values[1][1];
 						let re = inter.unit.replace("$", val);
-						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.between[1][0]}`).style[inter.value] = re;
+						document.querySelector(`.roundabout-${parent._uniqueId}-visible-page-${inter.values[1][0]}`).style[inter.property] = re;
 					}
 				});
 			}
@@ -780,10 +782,10 @@ export default class Roundabout {
 			for (let a = 0; a < parent.pages.length; a++) {
 				let t = "";
 				parent.interpolate.forEach((inter) => {
-					if (!t.includes(inter.value)) {
-						t += inter.value + " " + parent.transition / 1000 + "s, ";
+					if (!t.includes(inter.property)) {
+						t += inter.property + " " + parent.transition / 1000 + "s, ";
 					}
-					document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style[inter.value] = "";
+					document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style[inter.property] = "";
 				});
 				t = t.substr(0, t.length - 2) + ";";
 				document.querySelector(`.roundabout-${parent._uniqueId}-page-${a}`).style.transition = "";
@@ -1258,11 +1260,18 @@ export default class Roundabout {
 				console.error(`Error while attempting to generate Roundabout with id ${this.id}:`);
 				console.error(e);
 			}
-			this.interpolate.forEach((i) => {
-				if (i.between[0][0] > i.between[1][0]) {
-					this.interpolate[this.interpolate.indexOf(i)].between.push(this.interpolate[this.interpolate.indexOf(i)].between.shift());
-				}
-			});
+			if (!this._interParsed) {
+				this.interpolate = this.interpolate.map((i) => {
+					i.values = Object.entries(i.values);
+					i.values[0][0] = Number(i.values[0][0]);
+					i.values[1][0] = Number(i.values[1][0]);
+					if (i.values[0][0] > i.values[1][0]) {
+						i.values.push(i.values.shift());
+					}
+					return i;
+				});
+				this._interParsed = true;
+			}
 			this._boundFollow = this._execMM.bind(this);
 			this._boundEnd = this._execMU.bind(this);
 			this._boundCancel = this._execMU.bind(this);
