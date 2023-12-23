@@ -406,7 +406,7 @@ export default class Roundabout {
 				);
 			}
 
-			if ((this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") && (Math.abs(distance) == this.scrollBy)) {
+			if (this.lazyLoad !== "custom" && (this.lazyLoad == "hidden" || this.lazyLoad == "lazy-hidden") && (Math.abs(distance) == this.scrollBy)) {
 				if (distance > 0) {
 					this.load(this._orderedPages.slice(this.pagesToShow, this.pagesToShow + this.scrollBy));
 				} else if (distance < 0) {
@@ -418,9 +418,13 @@ export default class Roundabout {
 
 	scrollTo(page, transition = true) {
 		if (this._scrollIsAllowed && this.throttleNavigation && this.navigation) {
-			this.setActiveBtn(
-				this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow)
-			);
+			if (!this.navigationTrim && this.type == "slider") {
+				this.setActiveBtn(page);
+			} else {
+				this.setActiveBtn(
+					this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow)
+				);
+			}
 		} else if (!this.throttleNavigation && this.navigation) {
 			this.setActiveBtn(
 				this.type == "slider" ? this.onPage : Math.floor(this.onPage / this.pagesToShow) % Math.floor(this.pages.length / this.pagesToShow)
@@ -448,7 +452,9 @@ export default class Roundabout {
 				}
 			}
 		}
-		this.load([...this._orderedPages.slice(0, this.pagesToShow + this.scrollBy), ...this._orderedPages.slice(this._orderedPages.length - this.scrollBy)]);
+		if (this.lazyLoad !== "custom") {
+			this.load([...this._orderedPages.slice(0, this.pagesToShow + this.scrollBy), ...this._orderedPages.slice(this._orderedPages.length - this.scrollBy)]);
+		}
 	}
 
 	setActiveBtn(id) {
@@ -916,7 +922,7 @@ export default class Roundabout {
 			newCarousel.innerHTML = html;
 			newCarousel.classList.add("roundabout-wrapper", );
 			if (this._templateRootSelectors.classes) newCarousel.classList.add(...this._templateRootSelectors.classes);
-			newCarousel.id = this._templateRootSelectors.id;
+			if (this._templateRootSelectors.id) newCarousel.id = this._templateRootSelectors.id;
 			if (this.id.split("")[0] == "#") {
 				let newId = this.id.split("");
 				newId.shift();
@@ -1055,13 +1061,17 @@ export default class Roundabout {
 					initial.push(i);
 				}
 				window.addEventListener("load", () => {
-					this.load(initial);
+					if (this.lazyLoad !== "custom") {
+						this.load(initial);
+					}
 				}, { signal: this._abort.all.signal });
 				this._handledLoad = true;
 			} else if (this.lazyLoad == "all" && !this._handledLoad) {
 				this._handledLoad = true;
 				window.addEventListener("load", () => {
-					this.load(this._orderedPages);
+					if (this.lazyLoad !== "custom") {
+						this.load(this._orderedPages);
+					}
 				}, { signal: this._abort.all.signal });
 			}
 			if (this._htmlTemplates[a]) {
