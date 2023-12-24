@@ -1418,7 +1418,7 @@ export default class Roundabout {
 			this.displayError("The minimum number of pages supported is 2.");
 			return false;
 		}
-		if ((!this.template && this.pages.length - this.pagesToShow <= 0) || (this.template && this._htmlTemplates.length - this.pagesToShow <= 0)) {
+		if ((!this.template && this.pages.length - this.pagesToShow < 2) || (this.template && this._htmlTemplates.length - this.pagesToShow <= 0)) {
 			this.displayError("Too many pages are being displayed at once. There must be at least 2 fewer pages shown than the number of total pages.");
 			return false;
 		}
