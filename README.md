@@ -10,7 +10,7 @@ Note: Project is complete and is no longer regularly maintained.
 
 The main focus of Roundabout is quick and easy setup, with plenty of customization options.
 
-To add Roundabout to your project, download and link ```roundabout.min.js``` to your HTML. Create another JavaScript file (or use the provided ```roundabout-settings.js```) to contain your settings. Import Roundabout into your settings script.
+To add Roundabout to your project, download the plugin and add the files to your project. Create another JavaScript file (or use the provided ```roundabout-settings.js```) to contain your settings. Import Roundabout into your settings script.
 
 
 Link ```roundabout-style.css``` to your page. Your document should look like this:
@@ -26,7 +26,6 @@ Link ```roundabout-style.css``` to your page. Your document should look like thi
   <body>
     <!-- ... -->
 
-    <script type="module" src="path/to/roundabout.min.js"></script>
     <script type="module" src="path/to/roundabout-settings.js"></script>
   </body>
 </html>
