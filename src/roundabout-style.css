@@ -13,13 +13,13 @@ Main wrapper
 ==================================
 */
 
+/* This same element also gains the selector specified by the "id" setting */
 .roundabout-wrapper {
    width: 100%;
 	height: 80vh;
    /* Cannot change: "position" and "overflow" */
 }
 
-/* This same element also gains the selector specified by the "id" setting */
 
 /*
 ==================================
@@ -54,6 +54,7 @@ UI wrapper
 Next and Previous buttons
 ==================================
 */
+/* Both buttons also gain the class ".roundabout-scroll-btn" */
 
 .roundabout-btn-next, .roundabout-btn-prev {
 	position: absolute;
@@ -84,8 +85,6 @@ Next and Previous buttons
 .roundabout-btn-next {
 	right: 0;
 }
-
-/* Both buttons also gain the class ".roundabout-scroll-btn" */
 
 /*
 ==================================
@@ -149,12 +148,13 @@ Pages
 ==================================
 */
 
+/* Page wrap also gains the class ".roundabout-[UNIQUE ID]-page-wrap" */
 .roundabout-page-wrap {
    /* Cannot change: "position", "height", "width", and "left" */
 }
 
-/* Page wrap also gains the class ".roundabout-[UNIQUE ID]-page-wrap" */
-
+/* Each page also gains the classes ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" and ".roundabout-[UNIQUE ID]-page", 
+and all visible pages gain the class ".roundabout-[UNIQUE ID]-visible-page-[NTH VISIBLE PAGE] */
 .roundabout-page {
    height: 100%;
    background-position: center center;
@@ -167,6 +167,3 @@ Pages
       https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Transitions/Using_CSS_transitions#multiple_animated_properties_example
    */
 }
-
-/* Each page also gains the classes ".roundabout-[UNIQUE ID]-page-[NTH PAGE]" and ".roundabout-[UNIQUE ID]-page", 
-and all visible pages gain the class ".roundabout-[UNIQUE ID]-visible-page-[NTH VISIBLE PAGE] */
