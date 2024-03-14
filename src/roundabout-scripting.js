@@ -19,23 +19,12 @@ Methods
 ✔ Add page
 ✔ Remove page
 ✔ Load page image
-Properties
-✖ Drag position
-✔ onPage
-✔ Active breakpoint
-Misc
-✔ Async lazy load promises
 */
 
 
 export default class RoundaboutScripter {
-   constructor() { }
-   
-   // on__(carousel, callback) {
-   //    carousel.subscribe("", callback)
-   // }
-
-   // 1 param
+	constructor() { }
+	
    static onScroll(carousel, callback) {
       carousel.subscribe("scroll", callback);
    }
@@ -52,12 +41,10 @@ export default class RoundaboutScripter {
       carousel.subscribe("dragEnd", callback)
    }
 
-   // 1 param
    static onScrollNext(carousel, callback) {
       carousel.subscribe("scrollNext", callback)
    }
 
-   // 1 param
    static onScrollPrevious(carousel, callback) {
       carousel.subscribe("scrollPrevious", callback)
    }
@@ -158,11 +145,14 @@ export default class RoundaboutScripter {
       }
    }
 
-   static setValue(carousel, setting, value) {
+   static setValue(carousel, setting, value, refresh = false) {
       if (setting.split("")[0] == "_") {
          console.error(`The setting ${setting} cannot be overridden.`);
       } else {
-         carousel[setting] = value;
+			carousel[setting] = value;
+			if (refresh) {
+				carousel.destroy(true, false);
+			}
       }
    }
 }
